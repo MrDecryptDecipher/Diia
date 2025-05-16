@@ -1,0 +1,34 @@
+{
+  "name": "omni-alpha-dashboard-backend",
+  "version": "1.0.0",
+  "description": "Backend for OMNI-ALPHA VΩ∞∞ Trading System Dashboard",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "start:websocket": "node src/websocket-server.js",
+    "start:grpc": "node src/grpc-server.js",
+    "start:all": "concurrently \"npm run start\" \"npm run start:websocket\" \"npm run start:grpc\"",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@grpc/grpc-js": "^1.8.14",
+    "@grpc/proto-loader": "^0.7.6",
+    "axios": "^1.4.0",
+    "cors": "^2.8.5",
+    "crypto": "^1.0.1",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "fs": "^0.0.1-security",
+    "helmet": "^6.1.5",
+    "morgan": "^1.10.0",
+    "node-fetch": "^2.7.0",
+    "path": "^0.12.7",
+    "socket.io": "^4.6.1",
+    "winston": "^3.8.2"
+  },
+  "devDependencies": {
+    "concurrently": "^8.0.1",
+    "nodemon": "^2.0.22"
+  }
+}

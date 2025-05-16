@@ -1,0 +1,92 @@
+syntax = "proto3";
+
+package omni;
+
+// OMNI-ALPHA VΩ∞∞ Trading System Service
+service OmniService {
+  // Get system metrics
+  rpc GetSystemMetrics(Empty) returns (SystemMetricsResponse);
+  
+  // Get wallet balance
+  rpc GetWalletBalance(Empty) returns (WalletBalanceResponse);
+  
+  // Get open positions
+  rpc GetOpenPositions(Empty) returns (PositionsResponse);
+  
+  // Get recent trades
+  rpc GetRecentTrades(Empty) returns (TradesResponse);
+  
+  // Execute a trade
+  rpc ExecuteTrade(TradeRequest) returns (TradeResponse);
+  
+  // Close a position
+  rpc ClosePosition(ClosePositionRequest) returns (ClosePositionResponse);
+  
+  // Get market data
+  rpc GetMarketData(MarketDataRequest) returns (MarketDataResponse);
+  
+  // Stream market data
+  rpc StreamMarketData(MarketDataRequest) returns (stream MarketDataResponse);
+  
+  // Stream system metrics
+  rpc StreamSystemMetrics(Empty) returns (stream SystemMetricsResponse);
+}
+
+// Empty request message
+message Empty {}
+
+// System metrics response
+message SystemMetricsResponse {
+  string metrics = 1; // JSON string of system metrics
+}
+
+// Wallet balance response
+message WalletBalanceResponse {
+  string walletBalance = 1; // JSON string of wallet balance
+}
+
+// Positions response
+message PositionsResponse {
+  string positions = 1; // JSON string of positions
+}
+
+// Trades response
+message TradesResponse {
+  string trades = 1; // JSON string of trades
+}
+
+// Trade request
+message TradeRequest {
+  string symbol = 1; // Trading symbol (e.g., BTCUSDT)
+  string direction = 2; // Trade direction (long or short)
+  string amount = 3; // Trade amount in USDT
+  string leverage = 4; // Leverage to use
+}
+
+// Trade response
+message TradeResponse {
+  string trade = 1; // JSON string of trade details
+}
+
+// Close position request
+message ClosePositionRequest {
+  string symbol = 1; // Trading symbol (e.g., BTCUSDT)
+  int32 positionIdx = 2; // Position index (0 for one-way mode)
+}
+
+// Close position response
+message ClosePositionResponse {
+  string result = 1; // JSON string of close position result
+}
+
+// Market data request
+message MarketDataRequest {
+  string symbol = 1; // Trading symbol (e.g., BTCUSDT)
+  string interval = 2; // Kline interval (e.g., 1, 5, 15, 60, D)
+  int32 limit = 3; // Number of klines to return
+}
+
+// Market data response
+message MarketDataResponse {
+  string marketData = 1; // JSON string of market data
+}

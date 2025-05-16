@@ -1,0 +1,72 @@
+[package]
+name = "omni"
+version = "0.1.0"
+edition = "2021"
+description = "OMNI-ALPHA VΩ∞∞ Trading System"
+authors = ["Sandeep Kumar Sahoo"]
+
+[dependencies]
+tokio = { version = "1.28", features = ["full"] }
+anyhow = "1.0"
+thiserror = "1.0"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+chrono = { version = "0.4", features = ["serde"] }
+tracing = "0.1"
+tracing-subscriber = "0.3"
+async-trait = "0.1"
+rand = "0.8"
+rand_distr = "0.4"
+csv = "1.2"
+reqwest = { version = "0.11", features = ["json"] }
+futures = "0.3"
+plotters = "0.3"
+num = "0.4"
+ndarray = "0.15"
+ndarray-rand = "0.14"
+nalgebra = "0.32"
+rayon = "1.7"
+hmac = "0.12"
+sha2 = "0.10"
+dotenv = "0.15"
+serde_urlencoded = "0.7"
+
+[lib]
+name = "omni"
+path = "src/lib.rs"
+
+[[bin]]
+name = "omni"
+path = "src/main.rs"
+
+[[bin]]
+name = "omni_alpha_executor"
+path = "src/bin/omni_alpha_executor.rs"
+
+[[bin]]
+name = "omni_alpha_bybit"
+path = "src/bin/omni_alpha_bybit.rs"
+
+[[bin]]
+name = "omni_alpha"
+path = "src/bin/omni_alpha.rs"
+
+[[bin]]
+name = "request_demo_funds"
+path = "src/bin/request_demo_funds.rs"
+
+[[bin]]
+name = "check_account_info"
+path = "src/bin/check_account_info.rs"
+
+[[bin]]
+name = "simulate_trading"
+path = "src/bin/simulate_trading.rs"
+
+[[bin]]
+name = "bybit_demo"
+path = "src/bin/bybit_demo.rs"
+
+[[bin]]
+name = "bybit_high_frequency_trader"
+path = "src/bin/bybit_high_frequency_trader.rs"
