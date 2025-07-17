@@ -1,0 +1,166 @@
+# OMNI-ALPHA VΩ∞∞ Trading System Configuration
+# Development configuration for testing and debugging
+
+[system]
+name = "OMNI-ALPHA-DEV"
+version = "1.0.0-dev"
+environment = "development"
+debug = true
+
+[network]
+id = "omni-trading-network-dev"
+listen_addr = "0.0.0.0:3000"
+api_port = 3001
+websocket_port = 3002
+grpc_port = 3003
+frontend_port = 3000
+
+[trading]
+initial_capital = 100.0  # USDT (higher for testing)
+min_profit_per_trade = 0.1  # USDT (lower for testing)
+max_position_size = 10.0  # USDT
+risk_tolerance = 0.05  # 5% (lower risk for dev)
+max_positions = 3
+target_trades_per_day = 50  # Lower for development
+
+[exchange]
+name = "bybit"
+testnet = true
+api_key = "demo_key"
+api_secret = "demo_secret"
+base_url = "https://api-demo.bybit.com"
+timeout_seconds = 60  # Higher timeout for debugging
+rate_limit_per_minute = 60
+
+[agents]
+max_agents = 5  # Fewer agents for development
+coordination_interval = 5000  # milliseconds (slower for debugging)
+performance_check_interval = 10000  # milliseconds
+
+[agents.quantum_predictor]
+enabled = true
+confidence_threshold = 0.5  # Lower threshold for testing
+prediction_horizon = 6  # hours (shorter for dev)
+quantum_dimensions = 1000  # Smaller for faster processing
+
+[agents.market_analyzer]
+enabled = true
+analysis_interval = 300  # seconds (slower for dev)
+technical_indicators = ["RSI", "MACD"]  # Fewer indicators
+sentiment_sources = ["mock"]  # Mock data for development
+
+[agents.risk_manager]
+enabled = true
+max_drawdown = 0.05  # 5% (stricter for dev)
+stop_loss_percentage = 0.01  # 1%
+take_profit_percentage = 0.02  # 2%
+emergency_stop_threshold = 0.03  # 3%
+
+[agents.zero_loss_enforcer]
+enabled = false  # Disabled for development testing
+enforcement_mode = "warning"
+loss_threshold = 0.005  # 0.5%
+hedge_ratio = 0.5
+
+[agents.high_frequency_trader]
+enabled = false  # Disabled for development
+execution_speed_ms = 1000  # Slower for debugging
+arbitrage_threshold = 0.01  # 1%
+max_trades_per_minute = 1
+
+[quantum]
+enabled = true
+entanglement_threshold = 0.5  # Lower for testing
+spectral_analysis_depth = 3  # Reduced for faster processing
+hyperdimensional_dimensions = 1000  # Smaller for development
+quantum_coherence_threshold = 0.6
+
+[strategy]
+primary = "simple_momentum"  # Simpler strategy for dev
+backup = "buy_and_hold"
+rebalance_interval = 1800  # seconds (30 minutes)
+performance_review_interval = 3600  # seconds (1 hour)
+
+[strategy.simple_momentum]
+enabled = true
+lookback_period = 20
+momentum_threshold = 0.02
+
+[monitoring]
+enabled = true
+metrics_interval = 10  # seconds (more frequent for dev)
+log_level = "debug"  # More verbose logging
+performance_tracking = true
+real_time_alerts = true
+
+[monitoring.performance]
+track_latency = true
+track_memory = true
+track_cpu = true
+track_network = true
+alert_threshold_latency_ms = 500  # Higher threshold for dev
+alert_threshold_memory_mb = 500
+
+[storage]
+data_dir = "./data/dev"
+logs_dir = "./logs/dev"
+config_dir = "./config"
+max_log_size_mb = 50  # Smaller for dev
+log_retention_days = 7
+
+[security]
+enable_encryption = false  # Disabled for easier debugging
+api_rate_limiting = false  # Disabled for development
+max_requests_per_minute = 10000
+enable_cors = true
+allowed_origins = ["http://localhost:3000", "http://127.0.0.1:3000"]
+
+[database]
+redis_url = "redis://localhost:6379/1"  # Different DB for dev
+cache_ttl = 60  # seconds (shorter for dev)
+max_connections = 5
+
+[ml]
+enabled = false  # Disabled for faster startup
+model_update_interval = 7200  # seconds
+training_data_retention = 3  # days
+prediction_confidence_threshold = 0.5
+
+[deployment]
+auto_restart = false  # Manual restart for debugging
+health_check_interval = 60  # seconds
+graceful_shutdown_timeout = 10  # seconds
+max_memory_mb = 1024
+max_cpu_percent = 50
+
+[logging]
+level = "debug"
+format = "pretty"  # Human-readable format for dev
+file = "./logs/dev/omni-dev.log"
+max_files = 5
+rotation_size_mb = 25
+
+[alerts]
+enabled = false  # Disabled for development
+email_notifications = false
+webhook_url = ""
+
+[performance]
+cache_enabled = false  # Disabled for consistent testing
+async_processing = true
+connection_pooling = false  # Disabled for simpler debugging
+memory_optimization = false
+gc_interval = 60  # seconds
+
+[testing]
+mock_trading = true
+paper_trading = true
+simulation_mode = true  # Full simulation for dev
+test_data_path = "./data/test"
+
+[backup]
+enabled = false  # Disabled for development
+interval = 7200  # seconds
+retention_days = 3
+backup_path = "./data/dev/backups"
+compress = false

@@ -1,0 +1,173 @@
+# OMNI-ALPHA VΩ∞∞ Trading System Configuration
+# Default configuration for production deployment
+
+[system]
+name = "OMNI-ALPHA"
+version = "1.0.0"
+environment = "production"
+debug = false
+
+[network]
+id = "omni-trading-network"
+listen_addr = "0.0.0.0:10000"
+api_port = 10002
+websocket_port = 10003
+grpc_port = 10004
+frontend_port = 10001
+
+[trading]
+initial_capital = 12.0  # USDT
+min_profit_per_trade = 2.2  # USDT
+max_position_size = 6.0  # USDT (50% of capital)
+risk_tolerance = 0.1  # 10%
+max_positions = 5
+target_trades_per_day = 750
+
+[exchange]
+name = "bybit"
+testnet = true
+api_key = ""  # Set via environment variable
+api_secret = ""  # Set via environment variable
+base_url = "https://api-demo.bybit.com"
+timeout_seconds = 30
+rate_limit_per_minute = 120
+
+[agents]
+# Agent configuration
+max_agents = 18
+coordination_interval = 1000  # milliseconds
+performance_check_interval = 5000  # milliseconds
+
+[agents.quantum_predictor]
+enabled = true
+confidence_threshold = 0.7
+prediction_horizon = 24  # hours
+quantum_dimensions = 10000
+
+[agents.market_analyzer]
+enabled = true
+analysis_interval = 60  # seconds
+technical_indicators = ["RSI", "MACD", "EMA", "Bollinger"]
+sentiment_sources = ["twitter", "reddit", "news"]
+
+[agents.risk_manager]
+enabled = true
+max_drawdown = 0.15  # 15%
+stop_loss_percentage = 0.02  # 2%
+take_profit_percentage = 0.05  # 5%
+emergency_stop_threshold = 0.10  # 10%
+
+[agents.zero_loss_enforcer]
+enabled = true
+enforcement_mode = "strict"
+loss_threshold = 0.01  # 1%
+hedge_ratio = 0.8
+
+[agents.high_frequency_trader]
+enabled = true
+execution_speed_ms = 50
+arbitrage_threshold = 0.001  # 0.1%
+max_trades_per_minute = 10
+
+[quantum]
+enabled = true
+entanglement_threshold = 0.7
+spectral_analysis_depth = 5
+hyperdimensional_dimensions = 10000
+quantum_coherence_threshold = 0.8
+
+[strategy]
+primary = "advanced_multi_factor"
+backup = "simple_momentum"
+rebalance_interval = 3600  # seconds
+performance_review_interval = 86400  # seconds
+
+[strategy.advanced_multi_factor]
+enabled = true
+factors = ["momentum", "mean_reversion", "volatility", "volume"]
+weight_momentum = 0.3
+weight_mean_reversion = 0.25
+weight_volatility = 0.25
+weight_volume = 0.2
+
+[monitoring]
+enabled = true
+metrics_interval = 30  # seconds
+log_level = "info"
+performance_tracking = true
+real_time_alerts = true
+
+[monitoring.performance]
+track_latency = true
+track_memory = true
+track_cpu = true
+track_network = true
+alert_threshold_latency_ms = 100
+alert_threshold_memory_mb = 1000
+
+[storage]
+data_dir = "./data"
+logs_dir = "./logs"
+config_dir = "./config"
+max_log_size_mb = 100
+log_retention_days = 30
+
+[security]
+enable_encryption = true
+api_rate_limiting = true
+max_requests_per_minute = 1000
+enable_cors = true
+allowed_origins = ["http://3.111.22.56:10001"]
+
+[database]
+# Redis configuration for caching
+redis_url = "redis://localhost:6379"
+cache_ttl = 300  # seconds
+max_connections = 10
+
+[ml]
+enabled = true
+model_update_interval = 3600  # seconds
+training_data_retention = 7  # days
+prediction_confidence_threshold = 0.75
+
+[deployment]
+auto_restart = true
+health_check_interval = 30  # seconds
+graceful_shutdown_timeout = 30  # seconds
+max_memory_mb = 2048
+max_cpu_percent = 80
+
+[logging]
+level = "info"
+format = "json"
+file = "./logs/omni.log"
+max_files = 10
+rotation_size_mb = 50
+
+[alerts]
+enabled = true
+email_notifications = false
+webhook_url = ""
+slack_webhook = ""
+discord_webhook = ""
+
+[performance]
+cache_enabled = true
+async_processing = true
+connection_pooling = true
+memory_optimization = true
+gc_interval = 300  # seconds
+
+[testing]
+mock_trading = true  # Enable for testing
+paper_trading = true
+simulation_mode = false
+test_data_path = "./data/test"
+
+[backup]
+enabled = true
+interval = 3600  # seconds
+retention_days = 7
+backup_path = "./data/backups"
+compress = true

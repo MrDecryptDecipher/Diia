@@ -1,0 +1,167 @@
+# Advanced Multi-Factor Strategy Configuration
+# Quantum-enhanced trading strategy with multiple signal sources
+
+[strategy]
+name = "advanced_multi_factor"
+version = "1.0.0"
+description = "Advanced multi-factor strategy combining momentum, mean reversion, volatility, and volume analysis"
+enabled = true
+
+[parameters]
+# Risk management
+max_position_size = 0.5  # 50% of available capital
+stop_loss_percentage = 0.02  # 2%
+take_profit_percentage = 0.05  # 5%
+max_drawdown = 0.15  # 15%
+
+# Position sizing
+position_sizing_method = "kelly_criterion"
+base_position_size = 0.1  # 10% of capital
+max_leverage = 1.0  # No leverage for safety
+
+# Time frames
+primary_timeframe = "1h"
+secondary_timeframe = "4h"
+long_term_timeframe = "1d"
+
+[factors]
+# Factor weights (must sum to 1.0)
+momentum_weight = 0.30
+mean_reversion_weight = 0.25
+volatility_weight = 0.25
+volume_weight = 0.20
+
+[factors.momentum]
+enabled = true
+lookback_period = 20
+momentum_threshold = 0.02  # 2%
+rsi_period = 14
+rsi_overbought = 70
+rsi_oversold = 30
+macd_fast = 12
+macd_slow = 26
+macd_signal = 9
+
+[factors.mean_reversion]
+enabled = true
+bollinger_period = 20
+bollinger_std = 2.0
+mean_reversion_threshold = 0.015  # 1.5%
+z_score_threshold = 2.0
+lookback_window = 50
+
+[factors.volatility]
+enabled = true
+volatility_window = 20
+high_volatility_threshold = 0.03  # 3%
+low_volatility_threshold = 0.01  # 1%
+atr_period = 14
+volatility_breakout_multiplier = 1.5
+
+[factors.volume]
+enabled = true
+volume_sma_period = 20
+volume_spike_threshold = 2.0  # 2x average volume
+volume_confirmation_required = true
+obv_period = 10
+
+[signals]
+# Signal generation rules
+min_signal_strength = 0.6
+signal_confirmation_required = true
+max_conflicting_signals = 1
+
+[signals.entry]
+# Entry signal requirements
+min_factors_agreeing = 2
+momentum_entry_threshold = 0.7
+mean_reversion_entry_threshold = 0.6
+volatility_entry_threshold = 0.5
+volume_entry_threshold = 0.5
+
+[signals.exit]
+# Exit signal requirements
+profit_target_factor = 2.0  # 2x stop loss
+trailing_stop_enabled = true
+trailing_stop_percentage = 0.01  # 1%
+time_based_exit_hours = 24
+
+[risk_management]
+# Advanced risk management
+max_correlation = 0.7  # Maximum correlation between positions
+sector_concentration_limit = 0.3  # 30% max in one sector
+daily_loss_limit = 0.05  # 5% daily loss limit
+consecutive_loss_limit = 3
+
+[quantum_enhancement]
+enabled = true
+quantum_confidence_threshold = 0.75
+entanglement_analysis = true
+spectral_tree_depth = 5
+hyperdimensional_pattern_matching = true
+
+[backtesting]
+# Backtesting parameters
+start_date = "2023-01-01"
+end_date = "2024-01-01"
+initial_capital = 10000.0
+commission_rate = 0.001  # 0.1%
+slippage = 0.0005  # 0.05%
+
+[optimization]
+# Strategy optimization
+parameter_optimization = true
+walk_forward_analysis = true
+monte_carlo_simulations = 1000
+genetic_algorithm_generations = 50
+
+[symbols]
+# Supported trading symbols
+primary = ["BTCUSDT", "ETHUSDT"]
+secondary = ["ADAUSDT", "DOTUSDT", "LINKUSDT"]
+watchlist = ["SOLUSDT", "AVAXUSDT", "MATICUSDT"]
+
+[market_conditions]
+# Market regime detection
+bull_market_threshold = 0.05  # 5% monthly return
+bear_market_threshold = -0.05  # -5% monthly return
+sideways_market_volatility = 0.02  # 2% volatility
+
+[market_conditions.bull_market]
+momentum_weight = 0.40
+mean_reversion_weight = 0.20
+volatility_weight = 0.20
+volume_weight = 0.20
+
+[market_conditions.bear_market]
+momentum_weight = 0.20
+mean_reversion_weight = 0.40
+volatility_weight = 0.25
+volume_weight = 0.15
+
+[market_conditions.sideways_market]
+momentum_weight = 0.25
+mean_reversion_weight = 0.35
+volatility_weight = 0.25
+volume_weight = 0.15
+
+[alerts]
+# Alert configuration
+enable_trade_alerts = true
+enable_risk_alerts = true
+enable_performance_alerts = true
+alert_cooldown_minutes = 15
+
+[performance]
+# Performance tracking
+benchmark_symbol = "BTCUSDT"
+performance_review_frequency = "daily"
+rebalance_frequency = "weekly"
+strategy_review_frequency = "monthly"
+
+[logging]
+# Strategy-specific logging
+log_all_signals = true
+log_factor_scores = true
+log_risk_metrics = true
+log_performance_metrics = true
