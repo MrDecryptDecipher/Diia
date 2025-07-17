@@ -21,7 +21,7 @@ BASE_URL = "https://api-demo.bybit.com"
 
 # System Configuration
 INITIAL_CAPITAL = 12.0  # $12 USDT
-MAX_CONCURRENT_TRADES = 3
+MAX_CONCURRENT_TRADES = 50  # Increased for testing
 POSITION_SIZE_PERCENTAGE = 0.1  # 10% of capital per trade
 STOP_LOSS_PERCENTAGE = 0.02  # 2% stop loss
 TAKE_PROFIT_PERCENTAGE = 0.05  # 5% take profit

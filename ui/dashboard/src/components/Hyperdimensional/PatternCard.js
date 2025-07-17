@@ -32,16 +32,35 @@ const PatternCard = ({ pattern }) => {
   
   // Get icon based on pattern type
   const getPatternIcon = (type) => {
+    const typeStr = type.toLowerCase();
+
+    if (typeStr.includes('fractal') || typeStr.includes('quantum')) {
+      return <BlurOn />;
+    }
+    if (typeStr.includes('harmonic') || typeStr.includes('neural')) {
+      return <Timeline />;
+    }
+    if (typeStr.includes('geometric') || typeStr.includes('hyperspatial')) {
+      return <Public />;
+    }
+    if (typeStr.includes('fibonacci') || typeStr.includes('hyperdimensional')) {
+      return <Insights />;
+    }
+    if (typeStr.includes('elliot') || typeStr.includes('elliott') || typeStr.includes('wave')) {
+      return <Timelapse />;
+    }
+
+    // Legacy types
     switch (type) {
-      case 'Fractal':
+      case 'fractal':
         return <BlurOn />;
-      case 'Harmonic':
+      case 'harmonic':
         return <Timeline />;
-      case 'Geometric':
+      case 'geometric':
         return <Public />;
-      case 'Fibonacci':
+      case 'fibonacci':
         return <Insights />;
-      case 'Elliot Wave':
+      case 'elliot':
         return <Timelapse />;
       default:
         return <Speed />;
@@ -105,11 +124,27 @@ const PatternCard = ({ pattern }) => {
         </Box>
         
         <Box sx={{ mb: 2 }}>
-          <Typography variant="body2" sx={{ mb: 1, fontWeight: 'medium' }}>
-            {pattern.type} Pattern
+          <Typography variant="body2" sx={{ mb: 1, fontWeight: 'medium', fontFamily: 'Rajdhani, sans-serif' }}>
+            {pattern.type.charAt(0).toUpperCase() + pattern.type.slice(1)} Pattern
           </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-            {pattern.description}
+          {pattern.tradingSystemActive && (
+            <Chip
+              label={`System Active • ${pattern.systemTrades} trades`}
+              size="small"
+              sx={{
+                backgroundColor: alpha(theme.palette.success.main, 0.1),
+                color: theme.palette.success.main,
+                fontSize: '0.7rem',
+                height: 20,
+                mb: 1,
+              }}
+            />
+          )}
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+            Prediction: {pattern.prediction?.direction?.toUpperCase()} • {pattern.prediction?.timeframe}
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Magnitude: {pattern.prediction?.magnitude?.toFixed(2)}% • Complexity: {pattern.complexity?.toFixed(1)}
           </Typography>
         </Box>
         

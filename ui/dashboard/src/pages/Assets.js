@@ -137,7 +137,16 @@ const Assets = () => {
   const getFilteredAssets = () => {
     if (!assetInfo) return [];
 
-    let filteredAssets = [...assetInfo];
+    // Map API data to component expected format
+    let filteredAssets = assetInfo.map(asset => ({
+      ...asset,
+      id: asset.symbol, // Use symbol as id
+      priceChange24h: asset.change24h, // Map change24h to priceChange24h
+      volume: asset.tradingVolume, // Map tradingVolume to volume
+      category: asset.baseAsset === 'BTC' ? 'Bitcoin' :
+                asset.baseAsset === 'ETH' ? 'Ethereum' :
+                asset.baseAsset === 'SOL' ? 'Solana' : 'Crypto'
+    }));
 
     // Apply search
     if (searchTerm) {
@@ -174,7 +183,12 @@ const Assets = () => {
   // Get unique categories
   const getUniqueCategories = () => {
     if (!assetInfo) return [];
-    return [...new Set(assetInfo.map(asset => asset.category))];
+    const categories = assetInfo.map(asset =>
+      asset.baseAsset === 'BTC' ? 'Bitcoin' :
+      asset.baseAsset === 'ETH' ? 'Ethereum' :
+      asset.baseAsset === 'SOL' ? 'Solana' : 'Crypto'
+    );
+    return [...new Set(categories)];
   };
 
   // Initialize chart

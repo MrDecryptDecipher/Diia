@@ -11,12 +11,14 @@ use tracing::{info, error};
 use tracing_subscriber::fmt::format::FmtSpan;
 use dotenv::dotenv;
 use tokio::time;
+use std::sync::Arc;
 
 use omni::trading_system::{TradingSystem, TradingSystemConfig, TradingMode, ExchangeConfig};
 use omni::agents::{
     MemoryNode, FeedbackLoop, CompoundController, GhostTrader, AntiLossHedger, GodKernel,
     CapitalTier
 };
+use omni::adapters::BybitAdapter;
 
 #[derive(Parser)]
 #[clap(author, version, about, long_about = None)]

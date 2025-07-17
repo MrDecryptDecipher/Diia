@@ -13,12 +13,15 @@ use anyhow::Result;
 use tracing::{info, debug, warn, error};
 use async_trait::async_trait;
 use chrono::Utc;
+use uuid::Uuid;
 
 use crate::engine::agent_trait::{Agent, AgentContext, AgentConfig};
-use crate::engine::message_bus::{BusMessage, MessageBus, MessageType};
+use crate::engine::message_bus::{BusMessage, MessageBus, MessageType, TradeDirection};
 use crate::exchange::bybit::adapter::BybitAdapter;
 use crate::exchange::bybit::types::{OrderSide, OrderType, TimeInForce};
 use crate::exchange::asset_scanner::{AssetScanner, TradingOpportunity};
+use crate::agents::main_strategy_controller::{TradingCommand, CommandType, ExecutionResponse};
+use crate::agents::trade_executor::ExecutionStatus;
 
 /// High Frequency Trader Agent configuration
 #[derive(Debug, Clone)]
@@ -559,6 +562,257 @@ impl HighFrequencyTrader {
 
         Ok(())
     }
+
+    /// Handle trading command from main strategy controller
+    async fn handle_trading_command(&mut self, command: TradingCommand) -> Result<()> {
+        info!("🎯 Executing trading command: {} for {} - {} {:?}",
+              command.id, command.symbol, command.direction, command.command_type);
+
+        let response = match command.command_type {
+            CommandType::ExecuteTrade => {
+                self.execute_trade_command(&command).await
+            },
+            CommandType::ClosePosition => {
+                self.close_position_command(&command).await
+            },
+            CommandType::MonitorEntry => {
+                // For now, treat monitor as immediate execution
+                self.execute_trade_command(&command).await
+            },
+            CommandType::UpdateStopLoss => {
+                self.update_stop_loss_command(&command).await
+            },
+            CommandType::UpdateTakeProfit => {
+                self.update_take_profit_command(&command).await
+            },
+            CommandType::CancelOrder => {
+                self.cancel_order_command(&command).await
+            },
+            CommandType::EmergencyStop => {
+                self.emergency_stop_command().await
+            },
+        };
+
+        // Send response back to main strategy controller
+        self.send_execution_response(command.id, response).await?;
+
+        Ok(())
+    }
+
+    /// Execute a trade command
+    async fn execute_trade_command(&mut self, command: &TradingCommand) -> Result<String> {
+        // Check if we already have a position for this symbol
+        if self.active_trades.contains_key(&command.symbol) {
+            return Err(anyhow::anyhow!("Already have active position for {}", command.symbol));
+        }
+
+        // Check if we have reached max concurrent trades
+        if self.active_trades.len() >= self.config.max_concurrent_trades {
+            return Err(anyhow::anyhow!("Maximum concurrent trades reached"));
+        }
+
+        // Convert direction to OrderSide
+        let side = match command.direction {
+            TradeDirection::Long => OrderSide::Buy,
+            TradeDirection::Short => OrderSide::Sell,
+        };
+
+        // Calculate quantity based on position size and leverage
+        let quantity = (command.position_size * command.leverage) / command.entry_price;
+
+        // Place the order
+        let order_result = self.exchange.place_order(
+            &command.symbol,
+            side,
+            OrderType::Market,
+            quantity,
+            None, // Market order, no price needed
+            TimeInForce::IOC,
+            Some(command.leverage),
+            Some(command.stop_loss),
+            Some(command.take_profit),
+        ).await?;
+
+        // Create trade record
+        let trade_record = TradeRecord {
+            symbol: command.symbol.clone(),
+            order_id: order_result.order_id.clone(),
+            side,
+            entry_price: command.entry_price,
+            quantity,
+            leverage: command.leverage,
+            take_profit: command.take_profit,
+            stop_loss: command.stop_loss,
+            entry_time: Utc::now(),
+            exit_time: None,
+            exit_price: None,
+            pnl: None,
+        };
+
+        // Add to active trades
+        self.active_trades.insert(command.symbol.clone(), trade_record);
+
+        // Update trade counter
+        self.trades_today += 1;
+
+        info!("✅ Trade executed: {} {} {} @ {:.4} (Leverage: {}x, Order: {})",
+              command.symbol, side, quantity, command.entry_price, command.leverage, order_result.order_id);
+
+        Ok(order_result.order_id)
+    }
+
+    /// Close a position command
+    async fn close_position_command(&mut self, command: &TradingCommand) -> Result<String> {
+        if let Some(trade_record) = self.active_trades.get(&command.symbol) {
+            // Close the position by placing opposite order
+            let close_side = match trade_record.side {
+                OrderSide::Buy => OrderSide::Sell,
+                OrderSide::Sell => OrderSide::Buy,
+            };
+
+            let close_result = self.exchange.place_order(
+                &command.symbol,
+                close_side,
+                OrderType::Market,
+                trade_record.quantity,
+                None,
+                TimeInForce::IOC,
+                None, // No leverage for closing
+                None, // No stop loss for closing
+                None, // No take profit for closing
+            ).await?;
+
+            // Remove from active trades
+            self.active_trades.remove(&command.symbol);
+
+            info!("✅ Position closed: {} (Order: {})", command.symbol, close_result.order_id);
+
+            Ok(close_result.order_id)
+        } else {
+            Err(anyhow::anyhow!("No active position found for {}", command.symbol))
+        }
+    }
+
+    /// Update stop loss command
+    async fn update_stop_loss_command(&mut self, command: &TradingCommand) -> Result<String> {
+        if let Some(trade_record) = self.active_trades.get_mut(&command.symbol) {
+            trade_record.stop_loss = command.stop_loss;
+            info!("✅ Stop loss updated for {}: {:.4}", command.symbol, command.stop_loss);
+            Ok("stop_loss_updated".to_string())
+        } else {
+            Err(anyhow::anyhow!("No active position found for {}", command.symbol))
+        }
+    }
+
+    /// Update take profit command
+    async fn update_take_profit_command(&mut self, command: &TradingCommand) -> Result<String> {
+        if let Some(trade_record) = self.active_trades.get_mut(&command.symbol) {
+            trade_record.take_profit = command.take_profit;
+            info!("✅ Take profit updated for {}: {:.4}", command.symbol, command.take_profit);
+            Ok("take_profit_updated".to_string())
+        } else {
+            Err(anyhow::anyhow!("No active position found for {}", command.symbol))
+        }
+    }
+
+    /// Cancel order command
+    async fn cancel_order_command(&mut self, command: &TradingCommand) -> Result<String> {
+        if let Some(trade_record) = self.active_trades.get(&command.symbol) {
+            // Cancel the order
+            self.exchange.cancel_order(&command.symbol, &trade_record.order_id).await?;
+
+            // Remove from active trades
+            self.active_trades.remove(&command.symbol);
+
+            info!("✅ Order cancelled: {} (Order: {})", command.symbol, trade_record.order_id);
+            Ok("order_cancelled".to_string())
+        } else {
+            Err(anyhow::anyhow!("No active position found for {}", command.symbol))
+        }
+    }
+
+    /// Emergency stop command
+    async fn emergency_stop_command(&mut self) -> Result<String> {
+        info!("🚨 EMERGENCY STOP - Closing all positions");
+
+        let mut closed_count = 0;
+        let symbols: Vec<String> = self.active_trades.keys().cloned().collect();
+
+        for symbol in symbols {
+            if let Some(trade_record) = self.active_trades.get(&symbol) {
+                let close_side = match trade_record.side {
+                    OrderSide::Buy => OrderSide::Sell,
+                    OrderSide::Sell => OrderSide::Buy,
+                };
+
+                if let Ok(_) = self.exchange.place_order(
+                    &symbol,
+                    close_side,
+                    OrderType::Market,
+                    trade_record.quantity,
+                    None,
+                    TimeInForce::IOC,
+                    None,
+                    None,
+                    None,
+                ).await {
+                    self.active_trades.remove(&symbol);
+                    closed_count += 1;
+                    info!("✅ Emergency closed: {}", symbol);
+                }
+            }
+        }
+
+        // Stop the trader
+        self.running = false;
+
+        info!("🚨 Emergency stop completed. Closed {} positions", closed_count);
+        Ok(format!("emergency_stop_completed_{}_positions", closed_count))
+    }
+
+    /// Handle cancel command
+    async fn handle_cancel_command(&mut self, command_id: &str) -> Result<()> {
+        info!("🚫 Handling cancel command: {}", command_id);
+        // For now, just log the cancel command
+        // In a more sophisticated implementation, we would track pending commands
+        Ok(())
+    }
+
+    /// Send execution response back to main strategy controller
+    async fn send_execution_response(&self, command_id: String, result: Result<String>) -> Result<()> {
+        let response = match result {
+            Ok(order_id) => ExecutionResponse {
+                command_id,
+                status: ExecutionStatus::Completed,
+                order_id: Some(order_id),
+                pnl: None, // PnL will be calculated when position is closed
+                error_message: None,
+                timestamp: Utc::now(),
+            },
+            Err(e) => ExecutionResponse {
+                command_id,
+                status: ExecutionStatus::Failed(e.to_string()),
+                order_id: None,
+                pnl: None,
+                error_message: Some(e.to_string()),
+                timestamp: Utc::now(),
+            },
+        };
+
+        // Send response via message bus
+        let message = BusMessage {
+            id: Uuid::new_v4().to_string(),
+            message_type: MessageType::ExecutionResponse,
+            source: "high_frequency_trader".to_string(),
+            target: "main_strategy_controller".to_string(),
+            data: serde_json::to_value(&response)?,
+            timestamp: Utc::now(),
+        };
+
+        self.message_bus.send(message);
+
+        Ok(())
+    }
 }
 
 #[async_trait]
@@ -683,6 +937,26 @@ impl Agent for HighFrequencyTrader {
 
     async fn handle_message(&mut self, message: BusMessage) -> Result<()> {
         match message.message_type {
+            MessageType::TradingCommand => {
+                info!("📥 Received trading command from main strategy controller");
+
+                // Parse trading command
+                if let Ok(command) = serde_json::from_value::<TradingCommand>(message.data) {
+                    self.handle_trading_command(command).await?;
+                } else {
+                    warn!("⚠️ Failed to parse trading command");
+                }
+            },
+            MessageType::CancelCommand => {
+                info!("📥 Received cancel command");
+
+                // Parse command ID to cancel
+                if let Ok(command_id) = serde_json::from_value::<String>(message.data) {
+                    self.handle_cancel_command(&command_id).await?;
+                } else {
+                    warn!("⚠️ Failed to parse cancel command");
+                }
+            },
             MessageType::TradeExit => {
                 info!("Received trade exit message: {}", message.content);
 

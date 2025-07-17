@@ -8,6 +8,7 @@ use tokio::sync::broadcast::{self, Sender, Receiver};
 use serde::{Deserialize, Serialize};
 use chrono::{DateTime, Utc};
 use anyhow::Result;
+use uuid::Uuid;
 
 /// Trade direction
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, Hash)]
@@ -307,15 +308,36 @@ pub enum MessageType {
 
     /// Trade completed
     TradeCompleted,
+
+    /// Trading command from main strategy controller
+    TradingCommand,
+
+    /// Cancel command
+    CancelCommand,
+
+    /// Execution response from trading components
+    ExecutionResponse,
 }
 
 /// Message for the new message bus
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct BusMessage {
+    /// Message ID
+    pub id: String,
+
     /// Message type
     pub message_type: MessageType,
 
-    /// Message content
+    /// Source agent
+    pub source: String,
+
+    /// Target agent
+    pub target: String,
+
+    /// Message data (JSON value for structured data)
+    pub data: serde_json::Value,
+
+    /// Message content (for backward compatibility)
     pub content: String,
 
     /// Timestamp
@@ -350,9 +372,16 @@ impl MessageBus {
     }
 
     /// Send a message (synchronous version of publish)
-    pub fn send(&self, message: Message) {
+    pub fn send(&self, message: BusMessage) {
+        // Ignore errors when no receivers
+        let _ = self.sender.send(message);
+    }
+
+    /// Send a legacy message (for backward compatibility)
+    pub fn send_legacy(&self, message: Message) {
         // Create a bus message
         let bus_message = BusMessage {
+            id: Uuid::new_v4().to_string(),
             message_type: match message {
                 Message::MarketUpdate { .. } => MessageType::SystemUpdate,
                 Message::MarketData { .. } => MessageType::MarketData,
@@ -366,6 +395,9 @@ impl MessageBus {
                 Message::Custom(_, _) => MessageType::SystemUpdate,
                 _ => MessageType::SystemUpdate,
             },
+            source: "system".to_string(),
+            target: "all".to_string(),
+            data: serde_json::to_value(&message).unwrap_or_default(),
             content: serde_json::to_string(&message).unwrap_or_default(),
             timestamp: Utc::now(),
         };
@@ -375,9 +407,10 @@ impl MessageBus {
     }
 
     /// Get messages for a specific agent
-    pub fn get_messages_for_agent(&self, agent_id: &str) -> Vec<Message> {
+    pub fn get_messages_for_agent(&self, agent_id: &str) -> Vec<BusMessage> {
         // This is a simplified implementation
-        // In a real system, you would filter messages based on agent ID
+        // In a real system, you would maintain a message queue per agent
+        // For now, return empty vector as messages are processed immediately
         Vec::new()
     }
 }

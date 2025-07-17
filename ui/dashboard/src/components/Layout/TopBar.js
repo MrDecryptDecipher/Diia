@@ -71,7 +71,7 @@ const TopBar = ({ toggleSidebar }) => {
       }}
       className="futuristic-border"
     >
-      <Toolbar>
+      <Toolbar sx={{ minHeight: '110px' }}>
         {/* Menu Button */}
         <IconButton
           color="inherit"
@@ -88,28 +88,32 @@ const TopBar = ({ toggleSidebar }) => {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            marginRight: '24px',
+            marginLeft: '8px',
+            zIndex: 1000,
+            minWidth: '200px'
+          }}
         >
-          <Typography
-            variant="h6"
-            noWrap
-            component="div"
-            sx={{ 
-              display: { xs: 'none', sm: 'block' },
-              fontFamily: 'Orbitron, sans-serif',
-              fontWeight: 700,
-              letterSpacing: '0.1em',
-              background: 'linear-gradient(45deg, #7B68EE, #00BFFF)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
+          <img
+            src="/assets/Nija-Diia-Logo.png"
+            alt="Nija Diia Logo"
+            style={{
+              height: '90px',
+              width: 'auto',
+              maxWidth: '300px',
+              objectFit: 'contain',
+              borderRadius: '12px',
+              boxShadow: '0 0 15px rgba(0, 255, 255, 0.4)',
+              filter: 'brightness(1.1) contrast(1.1)'
             }}
-            className="glow-text"
-          >
-            OMNI-ALPHA VΩ∞∞
-          </Typography>
+          />
         </motion.div>
         
         {/* System Status */}
-        <Box sx={{ ml: 2, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ ml: 3, display: 'flex', alignItems: 'center' }}>
           <Chip
             size="small"
             label={systemStatus ? systemStatus.status : 'Connecting...'}

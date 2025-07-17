@@ -1,0 +1,805 @@
+{
+  "timestamp": "2025-06-28T17:47:15.963Z",
+  "totalTests": 117,
+  "passedTests": 68,
+  "failedTests": 49,
+  "testDetails": [
+    {
+      "name": "System Status API",
+      "passed": false,
+      "details": "Failed to get system status",
+      "timestamp": "2025-06-28T17:47:16.041Z"
+    },
+    {
+      "name": "BTCUSDT - Candlestick Pattern Structure",
+      "passed": true,
+      "details": "Pattern strength: 0",
+      "timestamp": "2025-06-28T17:47:16.052Z"
+    },
+    {
+      "name": "BTCUSDT - Pattern Detection",
+      "passed": true,
+      "details": "Patterns detected: 0",
+      "timestamp": "2025-06-28T17:47:16.052Z"
+    },
+    {
+      "name": "BTCUSDT - Pattern Signal",
+      "passed": false,
+      "details": "Signal: undefined",
+      "timestamp": "2025-06-28T17:47:16.052Z"
+    },
+    {
+      "name": "ETHUSDT - Candlestick Pattern Structure",
+      "passed": true,
+      "details": "Pattern strength: 0",
+      "timestamp": "2025-06-28T17:47:16.061Z"
+    },
+    {
+      "name": "ETHUSDT - Pattern Detection",
+      "passed": true,
+      "details": "Patterns detected: 0",
+      "timestamp": "2025-06-28T17:47:16.061Z"
+    },
+    {
+      "name": "ETHUSDT - Pattern Signal",
+      "passed": false,
+      "details": "Signal: undefined",
+      "timestamp": "2025-06-28T17:47:16.062Z"
+    },
+    {
+      "name": "SOLUSDT - Candlestick Pattern Structure",
+      "passed": true,
+      "details": "Pattern strength: 0",
+      "timestamp": "2025-06-28T17:47:16.073Z"
+    },
+    {
+      "name": "SOLUSDT - Pattern Detection",
+      "passed": true,
+      "details": "Patterns detected: 0",
+      "timestamp": "2025-06-28T17:47:16.073Z"
+    },
+    {
+      "name": "SOLUSDT - Pattern Signal",
+      "passed": false,
+      "details": "Signal: undefined",
+      "timestamp": "2025-06-28T17:47:16.074Z"
+    },
+    {
+      "name": "BTCUSDT - Chart Pattern Structure",
+      "passed": true,
+      "details": "Confidence: 0",
+      "timestamp": "2025-06-28T17:47:16.083Z"
+    },
+    {
+      "name": "BTCUSDT - Chart Pattern Types",
+      "details": "Patterns: 0",
+      "timestamp": "2025-06-28T17:47:16.084Z"
+    },
+    {
+      "name": "BTCUSDT - Chart Pattern Signal",
+      "passed": true,
+      "details": "Signal: NEUTRAL",
+      "timestamp": "2025-06-28T17:47:16.084Z"
+    },
+    {
+      "name": "ETHUSDT - Chart Pattern Structure",
+      "passed": true,
+      "details": "Confidence: 0",
+      "timestamp": "2025-06-28T17:47:16.089Z"
+    },
+    {
+      "name": "ETHUSDT - Chart Pattern Types",
+      "details": "Patterns: 0",
+      "timestamp": "2025-06-28T17:47:16.089Z"
+    },
+    {
+      "name": "ETHUSDT - Chart Pattern Signal",
+      "passed": true,
+      "details": "Signal: NEUTRAL",
+      "timestamp": "2025-06-28T17:47:16.089Z"
+    },
+    {
+      "name": "SOLUSDT - Chart Pattern Structure",
+      "passed": true,
+      "details": "Confidence: 0",
+      "timestamp": "2025-06-28T17:47:16.095Z"
+    },
+    {
+      "name": "SOLUSDT - Chart Pattern Types",
+      "details": "Patterns: 0",
+      "timestamp": "2025-06-28T17:47:16.095Z"
+    },
+    {
+      "name": "SOLUSDT - Chart Pattern Signal",
+      "passed": true,
+      "details": "Signal: NEUTRAL",
+      "timestamp": "2025-06-28T17:47:16.095Z"
+    },
+    {
+      "name": "BTCUSDT - Orderbook Structure",
+      "passed": true,
+      "details": "Liquidity Score: 0",
+      "timestamp": "2025-06-28T17:47:16.102Z"
+    },
+    {
+      "name": "BTCUSDT - Bid/Ask Analysis",
+      "passed": false,
+      "details": "Bid Volume: undefined, Ask Volume: undefined",
+      "timestamp": "2025-06-28T17:47:16.102Z"
+    },
+    {
+      "name": "BTCUSDT - Market Imbalance",
+      "passed": false,
+      "details": "Imbalance: undefined",
+      "timestamp": "2025-06-28T17:47:16.102Z"
+    },
+    {
+      "name": "BTCUSDT - Spread Analysis",
+      "passed": false,
+      "details": "Spread: undefined",
+      "timestamp": "2025-06-28T17:47:16.102Z"
+    },
+    {
+      "name": "ETHUSDT - Orderbook Structure",
+      "passed": true,
+      "details": "Liquidity Score: 0",
+      "timestamp": "2025-06-28T17:47:16.107Z"
+    },
+    {
+      "name": "ETHUSDT - Bid/Ask Analysis",
+      "passed": false,
+      "details": "Bid Volume: undefined, Ask Volume: undefined",
+      "timestamp": "2025-06-28T17:47:16.107Z"
+    },
+    {
+      "name": "ETHUSDT - Market Imbalance",
+      "passed": false,
+      "details": "Imbalance: undefined",
+      "timestamp": "2025-06-28T17:47:16.107Z"
+    },
+    {
+      "name": "ETHUSDT - Spread Analysis",
+      "passed": false,
+      "details": "Spread: undefined",
+      "timestamp": "2025-06-28T17:47:16.107Z"
+    },
+    {
+      "name": "SOLUSDT - Orderbook Structure",
+      "passed": true,
+      "details": "Liquidity Score: 0",
+      "timestamp": "2025-06-28T17:47:16.113Z"
+    },
+    {
+      "name": "SOLUSDT - Bid/Ask Analysis",
+      "passed": false,
+      "details": "Bid Volume: undefined, Ask Volume: undefined",
+      "timestamp": "2025-06-28T17:47:16.113Z"
+    },
+    {
+      "name": "SOLUSDT - Market Imbalance",
+      "passed": false,
+      "details": "Imbalance: undefined",
+      "timestamp": "2025-06-28T17:47:16.113Z"
+    },
+    {
+      "name": "SOLUSDT - Spread Analysis",
+      "passed": false,
+      "details": "Spread: undefined",
+      "timestamp": "2025-06-28T17:47:16.113Z"
+    },
+    {
+      "name": "Fee Structure",
+      "passed": true,
+      "details": "Maker: 0.0001, Taker: 0.0006",
+      "timestamp": "2025-06-28T17:47:16.118Z"
+    },
+    {
+      "name": "Total Cost Calculation",
+      "passed": true,
+      "details": "Total Cost: 0.0015999999999999999",
+      "timestamp": "2025-06-28T17:47:16.119Z"
+    },
+    {
+      "name": "Break-even Analysis",
+      "passed": true,
+      "details": "Break-even Move: 0.0031999999999999997",
+      "timestamp": "2025-06-28T17:47:16.119Z"
+    },
+    {
+      "name": "Fee Recommendation",
+      "passed": true,
+      "details": "Recommendation: CAUTION",
+      "timestamp": "2025-06-28T17:47:16.119Z"
+    },
+    {
+      "name": "BTCUSDT - Volume Metrics",
+      "passed": true,
+      "details": "Volume Strength: 0",
+      "timestamp": "2025-06-28T17:47:16.124Z"
+    },
+    {
+      "name": "BTCUSDT - Volume Ratios",
+      "passed": false,
+      "details": "Volume Ratio: undefined",
+      "timestamp": "2025-06-28T17:47:16.124Z"
+    },
+    {
+      "name": "BTCUSDT - Price-Volume Correlation",
+      "passed": false,
+      "details": "Price Change: undefined%",
+      "timestamp": "2025-06-28T17:47:16.125Z"
+    },
+    {
+      "name": "BTCUSDT - Volume Confirmation",
+      "passed": false,
+      "details": "Confirmation: undefined",
+      "timestamp": "2025-06-28T17:47:16.125Z"
+    },
+    {
+      "name": "ETHUSDT - Volume Metrics",
+      "passed": true,
+      "details": "Volume Strength: 0",
+      "timestamp": "2025-06-28T17:47:16.129Z"
+    },
+    {
+      "name": "ETHUSDT - Volume Ratios",
+      "passed": false,
+      "details": "Volume Ratio: undefined",
+      "timestamp": "2025-06-28T17:47:16.129Z"
+    },
+    {
+      "name": "ETHUSDT - Price-Volume Correlation",
+      "passed": false,
+      "details": "Price Change: undefined%",
+      "timestamp": "2025-06-28T17:47:16.129Z"
+    },
+    {
+      "name": "ETHUSDT - Volume Confirmation",
+      "passed": false,
+      "details": "Confirmation: undefined",
+      "timestamp": "2025-06-28T17:47:16.130Z"
+    },
+    {
+      "name": "SOLUSDT - Volume Metrics",
+      "passed": true,
+      "details": "Volume Strength: 0",
+      "timestamp": "2025-06-28T17:47:16.134Z"
+    },
+    {
+      "name": "SOLUSDT - Volume Ratios",
+      "passed": false,
+      "details": "Volume Ratio: undefined",
+      "timestamp": "2025-06-28T17:47:16.134Z"
+    },
+    {
+      "name": "SOLUSDT - Price-Volume Correlation",
+      "passed": false,
+      "details": "Price Change: undefined%",
+      "timestamp": "2025-06-28T17:47:16.134Z"
+    },
+    {
+      "name": "SOLUSDT - Volume Confirmation",
+      "passed": false,
+      "details": "Confirmation: undefined",
+      "timestamp": "2025-06-28T17:47:16.134Z"
+    },
+    {
+      "name": "BTCUSDT - Technical Indicator Structure",
+      "passed": true,
+      "details": "Indicator Strength: 0",
+      "timestamp": "2025-06-28T17:47:16.141Z"
+    },
+    {
+      "name": "BTCUSDT - Indicator Calculations",
+      "details": "Indicators: 0",
+      "timestamp": "2025-06-28T17:47:16.141Z"
+    },
+    {
+      "name": "BTCUSDT - Technical Signal",
+      "passed": true,
+      "details": "Signal: NEUTRAL",
+      "timestamp": "2025-06-28T17:47:16.141Z"
+    },
+    {
+      "name": "ETHUSDT - Technical Indicator Structure",
+      "passed": true,
+      "details": "Indicator Strength: 0",
+      "timestamp": "2025-06-28T17:47:16.148Z"
+    },
+    {
+      "name": "ETHUSDT - Indicator Calculations",
+      "details": "Indicators: 0",
+      "timestamp": "2025-06-28T17:47:16.148Z"
+    },
+    {
+      "name": "ETHUSDT - Technical Signal",
+      "passed": true,
+      "details": "Signal: NEUTRAL",
+      "timestamp": "2025-06-28T17:47:16.148Z"
+    },
+    {
+      "name": "SOLUSDT - Technical Indicator Structure",
+      "passed": true,
+      "details": "Indicator Strength: 0",
+      "timestamp": "2025-06-28T17:47:16.152Z"
+    },
+    {
+      "name": "SOLUSDT - Indicator Calculations",
+      "details": "Indicators: 0",
+      "timestamp": "2025-06-28T17:47:16.152Z"
+    },
+    {
+      "name": "SOLUSDT - Technical Signal",
+      "passed": true,
+      "details": "Signal: NEUTRAL",
+      "timestamp": "2025-06-28T17:47:16.152Z"
+    },
+    {
+      "name": "BTCUSDT - ML Prediction Structure",
+      "passed": true,
+      "details": "ML Confidence: 0",
+      "timestamp": "2025-06-28T17:47:16.157Z"
+    },
+    {
+      "name": "BTCUSDT - ML Features",
+      "details": "Features: 0",
+      "timestamp": "2025-06-28T17:47:16.157Z"
+    },
+    {
+      "name": "BTCUSDT - ML Prediction Value",
+      "passed": false,
+      "details": "Prediction: undefined",
+      "timestamp": "2025-06-28T17:47:16.157Z"
+    },
+    {
+      "name": "BTCUSDT - ML Signal",
+      "passed": true,
+      "details": "Signal: NEUTRAL",
+      "timestamp": "2025-06-28T17:47:16.157Z"
+    },
+    {
+      "name": "ETHUSDT - ML Prediction Structure",
+      "passed": true,
+      "details": "ML Confidence: 0",
+      "timestamp": "2025-06-28T17:47:16.161Z"
+    },
+    {
+      "name": "ETHUSDT - ML Features",
+      "details": "Features: 0",
+      "timestamp": "2025-06-28T17:47:16.161Z"
+    },
+    {
+      "name": "ETHUSDT - ML Prediction Value",
+      "passed": false,
+      "details": "Prediction: undefined",
+      "timestamp": "2025-06-28T17:47:16.161Z"
+    },
+    {
+      "name": "ETHUSDT - ML Signal",
+      "passed": true,
+      "details": "Signal: NEUTRAL",
+      "timestamp": "2025-06-28T17:47:16.161Z"
+    },
+    {
+      "name": "SOLUSDT - ML Prediction Structure",
+      "passed": true,
+      "details": "ML Confidence: 0",
+      "timestamp": "2025-06-28T17:47:16.167Z"
+    },
+    {
+      "name": "SOLUSDT - ML Features",
+      "details": "Features: 0",
+      "timestamp": "2025-06-28T17:47:16.167Z"
+    },
+    {
+      "name": "SOLUSDT - ML Prediction Value",
+      "passed": false,
+      "details": "Prediction: undefined",
+      "timestamp": "2025-06-28T17:47:16.167Z"
+    },
+    {
+      "name": "SOLUSDT - ML Signal",
+      "passed": true,
+      "details": "Signal: NEUTRAL",
+      "timestamp": "2025-06-28T17:47:16.167Z"
+    },
+    {
+      "name": "BTCUSDT - Neural Network Features",
+      "details": "NN Features available: No",
+      "timestamp": "2025-06-28T17:47:16.173Z"
+    },
+    {
+      "name": "BTCUSDT - Neural Network Ensemble",
+      "passed": false,
+      "details": "NN Ensemble Prediction: undefined",
+      "timestamp": "2025-06-28T17:47:16.173Z"
+    },
+    {
+      "name": "ETHUSDT - Neural Network Features",
+      "details": "NN Features available: No",
+      "timestamp": "2025-06-28T17:47:16.178Z"
+    },
+    {
+      "name": "ETHUSDT - Neural Network Ensemble",
+      "passed": false,
+      "details": "NN Ensemble Prediction: undefined",
+      "timestamp": "2025-06-28T17:47:16.178Z"
+    },
+    {
+      "name": "BTCUSDT - Fear & Greed Index",
+      "passed": true,
+      "details": "Fear & Greed: 50",
+      "timestamp": "2025-06-28T17:47:16.184Z"
+    },
+    {
+      "name": "BTCUSDT - Market Sentiment",
+      "passed": false,
+      "details": "Sentiment: undefined",
+      "timestamp": "2025-06-28T17:47:16.184Z"
+    },
+    {
+      "name": "BTCUSDT - Volatility Analysis",
+      "passed": false,
+      "details": "Volatility: undefined",
+      "timestamp": "2025-06-28T17:47:16.184Z"
+    },
+    {
+      "name": "BTCUSDT - Momentum Analysis",
+      "passed": false,
+      "details": "Momentum: undefined",
+      "timestamp": "2025-06-28T17:47:16.184Z"
+    },
+    {
+      "name": "ETHUSDT - Fear & Greed Index",
+      "passed": true,
+      "details": "Fear & Greed: 50",
+      "timestamp": "2025-06-28T17:47:16.188Z"
+    },
+    {
+      "name": "ETHUSDT - Market Sentiment",
+      "passed": false,
+      "details": "Sentiment: undefined",
+      "timestamp": "2025-06-28T17:47:16.188Z"
+    },
+    {
+      "name": "ETHUSDT - Volatility Analysis",
+      "passed": false,
+      "details": "Volatility: undefined",
+      "timestamp": "2025-06-28T17:47:16.188Z"
+    },
+    {
+      "name": "ETHUSDT - Momentum Analysis",
+      "passed": false,
+      "details": "Momentum: undefined",
+      "timestamp": "2025-06-28T17:47:16.188Z"
+    },
+    {
+      "name": "SOLUSDT - Fear & Greed Index",
+      "passed": true,
+      "details": "Fear & Greed: 50",
+      "timestamp": "2025-06-28T17:47:16.195Z"
+    },
+    {
+      "name": "SOLUSDT - Market Sentiment",
+      "passed": false,
+      "details": "Sentiment: undefined",
+      "timestamp": "2025-06-28T17:47:16.195Z"
+    },
+    {
+      "name": "SOLUSDT - Volatility Analysis",
+      "passed": false,
+      "details": "Volatility: undefined",
+      "timestamp": "2025-06-28T17:47:16.195Z"
+    },
+    {
+      "name": "SOLUSDT - Momentum Analysis",
+      "passed": false,
+      "details": "Momentum: undefined",
+      "timestamp": "2025-06-28T17:47:16.195Z"
+    },
+    {
+      "name": "Risk Assessment Structure",
+      "passed": 0.01,
+      "details": "Risk Level: MODERATE, Max Risk: 0.01",
+      "timestamp": "2025-06-28T17:47:16.200Z"
+    },
+    {
+      "name": "Risk Recommendations",
+      "passed": "PROCEED_WITH_CAUTION",
+      "details": "Recommendation: PROCEED_WITH_CAUTION",
+      "timestamp": "2025-06-28T17:47:16.200Z"
+    },
+    {
+      "name": "Comprehensive Risk Scoring",
+      "passed": true,
+      "details": "Confidence: 0",
+      "timestamp": "2025-06-28T17:47:16.200Z"
+    },
+    {
+      "name": "Trading Signal Generation",
+      "passed": true,
+      "details": "Signal: HOLD, Reason: INSUFFICIENT_CONFIDENCE",
+      "timestamp": "2025-06-28T17:47:16.200Z"
+    },
+    {
+      "name": "BTCUSDT - Data Availability",
+      "passed": true,
+      "details": "Data retrieved: Yes",
+      "timestamp": "2025-06-28T17:47:16.207Z"
+    },
+    {
+      "name": "BTCUSDT - Response Time",
+      "passed": true,
+      "details": "Response time: 7ms",
+      "timestamp": "2025-06-28T17:47:16.207Z"
+    },
+    {
+      "name": "BTCUSDT - Data Freshness",
+      "passed": "2025-06-28T17:47:16.202Z",
+      "details": "Timestamp: 2025-06-28T17:47:16.202Z",
+      "timestamp": "2025-06-28T17:47:16.207Z"
+    },
+    {
+      "name": "BTCUSDT - Data Completeness",
+      "passed": true,
+      "details": "Missing fields: None",
+      "timestamp": "2025-06-28T17:47:16.207Z"
+    },
+    {
+      "name": "ETHUSDT - Data Availability",
+      "passed": true,
+      "details": "Data retrieved: Yes",
+      "timestamp": "2025-06-28T17:47:16.213Z"
+    },
+    {
+      "name": "ETHUSDT - Response Time",
+      "passed": true,
+      "details": "Response time: 6ms",
+      "timestamp": "2025-06-28T17:47:16.213Z"
+    },
+    {
+      "name": "ETHUSDT - Data Freshness",
+      "passed": "2025-06-28T17:47:16.209Z",
+      "details": "Timestamp: 2025-06-28T17:47:16.209Z",
+      "timestamp": "2025-06-28T17:47:16.213Z"
+    },
+    {
+      "name": "ETHUSDT - Data Completeness",
+      "passed": true,
+      "details": "Missing fields: None",
+      "timestamp": "2025-06-28T17:47:16.213Z"
+    },
+    {
+      "name": "SOLUSDT - Data Availability",
+      "passed": true,
+      "details": "Data retrieved: Yes",
+      "timestamp": "2025-06-28T17:47:16.219Z"
+    },
+    {
+      "name": "SOLUSDT - Response Time",
+      "passed": true,
+      "details": "Response time: 6ms",
+      "timestamp": "2025-06-28T17:47:16.219Z"
+    },
+    {
+      "name": "SOLUSDT - Data Freshness",
+      "passed": "2025-06-28T17:47:16.215Z",
+      "details": "Timestamp: 2025-06-28T17:47:16.215Z",
+      "timestamp": "2025-06-28T17:47:16.219Z"
+    },
+    {
+      "name": "SOLUSDT - Data Completeness",
+      "passed": true,
+      "details": "Missing fields: None",
+      "timestamp": "2025-06-28T17:47:16.219Z"
+    },
+    {
+      "name": "ADAUSDT - Data Availability",
+      "passed": true,
+      "details": "Data retrieved: Yes",
+      "timestamp": "2025-06-28T17:47:16.224Z"
+    },
+    {
+      "name": "ADAUSDT - Response Time",
+      "passed": true,
+      "details": "Response time: 5ms",
+      "timestamp": "2025-06-28T17:47:16.224Z"
+    },
+    {
+      "name": "ADAUSDT - Data Freshness",
+      "passed": "2025-06-28T17:47:16.220Z",
+      "details": "Timestamp: 2025-06-28T17:47:16.220Z",
+      "timestamp": "2025-06-28T17:47:16.224Z"
+    },
+    {
+      "name": "ADAUSDT - Data Completeness",
+      "passed": true,
+      "details": "Missing fields: None",
+      "timestamp": "2025-06-28T17:47:16.224Z"
+    },
+    {
+      "name": "DOTUSDT - Data Availability",
+      "passed": true,
+      "details": "Data retrieved: Yes",
+      "timestamp": "2025-06-28T17:47:16.229Z"
+    },
+    {
+      "name": "DOTUSDT - Response Time",
+      "passed": true,
+      "details": "Response time: 5ms",
+      "timestamp": "2025-06-28T17:47:16.229Z"
+    },
+    {
+      "name": "DOTUSDT - Data Freshness",
+      "passed": "2025-06-28T17:47:16.226Z",
+      "details": "Timestamp: 2025-06-28T17:47:16.226Z",
+      "timestamp": "2025-06-28T17:47:16.229Z"
+    },
+    {
+      "name": "DOTUSDT - Data Completeness",
+      "passed": true,
+      "details": "Missing fields: None",
+      "timestamp": "2025-06-28T17:47:16.229Z"
+    },
+    {
+      "name": "Concurrent Request Handling",
+      "passed": true,
+      "details": "5/5 successful in 22ms",
+      "timestamp": "2025-06-28T17:47:16.254Z"
+    },
+    {
+      "name": "Memory Usage",
+      "passed": true,
+      "details": "Heap used: 11.21MB",
+      "timestamp": "2025-06-28T17:47:16.254Z"
+    },
+    {
+      "name": "System Status Under Load",
+      "passed": false,
+      "details": "Status available: No",
+      "timestamp": "2025-06-28T17:47:16.257Z"
+    },
+    {
+      "name": "API GET /trades/system-status",
+      "passed": true,
+      "details": "Status: 404, Success: false",
+      "timestamp": "2025-06-28T17:47:16.261Z"
+    },
+    {
+      "name": "API GET /trades/comprehensive-analysis/BTCUSDT",
+      "passed": true,
+      "details": "Status: 200, Success: true",
+      "timestamp": "2025-06-28T17:47:16.267Z"
+    },
+    {
+      "name": "API POST /trades/start-comprehensive",
+      "passed": true,
+      "details": "Status: 200, Success: true",
+      "timestamp": "2025-06-28T17:47:16.270Z"
+    },
+    {
+      "name": "API POST /trades/stop",
+      "passed": true,
+      "details": "Status: 200, Success: true",
+      "timestamp": "2025-06-28T17:47:16.274Z"
+    },
+    {
+      "name": "Rapid Request Handling",
+      "passed": false,
+      "details": "0/10 successful in 15ms",
+      "timestamp": "2025-06-28T17:47:16.294Z"
+    },
+    {
+      "name": "Sustained Load Handling",
+      "passed": true,
+      "details": "5/5 sustained requests successful",
+      "timestamp": "2025-06-28T17:47:16.316Z"
+    }
+  ],
+  "performanceMetrics": {
+    "/trades/comprehensive-analysis/BTCUSDT": [
+      11,
+      8,
+      6,
+      5,
+      5,
+      6,
+      4,
+      4,
+      6,
+      4,
+      7,
+      8,
+      5,
+      8
+    ],
+    "/trades/comprehensive-analysis/ETHUSDT": [
+      8,
+      5,
+      5,
+      4,
+      7,
+      4,
+      5,
+      3,
+      6,
+      10,
+      10
+    ],
+    "/trades/comprehensive-analysis/SOLUSDT": [
+      10,
+      6,
+      6,
+      4,
+      3,
+      6,
+      7,
+      6,
+      15,
+      14
+    ],
+    "/trades/comprehensive-analysis/ADAUSDT": [
+      5,
+      20,
+      16
+    ],
+    "/trades/comprehensive-analysis/DOTUSDT": [
+      5,
+      23,
+      20
+    ],
+    "/trades/start-comprehensive": [
+      3
+    ],
+    "/trades/stop": [
+      3
+    ]
+  },
+  "systemHealth": {},
+  "performanceStats": {
+    "/trades/comprehensive-analysis/BTCUSDT": {
+      "avgResponseTime": 6.214285714285714,
+      "minResponseTime": 4,
+      "maxResponseTime": 11,
+      "totalRequests": 14
+    },
+    "/trades/comprehensive-analysis/ETHUSDT": {
+      "avgResponseTime": 6.090909090909091,
+      "minResponseTime": 3,
+      "maxResponseTime": 10,
+      "totalRequests": 11
+    },
+    "/trades/comprehensive-analysis/SOLUSDT": {
+      "avgResponseTime": 7.7,
+      "minResponseTime": 3,
+      "maxResponseTime": 15,
+      "totalRequests": 10
+    },
+    "/trades/comprehensive-analysis/ADAUSDT": {
+      "avgResponseTime": 13.666666666666666,
+      "minResponseTime": 5,
+      "maxResponseTime": 20,
+      "totalRequests": 3
+    },
+    "/trades/comprehensive-analysis/DOTUSDT": {
+      "avgResponseTime": 16,
+      "minResponseTime": 5,
+      "maxResponseTime": 23,
+      "totalRequests": 3
+    },
+    "/trades/start-comprehensive": {
+      "avgResponseTime": 3,
+      "minResponseTime": 3,
+      "maxResponseTime": 3,
+      "totalRequests": 1
+    },
+    "/trades/stop": {
+      "avgResponseTime": 3,
+      "minResponseTime": 3,
+      "maxResponseTime": 3,
+      "totalRequests": 1
+    }
+  },
+  "successRate": "58.12",
+  "testDuration": "2025-06-28T17:47:16.316Z"
+}

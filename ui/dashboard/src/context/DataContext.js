@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { useSocket } from './SocketContext';
 import axios from 'axios';
 
 // Create context
@@ -10,8 +9,7 @@ export const useData = () => useContext(DataContext);
 
 // Data provider component
 export const DataProvider = ({ children }) => {
-  // Socket context
-  const { isConnected, on, subscribe } = useSocket();
+  console.log('🚀 DataProvider component mounted!');
 
   // State for data
   const [systemStatus, setSystemStatus] = useState(null);
@@ -30,26 +28,38 @@ export const DataProvider = ({ children }) => {
   const [tradeEvents, setTradeEvents] = useState([]);
 
   // API base URL
-  const API_URL = process.env.REACT_APP_API_URL || 'http://3.111.22.56/omni/api';
+  const API_URL = process.env.REACT_APP_API_URL || 'http://3.111.22.56:10002';
 
   // Fetch initial data from API
   useEffect(() => {
+    console.log('🔧 DataContext: useEffect triggered, API_URL:', API_URL);
     const fetchInitialData = async () => {
+      console.log('🔧 DataContext: Starting fetchInitialData...');
       try {
         // Fetch system status
         const systemStatusResponse = await axios.get(`${API_URL}/api/system/status`);
         setSystemStatus(systemStatusResponse.data);
 
+        // Fetch trading status (the correct endpoint)
+        const tradingStatusResponse = await axios.get(`${API_URL}/api/trading/status`);
+        // Trading status is included in metrics, so we don't need a separate state
+
         // Fetch active trades
+        console.log('🔧 DataContext: Fetching active trades...');
         const activeTradesResponse = await axios.get(`${API_URL}/api/trades/active`);
+        console.log('🔧 DataContext: Active trades received:', activeTradesResponse.data?.length || 0, 'trades');
         setActiveTrades(activeTradesResponse.data);
 
         // Fetch trade history
+        console.log('🔧 DataContext: Fetching trade history...');
         const tradeHistoryResponse = await axios.get(`${API_URL}/api/trades/history`);
+        console.log('🔧 DataContext: Trade history received:', tradeHistoryResponse.data?.length || 0, 'trades');
         setTradeHistory(tradeHistoryResponse.data);
 
         // Fetch metrics
+        console.log('🔧 DataContext: Fetching metrics...');
         const metricsResponse = await axios.get(`${API_URL}/api/metrics`);
+        console.log('🔧 DataContext: Metrics received:', metricsResponse.data);
         setMetrics(metricsResponse.data);
 
         // Fetch agent status
@@ -93,97 +103,21 @@ export const DataProvider = ({ children }) => {
     };
 
     fetchInitialData();
+
+    // Set up periodic refresh every 5 seconds to ensure data persistence
+    const refreshInterval = setInterval(() => {
+      console.log('🔄 DataContext: Periodic refresh triggered');
+      fetchInitialData();
+    }, 5000);
+
+    // Cleanup interval on unmount
+    return () => {
+      clearInterval(refreshInterval);
+    };
   }, [API_URL]);
 
-  // Set up socket listeners
-  useEffect(() => {
-    if (!isConnected) return;
-
-    // Subscribe to channels
-    subscribe('system:status');
-    subscribe('trades:active');
-    subscribe('trades:history');
-    subscribe('metrics');
-    subscribe('agents:status');
-    subscribe('assets:info');
-    subscribe('leaderboard');
-    subscribe('quantum:predictions');
-    subscribe('ml:insights');
-    subscribe('hyperdimensional:patterns');
-    subscribe('neural:state');
-    subscribe('strategy:performance');
-    subscribe('trades:events');
-
-    // Set up event listeners
-    const unsubscribeSystemStatus = on('system:status', (data) => {
-      setSystemStatus(data);
-    });
-
-    const unsubscribeActiveTrades = on('trades:active', (data) => {
-      setActiveTrades(data);
-    });
-
-    const unsubscribeTradeHistory = on('trades:history', (data) => {
-      setTradeHistory(data);
-    });
-
-    const unsubscribeMetrics = on('metrics', (data) => {
-      setMetrics(data);
-    });
-
-    const unsubscribeAgentStatus = on('agents:status', (data) => {
-      setAgentStatus(data);
-    });
-
-    const unsubscribeAssetInfo = on('assets:info', (data) => {
-      setAssetInfo(data);
-    });
-
-    const unsubscribeLeaderboard = on('leaderboard', (data) => {
-      setLeaderboard(data);
-    });
-
-    const unsubscribeQuantumPredictions = on('quantum:predictions', (data) => {
-      setQuantumPredictions(data);
-    });
-
-    const unsubscribeMlInsights = on('ml:insights', (data) => {
-      setMlInsights(data);
-    });
-
-    const unsubscribeHyperdimensionalPatterns = on('hyperdimensional:patterns', (data) => {
-      setHyperdimensionalPatterns(data);
-    });
-
-    const unsubscribeNeuralNetworkState = on('neural:state', (data) => {
-      setNeuralNetworkState(data);
-    });
-
-    const unsubscribeStrategyPerformance = on('strategy:performance', (data) => {
-      setStrategyPerformance(data);
-    });
-
-    const unsubscribeTradeEvents = on('trades:event', (data) => {
-      setTradeEvents((prev) => [data, ...prev].slice(0, 20));
-    });
-
-    // Clean up event listeners
-    return () => {
-      unsubscribeSystemStatus();
-      unsubscribeActiveTrades();
-      unsubscribeTradeHistory();
-      unsubscribeMetrics();
-      unsubscribeAgentStatus();
-      unsubscribeAssetInfo();
-      unsubscribeLeaderboard();
-      unsubscribeQuantumPredictions();
-      unsubscribeMlInsights();
-      unsubscribeHyperdimensionalPatterns();
-      unsubscribeNeuralNetworkState();
-      unsubscribeStrategyPerformance();
-      unsubscribeTradeEvents();
-    };
-  }, [isConnected, on, subscribe]);
+  // WebSocket functionality disabled to prevent data clearing
+  // TODO: Re-implement WebSocket with proper data validation once backend is configured
 
   // Context value
   const value = {

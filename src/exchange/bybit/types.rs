@@ -2,8 +2,29 @@
 //!
 //! This module provides Bybit exchange types for the OMNI-ALPHA VΩ∞∞ platform.
 
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Deserializer, Serialize};
 use std::fmt;
+
+/// Helper function to deserialize string to f64
+fn deserialize_string_to_f64<'de, D>(deserializer: D) -> Result<f64, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    let s = String::deserialize(deserializer)?;
+    s.parse::<f64>().map_err(serde::de::Error::custom)
+}
+
+/// Helper function to deserialize optional string to f64
+fn deserialize_optional_string_to_f64<'de, D>(deserializer: D) -> Result<Option<f64>, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    let s = Option::<String>::deserialize(deserializer)?;
+    match s {
+        Some(s) if !s.is_empty() => s.parse::<f64>().map(Some).map_err(serde::de::Error::custom),
+        _ => Ok(None),
+    }
+}
 
 /// Order side
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
@@ -390,30 +411,50 @@ pub struct BybitTicker {
     pub symbol: String,
 
     /// Last price
+    #[serde(rename = "lastPrice")]
+    #[serde(deserialize_with = "deserialize_string_to_f64")]
     pub last_price: f64,
 
-    /// Index price
-    pub index_price: f64,
+    /// Index price (optional for spot)
+    #[serde(rename = "indexPrice")]
+    #[serde(deserialize_with = "deserialize_optional_string_to_f64")]
+    #[serde(default)]
+    pub index_price: Option<f64>,
 
-    /// Mark price
-    pub mark_price: f64,
+    /// Mark price (optional for spot)
+    #[serde(rename = "markPrice")]
+    #[serde(deserialize_with = "deserialize_optional_string_to_f64")]
+    #[serde(default)]
+    pub mark_price: Option<f64>,
 
     /// Prev 24h price
+    #[serde(rename = "prevPrice24h")]
+    #[serde(deserialize_with = "deserialize_string_to_f64")]
     pub prev_price_24h: f64,
 
-    /// Price 24h change
+    /// Price 24h change percentage
+    #[serde(rename = "price24hPcnt")]
+    #[serde(deserialize_with = "deserialize_string_to_f64")]
     pub price_24h_pcnt: f64,
 
     /// High price 24h
+    #[serde(rename = "highPrice24h")]
+    #[serde(deserialize_with = "deserialize_string_to_f64")]
     pub high_price_24h: f64,
 
     /// Low price 24h
+    #[serde(rename = "lowPrice24h")]
+    #[serde(deserialize_with = "deserialize_string_to_f64")]
     pub low_price_24h: f64,
 
     /// Volume 24h
+    #[serde(rename = "volume24h")]
+    #[serde(deserialize_with = "deserialize_string_to_f64")]
     pub volume_24h: f64,
 
     /// Turnover 24h
+    #[serde(rename = "turnover24h")]
+    #[serde(deserialize_with = "deserialize_string_to_f64")]
     pub turnover_24h: f64,
 }
 
@@ -520,6 +561,26 @@ pub struct BybitInstrumentInfo {
     pub list: Vec<BybitInstrument>,
 }
 
+/// Bybit instrument info with pagination
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct BybitInstrumentInfoPaginated {
+    /// List of instruments (raw JSON)
+    pub list: Vec<serde_json::Value>,
+
+    /// Next page cursor
+    pub next_page_cursor: String,
+}
+
+/// Instrument status
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+pub enum InstrumentStatus {
+    Trading,
+    PreLaunch,
+    Delivering,
+    Closed,
+    Unknown,
+}
+
 /// Bybit funding rate
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct BybitFundingRate {
@@ -537,17 +598,30 @@ pub struct BybitFundingRate {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct BybitResponse<T> {
     /// Return code
+    #[serde(rename = "retCode")]
     pub ret_code: i32,
 
     /// Return message
+    #[serde(rename = "retMsg")]
     pub ret_msg: String,
 
     /// Result
     pub result: Option<T>,
 
     /// Extension info
-    pub ext_info: Option<serde_json::Value>,
+    #[serde(rename = "retExtInfo")]
+    pub ret_ext_info: Option<serde_json::Value>,
 
     /// Time
     pub time: i64,
+}
+
+/// Bybit ticker list response
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct BybitTickerListResponse {
+    /// Category
+    pub category: String,
+
+    /// List of tickers
+    pub list: Vec<BybitTicker>,
 }

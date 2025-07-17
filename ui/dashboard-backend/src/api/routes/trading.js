@@ -140,6 +140,44 @@ router.post('/stop', (req, res) => {
 });
 
 /**
+ * @route POST /api/trading/close-all-positions
+ * @description Close all open positions (emergency function)
+ * @access Public
+ */
+router.post('/close-all-positions', async (req, res) => {
+  try {
+    logger.info('🚨 EMERGENCY: Received request to close all positions');
+
+    // Call the close all positions function
+    await tradingStrategyService.closeAllExistingPositions();
+
+    // Reset trading state
+    await tradingStrategyService.resetTradingStateForTesting();
+
+    // Get updated trading state
+    const updatedTradingState = tradingStrategyService.getTradingState();
+
+    logger.info('✅ All positions closed successfully');
+    res.json({
+      success: true,
+      message: 'All positions closed successfully',
+      tradingState: {
+        isActive: updatedTradingState.isActive,
+        currentCapital: updatedTradingState.currentCapital,
+        totalTrades: updatedTradingState.totalTrades,
+        openTrades: updatedTradingState.openTrades.length
+      }
+    });
+  } catch (error) {
+    logger.error(`Error closing all positions: ${error.message}`);
+    res.status(500).json({
+      success: false,
+      message: `Error closing all positions: ${error.message}`
+    });
+  }
+});
+
+/**
  * @route POST /api/trading/execute-trade
  * @description Execute a single trade
  * @access Public
@@ -207,6 +245,22 @@ router.post('/request-funds', async (req, res) => {
       success: false,
       message: `Error requesting demo funds: ${error.message}`
     });
+  }
+});
+
+/**
+ * @route GET /api/trading/report
+ * @desc Generate comprehensive trading report
+ * @access Public
+ */
+router.get('/report', async (req, res) => {
+  try {
+    logger.info('Generating trading report');
+    const report = await tradingStrategyService.getReport();
+    res.json(report);
+  } catch (error) {
+    logger.error('Error generating trading report:', error);
+    res.status(500).json({ error: 'Failed to generate trading report' });
   }
 });
 

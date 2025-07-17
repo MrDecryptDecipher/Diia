@@ -16,12 +16,11 @@
 require('dotenv').config();
 const express = require('express');
 const http = require('http');
-const socketIo = require('socket.io');
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
-const winston = require('winston');
 const path = require('path');
+const logger = require('./utils/logger');
 
 // Import OMNI system components
 const tradingStrategyService = require('./services/trading-strategy-service');
@@ -30,6 +29,12 @@ const quantumBridge = require('./services/quantum-bridge');
 const zeroLossGuarantee = require('./services/zero-loss-guarantee');
 const strategyOptimizer = require('./services/strategy-optimizer');
 const multiAgentCoordinator = require('./services/multi-agent-coordinator');
+
+// Import production enhancement services
+const productionPerformanceMonitor = require('./services/production-performance-monitor');
+const productionRiskManager = require('./services/production-risk-manager');
+const productionTestingFramework = require('./services/production-testing-framework');
+const real750TradesEngine = require('./services/real-750-trades-engine');
 
 // Import routes
 const systemRoutes = require('./api/routes/system');
@@ -43,32 +48,12 @@ const quantumRoutes = require('./api/routes/quantum');
 const mlRoutes = require('./api/routes/ml');
 const bybitRoutes = require('./api/routes/bybit');
 const tradingRoutes = require('./api/routes/trading');
+const productionRoutes = require('./api/routes/production');
 
-// Import WebSocket handlers
-const { setupWebSocketServer } = require('./websocket/socket-server');
+// Note: WebSocket handlers are in separate omni-websocket process
 
 // Import gRPC server
 const { startGrpcServer } = require('./grpc/grpc-server');
-
-// Create logger
-const logger = winston.createLogger({
-  level: 'info',
-  format: winston.format.combine(
-    winston.format.timestamp(),
-    winston.format.json()
-  ),
-  defaultMeta: { service: 'omni-dashboard-api' },
-  transports: [
-    new winston.transports.Console({
-      format: winston.format.combine(
-        winston.format.colorize(),
-        winston.format.simple()
-      )
-    }),
-    new winston.transports.File({ filename: 'logs/error.log', level: 'error' }),
-    new winston.transports.File({ filename: 'logs/combined.log' })
-  ]
-});
 
 // Create Express app
 const app = express();
@@ -76,29 +61,15 @@ const app = express();
 // Create HTTP server
 const server = http.createServer(app);
 
-// Create Socket.IO server
-const io = socketIo(server, {
-  cors: {
-    origin: process.env.CORS_ORIGIN || 'http://3.111.22.56:10001',
-    methods: ['GET', 'POST'],
-    credentials: true
-  },
-  path: '/socket.io',
-  transports: ['websocket', 'polling'],
-  allowEIO3: true,
-  pingTimeout: 60000,
-  pingInterval: 25000
-});
-
-// Set up WebSocket server
-setupWebSocketServer(io);
+// Note: WebSocket server is handled separately by omni-websocket process
+// This server only provides REST API endpoints
 
 // Middleware
 app.use(helmet());
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'http://3.111.22.56:10001',
+  origin: ['http://3.111.22.56:10001', 'http://localhost:3000', 'http://localhost:10001'],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Cache-Control', 'Pragma', 'Expires'],
   credentials: true
 }));
 app.use(express.json());
@@ -106,6 +77,7 @@ app.use(morgan('combined', { stream: { write: message => logger.info(message.tri
 
 // Import routes
 const reportsRoutes = require('./api/routes/reports');
+const testingRoutes = require('./api/routes/testing');
 
 // Routes
 app.use('/api/system', systemRoutes);
@@ -118,8 +90,16 @@ app.use('/api/strategy', strategyRoutes);
 app.use('/api/quantum', quantumRoutes);
 app.use('/api/ml', mlRoutes);
 app.use('/api/reports', reportsRoutes);
+app.use('/api/testing', testingRoutes);
 app.use('/api/trading/bybit', bybitRoutes);
 app.use('/api/trading', tradingRoutes);
+app.use('/api/production', productionRoutes);
+
+// Enhanced sentiment analysis and AI routes
+app.use('/api/sentiment', require('./api/routes/enhanced-sentiment'));
+app.use('/api/social-insights', require('./api/routes/enhanced-social-insights'));
+app.use('/api/gemini', require('./api/routes/enhanced-gemini'));
+app.use('/api/gemini-intelligence', require('./api/routes/enhanced-gemini-intelligence'));
 
 // Health check endpoint
 app.get('/health', (req, res) => {
@@ -170,12 +150,21 @@ try {
   tradingStrategyService.initialize();
   logger.info('Trading Strategy Service initialized successfully');
 
-  // Start trading
+  // Initialize and start the Real 750 Trades Engine
+  try {
+    const engine = new real750TradesEngine();
+    await engine.initializeEngine();
+    logger.info('✅ Real 750 Trades Engine started successfully');
+  } catch (error) {
+    logger.error(`❌ Error starting Real 750 Trades Engine: ${error.message}`);
+  }
+
+  // Start trading strategy service as backup
   try {
     await tradingStrategyService.start();
-    logger.info('Trading started successfully');
+    logger.info('✅ Trading Strategy Service started successfully');
   } catch (error) {
-    logger.error(`Error starting trading: ${error.message}`);
+    logger.error(`❌ Error starting Trading Strategy Service: ${error.message}`);
   }
 
   logger.info('All OMNI system components initialized successfully');
@@ -210,4 +199,4 @@ process.on('uncaughtException', (err) => {
   process.exit(1);
 });
 
-module.exports = { app, server, io };
+module.exports = { app, server };

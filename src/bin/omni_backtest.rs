@@ -12,6 +12,7 @@ use anyhow::Result;
 use omni::exchange::bybit::demo_adapter::BybitDemoAdapter;
 use omni::exchange::types::Candle;
 use omni::backtest::backtest_engine::{BacktestEngine, BacktestConfig, BacktestResult};
+use omni::prelude::BacktestTrade;
 use omni::strategy::advanced_strategy::AdvancedStrategy;
 
 #[tokio::main]
@@ -29,7 +30,7 @@ async fn main() -> Result<()> {
     let api_secret = std::env::var("BYBIT_API_SECRET").unwrap_or_else(|_| "aXjs1SF9tmW3riHMktmjtyOyAT85puvrVstr".to_string());
 
     // Create Bybit adapter for fetching historical data
-    let bybit_adapter = BybitDemoAdapter::new(&api_key, &api_secret, true);
+    let bybit_adapter = BybitDemoAdapter::new(&api_key, &api_secret);
 
     // Define backtest parameters
     let start_date = Utc.with_ymd_and_hms(2023, 1, 1, 0, 0, 0).unwrap();

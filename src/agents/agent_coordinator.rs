@@ -18,6 +18,9 @@ use crate::agents::trade_executor::{TradeExecutor, TradeExecution, ExecutionStat
 use crate::agents::zero_loss_enforcer::{ZeroLossEnforcer, ZeroLossAssessment};
 use crate::agents::quantum_predictor::{QuantumPredictor, QuantumPrediction};
 use crate::agents::hyperdimensional_pattern_recognizer::{HyperdimensionalPatternRecognizer, PatternRecognition, PatternType};
+use crate::quantum::spectral_tree_engine::SpectralTreeEngine;
+use crate::quantum::hyperdimensional_computing::HyperdimensionalComputing;
+use crate::strategy::advanced_multi_factor_strategy::{AdvancedMultiFactorStrategy, StrategyConfig, MultiFactorAnalysis};
 
 /// Trading decision with superintelligent analysis
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -52,6 +55,12 @@ pub struct TradingDecision {
     /// Pattern recognition
     pub pattern_recognition: Option<PatternRecognition>,
 
+    /// Multi-factor analysis (NEW!)
+    pub multi_factor_analysis: Option<MultiFactorAnalysis>,
+
+    /// Spectral prediction (NEW!)
+    pub spectral_prediction: Option<f64>,
+
     /// Trade execution
     pub trade_execution: Option<TradeExecution>,
 
@@ -76,6 +85,12 @@ pub enum DecisionType {
 
     /// Hold (no action)
     Hold,
+
+    /// Buy signal
+    Buy,
+
+    /// Sell signal
+    Sell,
 
     /// Insufficient data
     InsufficientData,
@@ -103,6 +118,15 @@ pub struct AgentCoordinator {
 
     /// Hyperdimensional pattern recognizer
     pattern_recognizer: HyperdimensionalPatternRecognizer,
+
+    /// Spectral tree engine for advanced frequency analysis
+    spectral_engine: SpectralTreeEngine,
+
+    /// Hyperdimensional computing engine
+    hyperdimensional_engine: HyperdimensionalComputing,
+
+    /// Advanced multi-factor strategy
+    multi_factor_strategy: AdvancedMultiFactorStrategy,
 
     /// Decision cache
     decision_cache: HashMap<String, TradingDecision>,
@@ -142,6 +166,9 @@ impl AgentCoordinator {
             zero_loss_enforcer: ZeroLossEnforcer::new(),
             quantum_predictor: QuantumPredictor::new(),
             pattern_recognizer: HyperdimensionalPatternRecognizer::new(),
+            spectral_engine: SpectralTreeEngine::new(),
+            hyperdimensional_engine: HyperdimensionalComputing::new(),
+            multi_factor_strategy: AdvancedMultiFactorStrategy::new(StrategyConfig::default()).unwrap(),
             decision_cache: HashMap::new(),
             min_confidence: 90.0, // Minimum 90% confidence for exceptional trades
             min_opportunity_score: 90.0, // Minimum 90% opportunity score for exceptional trades
@@ -201,7 +228,32 @@ impl AgentCoordinator {
             }
         };
 
-        // Step 4: Hyperdimensional Pattern Recognition
+        // Step 4: Advanced Multi-Factor Analysis (NEW!)
+        let multi_factor_analysis = match self.multi_factor_strategy.analyze(symbol, candles).await {
+            Ok(analysis) => {
+                info!("Multi-factor analysis for {}: composite_score = {:.1}, confidence = {:.1}, action = {:?}",
+                      symbol, analysis.composite_score, analysis.confidence, analysis.action);
+                Some(analysis)
+            },
+            Err(e) => {
+                warn!("Failed to perform multi-factor analysis for {}: {}", symbol, e);
+                None
+            }
+        };
+
+        // Step 5: Spectral Tree Analysis (NEWLY INTEGRATED!)
+        let spectral_prediction = match self.spectral_engine.predict_price(symbol, 3600) {
+            Ok(prediction) => {
+                debug!("Spectral prediction for {}: ${:.2}", symbol, prediction);
+                Some(prediction)
+            },
+            Err(e) => {
+                warn!("Failed to generate spectral prediction for {}: {}", symbol, e);
+                None
+            }
+        };
+
+        // Step 6: Hyperdimensional Pattern Recognition
         let pattern_recognition = match self.pattern_recognizer.recognize_patterns(symbol, candles) {
             Ok(recognition) => {
                 debug!("Pattern recognition for {}: detected {} patterns, confluence = {:.1}%",
@@ -227,6 +279,8 @@ impl AgentCoordinator {
                 zero_loss_assessment: None,
                 quantum_prediction: None,
                 pattern_recognition: None,
+                multi_factor_analysis: None,
+                spectral_prediction: None,
                 trade_execution: None,
                 reasoning: "Insufficient data for analysis".to_string(),
                 superintelligence_score: 0.0,
@@ -269,6 +323,8 @@ impl AgentCoordinator {
                 zero_loss_assessment: None,
                 quantum_prediction: None,
                 pattern_recognition: None,
+                multi_factor_analysis: None,
+                spectral_prediction: None,
                 trade_execution: None,
                 reasoning: "Failed to assess risk".to_string(),
                 superintelligence_score: 0.0,
@@ -280,14 +336,46 @@ impl AgentCoordinator {
 
         let risk_assessment = risk_assessment.unwrap();
 
-        // Step 4: Make Trading Decision
-        let (decision_type, confidence, reasoning) = self.make_decision(
-            &market_analysis,
-            &sentiment_analysis,
-            &risk_assessment,
-            quantum_prediction.as_ref(),
-            pattern_recognition.as_ref(),
-        );
+        // Step 4: Enhanced Trading Decision with Multi-Factor Analysis
+        let (decision_type, confidence, reasoning) = if let Some(ref mfa) = multi_factor_analysis {
+            // Use advanced multi-factor analysis for decision making
+            let base_decision = self.make_decision(
+                &market_analysis,
+                &sentiment_analysis,
+                &risk_assessment,
+                quantum_prediction.as_ref(),
+                pattern_recognition.as_ref(),
+            );
+
+            let enhanced_confidence = (base_decision.1 + mfa.confidence) / 2.0;
+            let enhanced_reasoning = format!(
+                "Multi-factor analysis: composite_score={:.1}, action={:?}. {}",
+                mfa.composite_score, mfa.action, base_decision.2
+            );
+
+            // Override decision based on multi-factor analysis if it's more confident
+            if mfa.confidence > base_decision.1 {
+                let decision_type = match mfa.action {
+                    crate::strategy::advanced_multi_factor_strategy::TradingAction::StrongBuy => DecisionType::Buy,
+                    crate::strategy::advanced_multi_factor_strategy::TradingAction::Buy => DecisionType::Buy,
+                    crate::strategy::advanced_multi_factor_strategy::TradingAction::Sell => DecisionType::Sell,
+                    crate::strategy::advanced_multi_factor_strategy::TradingAction::StrongSell => DecisionType::Sell,
+                    _ => DecisionType::Hold,
+                };
+                (decision_type, mfa.confidence, enhanced_reasoning)
+            } else {
+                (base_decision.0, enhanced_confidence, enhanced_reasoning)
+            }
+        } else {
+            // Fallback to original decision making
+            self.make_decision(
+                &market_analysis,
+                &sentiment_analysis,
+                &risk_assessment,
+                quantum_prediction.as_ref(),
+                pattern_recognition.as_ref(),
+            )
+        };
 
         debug!("Trading decision for {}: {:?} (confidence: {})",
                symbol, decision_type, confidence);
@@ -403,6 +491,8 @@ impl AgentCoordinator {
             zero_loss_assessment,
             quantum_prediction,
             pattern_recognition,
+            multi_factor_analysis,
+            spectral_prediction,
             trade_execution,
             reasoning,
             superintelligence_score,

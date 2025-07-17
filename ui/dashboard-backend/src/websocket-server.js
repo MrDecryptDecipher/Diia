@@ -7,7 +7,6 @@
 require('dotenv').config();
 const http = require('http');
 const socketIo = require('socket.io');
-const winston = require('winston');
 const fetch = require('node-fetch');
 const tradingStrategyService = require('./services/trading-strategy-service');
 const tickerService = require('./services/ticker-service');
@@ -18,26 +17,8 @@ const quantumBridge = require('./services/quantum-bridge');
 const zeroLossGuarantee = require('./services/zero-loss-guarantee');
 const strategyOptimizer = require('./services/strategy-optimizer');
 const multiAgentCoordinator = require('./services/multi-agent-coordinator');
-
-// Create logger
-const logger = winston.createLogger({
-  level: 'info',
-  format: winston.format.combine(
-    winston.format.timestamp(),
-    winston.format.json()
-  ),
-  defaultMeta: { service: 'omni-dashboard-websocket' },
-  transports: [
-    new winston.transports.Console({
-      format: winston.format.combine(
-        winston.format.colorize(),
-        winston.format.simple()
-      )
-    }),
-    new winston.transports.File({ filename: 'logs/websocket-error.log', level: 'error' }),
-    new winston.transports.File({ filename: 'logs/websocket.log' })
-  ]
-});
+const bybitClient = require('./utils/bybit-client');
+const logger = require('./utils/logger');
 
 // Create HTTP server
 const server = http.createServer();
@@ -102,8 +83,62 @@ async function sendInitialData(socket) {
     // Get real trading data
     const tradingState = tradingStrategyService.getTradingState();
     const systemMetrics = tradingStrategyService.getSystemMetrics();
-    const activeTrades = tradingStrategyService.getActiveTrades();
     const tradeHistory = tradingStrategyService.getTradeHistory();
+
+    // Get real Bybit positions for initial data
+    let activeTrades = [];
+    try {
+      logger.debug('🔄 Fetching real Bybit positions for initial data');
+      const positionsResponse = await bybitClient.getPositions();
+
+      if (positionsResponse.retCode === 0 && positionsResponse.result?.list) {
+        const positions = positionsResponse.result.list;
+
+        activeTrades = positions
+          .filter(position => parseFloat(position.size) > 0)
+          .map(position => {
+            const direction = position.side.toLowerCase() === 'buy' ? 'long' : 'short';
+            const entryPrice = parseFloat(position.avgPrice);
+            const currentPrice = parseFloat(position.markPrice);
+            const pnl = parseFloat(position.unrealisedPnl);
+            const positionValue = parseFloat(position.positionValue);
+            const pnlPercentage = positionValue > 0 ? (pnl / positionValue) * 100 : 0;
+
+            return {
+              id: `bybit-${position.symbol}-${position.positionIdx}`,
+              symbol: position.symbol,
+              direction: direction,
+              side: position.side.toLowerCase(),
+              entryPrice: entryPrice,
+              currentPrice: currentPrice,
+              takeProfitPrice: parseFloat(position.takeProfit) || null,
+              stopLossPrice: parseFloat(position.stopLoss) || null,
+              amount: positionValue,
+              positionSize: parseFloat(position.size),
+              leverage: parseFloat(position.leverage),
+              entryTime: new Date(parseInt(position.createdTime)).toISOString(),
+              status: 'active',
+              pnl: pnl,
+              pnlPercentage: pnlPercentage,
+              markPrice: currentPrice,
+              unrealisedPnl: pnl,
+              cumRealisedPnl: parseFloat(position.cumRealisedPnl),
+              positionStatus: position.positionStatus,
+              agent: 'Bybit Position',
+              strategy: 'Manual Trading',
+              confidence: 100,
+              reasonEntry: 'Real Bybit position',
+              updatedTime: new Date(parseInt(position.updatedTime)).toISOString()
+            };
+          });
+
+        logger.debug(`📊 Found ${activeTrades.length} real positions for initial data`);
+      } else {
+        logger.warn(`Bybit API error for initial data: ${positionsResponse.retMsg}`);
+      }
+    } catch (positionsError) {
+      logger.error(`❌ Error fetching positions for initial data: ${positionsError.message}`);
+    }
 
     // Initialize the agent orchestrator if needed
     if (!agentOrchestrator.getState().active) {
@@ -229,30 +264,76 @@ function startPeriodicUpdates() {
     }
   }, 5000);
 
-  // Update active trades every 2 seconds
+  // Update active trades every 2 seconds (real Bybit positions)
   setInterval(() => {
     try {
-      // Define a function to fetch active trades
+      // Define a function to fetch real Bybit positions
       const fetchActiveTrades = async () => {
-        logger.debug('Fetching active trades from trading strategy service');
-        return tradingStrategyService.getActiveTrades();
+        logger.debug('🔄 Fetching real Bybit positions for WebSocket');
+
+        const positionsResponse = await bybitClient.getPositions();
+        if (positionsResponse.retCode !== 0) {
+          throw new Error(`Bybit API error: ${positionsResponse.retMsg}`);
+        }
+
+        const positions = positionsResponse.result?.list || [];
+
+        // Convert Bybit positions to trade format (same as REST API)
+        return positions
+          .filter(position => parseFloat(position.size) > 0)
+          .map(position => {
+            const direction = position.side.toLowerCase() === 'buy' ? 'long' : 'short';
+            const entryPrice = parseFloat(position.avgPrice);
+            const currentPrice = parseFloat(position.markPrice);
+            const pnl = parseFloat(position.unrealisedPnl);
+            const positionValue = parseFloat(position.positionValue);
+            const pnlPercentage = positionValue > 0 ? (pnl / positionValue) * 100 : 0;
+
+            return {
+              id: `bybit-${position.symbol}-${position.positionIdx}`,
+              symbol: position.symbol,
+              direction: direction,
+              side: position.side.toLowerCase(),
+              entryPrice: entryPrice,
+              currentPrice: currentPrice,
+              takeProfitPrice: parseFloat(position.takeProfit) || null,
+              stopLossPrice: parseFloat(position.stopLoss) || null,
+              amount: positionValue,
+              positionSize: parseFloat(position.size),
+              leverage: parseFloat(position.leverage),
+              entryTime: new Date(parseInt(position.createdTime)).toISOString(),
+              status: 'active',
+              pnl: pnl,
+              pnlPercentage: pnlPercentage,
+              markPrice: currentPrice,
+              unrealisedPnl: pnl,
+              cumRealisedPnl: parseFloat(position.cumRealisedPnl),
+              positionStatus: position.positionStatus,
+              agent: 'Bybit Position',
+              strategy: 'Manual Trading',
+              confidence: 100,
+              reasonEntry: 'Real Bybit position',
+              updatedTime: new Date(parseInt(position.updatedTime)).toISOString()
+            };
+          });
       };
 
       // Use getOrFetch to get the data with caching
       dataCache.getOrFetch('trades', 'active', fetchActiveTrades, 2000)
         .then(activeTrades => {
+          logger.debug(`📊 Broadcasting ${activeTrades.length} real positions via WebSocket`);
           // Emit to clients
           io.to('trades:active').emit('trades:active', activeTrades);
         })
         .catch(error => {
-          logger.error(`Error in getActiveTrades: ${error.message}`);
-          const { activeTrades } = generateMockData();
-          io.to('trades:active').emit('trades:active', activeTrades);
+          logger.error(`❌ Error fetching real positions: ${error.message}`);
+          // Fallback to empty array instead of fake data
+          io.to('trades:active').emit('trades:active', []);
         });
     } catch (error) {
-      logger.error(`Error updating active trades: ${error.message}`);
-      const { activeTrades } = generateMockData();
-      io.to('trades:active').emit('trades:active', activeTrades);
+      logger.error(`❌ Error updating active trades: ${error.message}`);
+      // Fallback to empty array instead of fake data
+      io.to('trades:active').emit('trades:active', []);
     }
   }, 2000);
 

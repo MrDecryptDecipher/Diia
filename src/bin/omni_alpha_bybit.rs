@@ -173,14 +173,16 @@ async fn main() -> Result<()> {
     info!("Multi-Agent Collaboration Network Established");
     info!("System Ready for Exponential Capital Growth");
 
-    // Bybit Demo API Credentials from demo.env
-    let api_key = "lCMnwPKIzXASNWn6UE";
-    let api_secret = "aXjs1SF9tmW3riHMktmjtyOyAT85puvrVstr";
+    // Load Bybit Demo API Credentials from environment (demo.env)
+    let api_key = std::env::var("BYBIT_DEMO_API_KEY")
+        .expect("BYBIT_DEMO_API_KEY must be set in environment");
+    let api_secret = std::env::var("BYBIT_DEMO_API_SECRET")
+        .expect("BYBIT_DEMO_API_SECRET must be set in environment");
 
-    info!("Using Bybit Demo API with key: {}", api_key);
+    info!("Using Bybit Demo API with key: {}...", &api_key[..10]);
 
     // Create Bybit demo adapter
-    let bybit_adapter = Arc::new(BybitDemoAdapter::new(api_key, api_secret));
+    let bybit_adapter = Arc::new(BybitDemoAdapter::new(&api_key, &api_secret));
 
     // Request demo funds
     info!("Requesting demo funds...");
@@ -191,10 +193,17 @@ async fn main() -> Result<()> {
 
     // Check wallet balance
     info!("Checking wallet balance...");
-    let initial_capital = 12.0; // Fixed at $12 USDT
-    let mut available_capital = initial_capital; // Track available capital
-    let target_trades_per_day = 750.0; // Target 750 trades per day
-    let target_profit_per_trade = 2.0; // Target $2 USDT profit per trade
+    let initial_capital = 12.0; // Fixed at $12 USDT as requested
+
+    // Get actual account balance and use it as available capital
+    let wallet_balances = bybit_adapter.get_wallet_balance(Some("USDT")).await?;
+    let usdt_balance = wallet_balances.get("USDT").map(|b| b.equity).unwrap_or(0.0);
+    let mut available_capital = initial_capital; // Start with our allocated capital
+
+    info!("🔄 Resetting capital tracking - Initial: ${:.2}, Account Balance: ${:.2}",
+          initial_capital, usdt_balance);
+    let target_trades_per_day = 750.0; // Target 750+ trades per day as specified
+    let target_profit_per_trade = 0.6; // Target 0.6 USDT minimum profit per trade as specified
     let target_profit_per_day = target_trades_per_day * target_profit_per_trade; // Target profit per day
 
     // Trade frequency control
@@ -236,33 +245,94 @@ async fn main() -> Result<()> {
     let config = TradingSystemConfig {
         initial_capital: trading_capital,
         mode: TradingMode::Live, // Use live mode with demo API
-        assets: vec![
-            "BTCUSDT".to_string(),
-            "ETHUSDT".to_string(),
-            "SOLUSDT".to_string(),
-            "BNBUSDT".to_string(),
-            "ADAUSDT".to_string(),
-            "DOGEUSDT".to_string(),
-            "XRPUSDT".to_string(),
-            "DOTUSDT".to_string(),
-            "AVAXUSDT".to_string(),
-            "MATICUSDT".to_string(),
-            "LINKUSDT".to_string(),
-            "UNIUSDT".to_string(),
-            "LTCUSDT".to_string(),
-            "ATOMUSDT".to_string(),
-            "NEARUSDT".to_string(),
-            "SHIBUSDT".to_string(),
-            "INJUSDT".to_string(),
-            "APTUSDT".to_string(),
-            "OPUSDT".to_string(),
-            "ARBUSDT".to_string(),
-            "SUIUSDT".to_string(),
-            "PEPEUSDT".to_string(),
-            "FILUSDT".to_string(),
-            "LDOUSDT".to_string(),
-            "STXUSDT".to_string(),
-        ],
+        assets: {
+            // Get all available USDT trading pairs from Bybit using market tickers
+            info!("Discovering all available USDT trading pairs from Bybit...");
+            let mut all_assets = Vec::new();
+
+            match bybit_adapter.get_market_tickers("linear", None).await {
+                Ok(tickers) => {
+                    // Filter for USDT pairs with good volume
+                    for ticker in tickers {
+                        if ticker.symbol.ends_with("USDT") &&
+                           ticker.symbol.len() <= 12 && // Avoid overly complex symbols
+                           ticker.volume_24h > 1000.0 { // Only assets with decent volume
+                            all_assets.push(ticker.symbol);
+                        }
+                    }
+                    info!("Found {} tradable USDT pairs with good volume", all_assets.len());
+                },
+                Err(e) => {
+                    warn!("Failed to get market tickers, using fallback list: {}", e);
+                    // Fallback to a comprehensive list if API fails
+                    all_assets = vec![
+                        "BTCUSDT".to_string(), "ETHUSDT".to_string(), "SOLUSDT".to_string(),
+                        "BNBUSDT".to_string(), "ADAUSDT".to_string(), "DOGEUSDT".to_string(),
+                        "XRPUSDT".to_string(), "DOTUSDT".to_string(), "AVAXUSDT".to_string(),
+                        "MATICUSDT".to_string(), "LINKUSDT".to_string(), "UNIUSDT".to_string(),
+                        "LTCUSDT".to_string(), "ATOMUSDT".to_string(), "NEARUSDT".to_string(),
+                        "SHIBUSDT".to_string(), "INJUSDT".to_string(), "APTUSDT".to_string(),
+                        "OPUSDT".to_string(), "ARBUSDT".to_string(), "SUIUSDT".to_string(),
+                        "PEPEUSDT".to_string(), "FILUSDT".to_string(), "LDOUSDT".to_string(),
+                        "STXUSDT".to_string(), "WIFUSDT".to_string(), "JUPUSDT".to_string(),
+                        "PYTHUSDT".to_string(), "TNSRUSDT".to_string(), "DYMUSDT".to_string(),
+                        "ALTUSDT".to_string(), "MANTAUSDT".to_string(), "JTOUSDT".to_string(),
+                        "PIXELUSDT".to_string(), "PORTALUSDT".to_string(), "ACEUSDT".to_string(),
+                        "NFPUSDT".to_string(), "AIUSDT".to_string(), "XAIUSDT".to_string(),
+                        "RONUSDT".to_string(), "MOVRUSDT".to_string(), "SAGAUSDT".to_string(),
+                        "TAOUSDT".to_string(), "OMNIUSDT".to_string(), "NOTUSDT".to_string(),
+                        "IOUSDT".to_string(), "ZKUSDT".to_string(), "LISTAUSDT".to_string(),
+                        "ZROUSDT".to_string(), "GUSDT".to_string(), "RENDERUSDT".to_string(),
+                        "TONUSDT".to_string(), "PEOPLEUSDT".to_string(), "BOMEUSDT".to_string(),
+                        "ENAUSDT".to_string(), "WUSDT".to_string(), "ETHFIUSDT".to_string(),
+                        "BCHUSDT".to_string(), "ICPUSDT".to_string(), "FETUSDT".to_string(),
+                        "STRKUSDT".to_string(), "IMXUSDT".to_string(), "METISUSDT".to_string(),
+                        "HBARUSDT".to_string(), "GALAUSDT".to_string(), "GRTUSDT".to_string(),
+                        "FLOWUSDT".to_string(), "FTMUSDT".to_string(), "CFXUSDT".to_string(),
+                        "BEAMUSDT".to_string(), "PYRUSDT".to_string(), "ORDIUSDT".to_string(),
+                        "1000SATSUSDT".to_string(), "KASUSDT".to_string(), "ARKMUSDT".to_string(),
+                        "TIAUSDT".to_string(), "WLDUSDT".to_string(), "SEUSDT".to_string(),
+                        "ARKUSDT".to_string(), "COREUSDT".to_string(), "GASUSDT".to_string(),
+                        "BLURUSDT".to_string(), "VANRYUSDT".to_string(), "JOEUSDT".to_string(),
+                        "MYROUSDT".to_string(), "CKBUSDT".to_string(), "LSKUSDT".to_string(),
+                        "PENDLEUSDT".to_string(), "SAFEUSDT".to_string(), "GMXUSDT".to_string(),
+                        "AEVOUSDT".to_string(), "REIUSDT".to_string(), "ONDOUSDT".to_string(),
+                        "SCUSDT".to_string(), "BTTUSDT".to_string(), "HOTUSDT".to_string(),
+                        "WINUSDT".to_string(), "SUNUSDT".to_string(), "NFTUSDT".to_string(),
+                        "CHZUSDT".to_string(), "SANDUSDT".to_string(), "MANAUSDT".to_string(),
+                        "APEUSDT".to_string(), "GMTUSDT".to_string(), "KLAYUSDT".to_string(),
+                        "ROSEUSDT".to_string(), "DENTUSDT".to_string(), "ZILUSDT".to_string(),
+                        "BATUSDT".to_string(), "ENJUSDT".to_string(), "HNTUSDT".to_string(),
+                        "C98USDT".to_string(), "MASKUSDT".to_string(), "THETAUSDT".to_string(),
+                        "RNDRUSDT".to_string(), "DEGOUSDT".to_string(), "KEYUSDT".to_string(),
+                        "CYBERUSDT".to_string(), "IQUSDT".to_string(), "NTRNUSDT".to_string(),
+                        "TRBUSDT".to_string(), "TELLOUSDT".to_string(), "ASTRUSDT".to_string(),
+                        "LOOMUSDT".to_string(), "FXSUSDT".to_string(), "RADUSDT".to_string(),
+                        "KNCUSDT".to_string(), "POLYXUSDT".to_string(), "PHBUSDT".to_string(),
+                        "HOOKUSDT".to_string(), "MAGICUSDT".to_string(), "HIGHUSDT".to_string(),
+                        "AGIXUSDT".to_string(), "GNSUSDT".to_string(), "SYNUSDT".to_string(),
+                        "VIBUSDT".to_string(), "SSVUSDT".to_string(), "LQTYUSDT".to_string(),
+                        "AMBUSDT".to_string(), "GLMRUSDT".to_string(), "STGUSDT".to_string(),
+                        "BICOUSDT".to_string(), "FLUXUSDT".to_string(), "FIDAUSDT".to_string(),
+                        "STEEMUSDT".to_string(), "PHAUSDT".to_string(), "BONDUSDT".to_string(),
+                        "HIUSDT".to_string(), "MDTUSDT".to_string(), "XVSUSDT".to_string(),
+                        "WAXPUSDT".to_string(), "UNFIUSDT".to_string(), "REEFUSDT".to_string(),
+                        "RVNUSDT".to_string(), "BADGERUSDT".to_string(), "FISUSDT".to_string(),
+                        "OMGUSDT".to_string(), "PONDUSDT".to_string(), "ALICEUSDT".to_string(),
+                        "LINAUSDT".to_string(), "PERPUSDT".to_string(), "SUPERUSDT".to_string(),
+                        "EPSUSDT".to_string(), "AUTOUSDT".to_string(), "TKXUSDT".to_string(),
+                        "PUNDIXUSDT".to_string(), "TLMUSDT".to_string(), "1INCHUSDT".to_string(),
+                        "BTCSTUSDT".to_string(), "TRUUSDT".to_string(), "TWTUSDT".to_string(),
+                        "LITUSDT".to_string(), "SFPUSDT".to_string(), "DODOUSDT".to_string(),
+                        "CAKEUSDT".to_string(), "ACMUSDT".to_string(),
+                    ];
+                }
+            }
+
+            // Limit to top assets by volume for performance
+            all_assets.truncate(100); // Scan top 100 assets for better performance
+            all_assets
+        },
         timeframes: vec![5, 15, 60, 240], // Add 5-minute timeframe for faster trading
         max_concurrent_trades: 5, // Increase concurrent trades for more opportunities
         heartbeat_interval: 30, // Reduce interval for faster trading
@@ -283,8 +353,8 @@ async fn main() -> Result<()> {
     trading_system.start().await?;
 
     // Create advanced trading strategy with more aggressive parameters
-    // Increase risk-reward ratio to 1:2 for better profitability
-    let advanced_strategy = AdvancedStrategy::new("OMNI-ALPHA", 0.01, 2.0);
+    // Use higher risk percentage for better position sizes with our small capital
+    let advanced_strategy = AdvancedStrategy::new("OMNI-ALPHA", 0.5, 2.0); // 50% of allocated capital
 
     // Main trading loop
     let mut iteration = 0;
@@ -334,7 +404,51 @@ async fn main() -> Result<()> {
         next_trade_time = Utc::now() + chrono::Duration::milliseconds(trade_interval.as_millis() as i64);
 
         // Get market data for all assets
-        for symbol in trading_system.get_assets() {
+        let mut assets_to_scan = trading_system.get_assets();
+
+        // Prioritize assets by volume and volatility for better opportunities
+        if iteration % 10 == 0 { // Re-prioritize every 10 iterations
+            info!("Re-prioritizing assets by volume and volatility...");
+
+            // Get market ticker data for all assets to prioritize by volume
+            match bybit_adapter.get_market_tickers("linear", None).await {
+                Ok(tickers) => {
+                    let mut asset_volumes: Vec<(String, f64)> = Vec::new();
+
+                    // Create a map of symbol to volume for quick lookup
+                    let ticker_map: std::collections::HashMap<String, f64> = tickers.into_iter()
+                        .map(|t| (t.symbol, t.volume_24h))
+                        .collect();
+
+                    // Get volumes for our assets
+                    for symbol in &assets_to_scan {
+                        let volume = ticker_map.get(symbol).copied().unwrap_or(0.0);
+                        asset_volumes.push((symbol.clone(), volume));
+                    }
+
+                    // Sort by volume (highest first) and take top assets
+                    asset_volumes.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap_or(std::cmp::Ordering::Equal));
+                    assets_to_scan = asset_volumes.into_iter()
+                        .take(50) // Focus on top 50 by volume for better performance
+                        .map(|(symbol, _)| symbol)
+                        .collect();
+
+                    info!("Prioritized {} high-volume assets for scanning", assets_to_scan.len());
+                },
+                Err(e) => {
+                    warn!("Failed to get market tickers for prioritization: {}", e);
+                    // Keep original asset list if we can't get tickers
+                }
+            }
+        }
+
+        info!("Scanning {} assets for trading opportunities...", assets_to_scan.len());
+        let mut assets_analyzed = 0;
+        let mut signals_generated = 0;
+
+        for symbol in assets_to_scan {
+            assets_analyzed += 1;
+
             // Get candles for different timeframes
             for timeframe in &["5", "15", "60"] { // Added 5-minute timeframe for faster signals
                 match bybit_adapter.get_candles(&symbol, timeframe, Some(100)).await {
@@ -362,7 +476,8 @@ async fn main() -> Result<()> {
                         let signal_result = advanced_strategy.analyze(&symbol, candles, trading_system.get_state().current_capital);
 
                         if let Some(signal) = signal_result {
-                            info!("Generated trading signal for {}", symbol);
+                            signals_generated += 1;
+                            info!("Generated trading signal for {} (Signal #{} this iteration)", symbol, signals_generated);
                             // Send signal to trading system
                             trading_system.send_message(signal.clone());
 
@@ -397,44 +512,30 @@ async fn main() -> Result<()> {
                                 let asset_config = get_asset_config(&futures_symbol);
 
                                 // Set optimal leverage for this symbol based on asset configuration
-                                // Higher leverage means we can use less capital to achieve the same profit target
-                                let leverage = asset_config.max_leverage.min(50); // Cap at 50x for safety
+                                // Use 50-100x leverage for 0.5-0.8% price movements as specified
+                                let leverage = asset_config.max_leverage.max(50).min(100); // 50-100x range as specified
 
                                 match bybit_adapter.set_leverage(&futures_symbol, leverage).await {
                                     Ok(_) => info!("Successfully set leverage for {} to {}x", futures_symbol, leverage),
                                     Err(e) => warn!("Failed to set leverage for {}: {}", futures_symbol, e)
                                 }
 
-                                // Calculate required price movement for $2 profit
-                                // Formula: profit = position_size * leverage * price_movement_percentage
-                                // Rearranged: price_movement_percentage = profit / (position_size * leverage)
+                                // Use the take-profit price from the strategy (don't override it)
+                                // The strategy already calculated optimal take-profit based on ATR
 
-                                // Calculate position size based on available capital and profit target
-                                // Use 25% of available capital per trade (max 4 concurrent trades)
-                                let position_size = (available_capital * 0.25).min(3.0); // Max $3 per trade
+                                // Use the stop loss price from the strategy as well
+                                // (The strategy already calculated optimal stop loss based on ATR)
 
-                                // Calculate required price movement percentage for $2 profit
-                                let required_movement = target_profit_per_trade / (position_size * leverage as f64);
+                                // Calculate capital allocation per trade
+                                // Use 10% of ORIGINAL capital ($12), not accumulated profits
+                                // This ensures consistent position sizing regardless of profits
+                                let capital_allocation = initial_capital * 0.10; // Use 10% of original $12 = $1.20 per trade
 
-                                // Calculate take profit price based on required movement
-                                let take_profit_price = if side == "Buy" {
-                                    entry_price * (1.0 + required_movement)
-                                } else {
-                                    entry_price * (1.0 - required_movement)
-                                };
+                                // Calculate notional position value (capital * leverage)
+                                let notional_position_value = capital_allocation * leverage as f64;
 
-                                // Calculate stop loss at half the take profit distance
-                                let stop_loss_price = if side == "Buy" {
-                                    entry_price * (1.0 - required_movement * 0.5)
-                                } else {
-                                    entry_price * (1.0 + required_movement * 0.5)
-                                };
-
-                                // Calculate position value with leverage
-                                let position_value = position_size * leverage as f64;
-
-                                // Calculate quantity in contracts
-                                let mut qty = position_value / entry_price;
+                                // Calculate quantity in contracts (notional value / price)
+                                let mut qty = notional_position_value / entry_price;
 
                                 // Format quantity based on asset configuration
                                 let precision = asset_config.qty_precision;
@@ -447,11 +548,17 @@ async fn main() -> Result<()> {
                                 // Make sure we meet minimum quantity requirements
                                 qty = formatted_qty.max(min_qty);
 
-                                // Calculate actual position value after quantity adjustment
-                                let actual_position_value = qty * entry_price;
+                                // Safety check: Ensure position size doesn't exceed reasonable limits
+                                // Max notional value should not exceed $100 (even with profits)
+                                let max_notional_value = 100.0;
+                                let max_qty = max_notional_value / entry_price;
+                                qty = qty.min(max_qty);
 
-                                // Calculate actual capital required (position value / leverage)
-                                let actual_capital_required = actual_position_value / leverage as f64;
+                                // Calculate actual notional position value after quantity adjustment
+                                let actual_notional_value = qty * entry_price;
+
+                                // Calculate actual capital required (notional value / leverage)
+                                let actual_capital_required = actual_notional_value / leverage as f64;
 
                                 // Check if we have enough available capital
                                 if actual_capital_required > available_capital {
@@ -460,10 +567,10 @@ async fn main() -> Result<()> {
                                     continue;
                                 }
 
-                                // Calculate fees
+                                // Calculate fees based on notional value
                                 let taker_fee_rate = asset_config.taker_fee / 100.0; // Convert from percentage
-                                let entry_fee = actual_position_value * taker_fee_rate;
-                                let exit_fee = actual_position_value * taker_fee_rate;
+                                let entry_fee = actual_notional_value * taker_fee_rate;
+                                let exit_fee = actual_notional_value * taker_fee_rate;
                                 let total_fees = entry_fee + exit_fee;
 
                                 // Calculate potential profit after fees
@@ -473,19 +580,30 @@ async fn main() -> Result<()> {
                                     1.0 - take_profit_price / entry_price
                                 };
 
-                                let potential_profit = actual_position_value * price_movement * leverage as f64 - total_fees;
+                                // Profit = notional_value * price_movement - fees
+                                let potential_profit = actual_notional_value * price_movement - total_fees;
+
+                                // Debug logging
+                                info!("Profit calculation debug:");
+                                info!("  Entry: ${:.2}, Target: ${:.2}, Side: {}", entry_price, take_profit_price, side);
+                                info!("  Price movement: {:.4} ({:.2}%)", price_movement, price_movement * 100.0);
+                                info!("  Notional value: ${:.2}", actual_notional_value);
+                                info!("  Total fees: ${:.2}", total_fees);
+                                info!("  Gross profit: ${:.2}", actual_notional_value * price_movement);
+                                info!("  Net profit: ${:.2}", potential_profit);
 
                                 // Only proceed if potential profit meets our target
+                                info!("Profit check: ${:.2} vs threshold ${:.2}", potential_profit, target_profit_per_trade);
                                 if potential_profit < target_profit_per_trade {
-                                    info!("Skipping trade on {} - insufficient profit potential: ${:.2}",
-                                          futures_symbol, potential_profit);
+                                    info!("Skipping trade on {} - insufficient profit potential: ${:.2} < ${:.2}",
+                                          futures_symbol, potential_profit, target_profit_per_trade);
                                     continue;
                                 }
 
                                 // Log the trade details
                                 info!("Trade opportunity: {} {} at ${:.2} with {}x leverage", side, futures_symbol, entry_price, leverage);
-                                info!("Position details: {:.6} contracts (${:.2}) using ${:.2} capital",
-                                      qty, actual_position_value, actual_capital_required);
+                                info!("Position details: {:.6} contracts (${:.2} notional) using ${:.2} capital",
+                                      qty, actual_notional_value, actual_capital_required);
                                 info!("Profit target: ${:.2} (after ${:.2} fees)", potential_profit, total_fees);
                                 info!("Take profit: ${:.2} ({}%), Stop loss: ${:.2} ({}%)",
                                       take_profit_price, price_movement * 100.0,
@@ -523,7 +641,7 @@ async fn main() -> Result<()> {
                                             side.to_string(),
                                             entry_price,
                                             qty,
-                                            actual_position_value,
+                                            actual_notional_value,
                                             leverage
                                         ));
 
@@ -608,17 +726,20 @@ async fn main() -> Result<()> {
                         let total_fees = entry_value * taker_fee_rate * 2.0; // Entry and exit fees
 
                         // Calculate PnL based on position side with leverage and fees
-                        let raw_pnl = if side == "Buy" {
+                        let price_change_pct = if side == "Buy" {
                             (current_price - entry_price) / entry_price
                         } else {
                             (entry_price - current_price) / entry_price
                         };
 
-                        // Apply leverage to the raw PnL
-                        let leveraged_pnl = raw_pnl * *leverage as f64 * entry_value;
+                        // Calculate actual dollar PnL with leverage
+                        let gross_pnl = price_change_pct * entry_value * *leverage as f64;
 
                         // Subtract fees to get net PnL
-                        let position_pnl = leveraged_pnl - total_fees;
+                        let position_pnl = gross_pnl - total_fees;
+
+                        // For display purposes
+                        let leveraged_pnl = gross_pnl;
 
                         // Update totals
                         total_position_value += entry_value;
@@ -626,24 +747,26 @@ async fn main() -> Result<()> {
                         current_pnl += position_pnl;
 
                         // Calculate ROI percentage
-                        let roi_pct = raw_pnl * 100.0;
-                        let leveraged_roi_pct = raw_pnl * *leverage as f64 * 100.0;
+                        let roi_pct = price_change_pct * 100.0;
+                        let leveraged_roi_pct = price_change_pct * *leverage as f64 * 100.0;
 
                         // Log position status
                         info!("Position status for {}: Entry: ${:.2}, Current: ${:.2}, PnL: ${:.2} ({}%), Leveraged PnL: ${:.2} ({}%)",
                               symbol, entry_price, current_price, position_pnl, roi_pct, leveraged_pnl, leveraged_roi_pct);
 
                         // Check for take profit or stop loss conditions
-                        // Calculate the profit threshold needed to achieve our $2 profit target
+                        // Calculate the profit threshold needed to achieve our 0.6 USDT profit target
                         let capital_used = entry_value / *leverage as f64;
                         let profit_target = target_profit_per_trade;
-                        let profit_threshold_pct = (profit_target / entry_value) * 100.0 / *leverage as f64;
 
-                        // Set stop loss at half the profit target
-                        let stop_loss_threshold = -profit_threshold_pct / 2.0;
+                        // Calculate required price movement percentage to achieve profit target
+                        let required_price_move_pct = (profit_target + total_fees) / (entry_value * *leverage as f64) * 100.0;
+
+                        // Set stop loss at 50% of required move (to limit losses)
+                        let stop_loss_threshold = -required_price_move_pct / 2.0;
 
                         // Check if we've reached our profit target or stop loss
-                        if (position_pnl >= profit_target && roi_pct > 0.0) || (roi_pct <= stop_loss_threshold) {
+                        if (position_pnl >= profit_target && price_change_pct > 0.0) || (roi_pct <= stop_loss_threshold) {
                             // Add to positions to close
                             positions_to_close.push(symbol.clone());
 
@@ -669,7 +792,12 @@ async fn main() -> Result<()> {
                             let close_qty = formatted_qty.max(min_qty);
 
                             // Calculate the capital that will be returned
-                            let capital_to_return = capital_used + position_pnl;
+                            // In leveraged trading, we only risk the margin (capital_used)
+                            // The P&L affects our total balance but we should return the original margin
+                            // adjusted for the actual profit/loss percentage on the margin
+                            let margin_roi_pct = position_pnl / entry_value * 100.0; // ROI on the full position value
+                            let margin_pnl = capital_used * (margin_roi_pct / 100.0); // P&L on the margin
+                            let capital_to_return = capital_used + margin_pnl;
 
                             match bybit_adapter.place_order_with_retry(
                                 symbol,
@@ -696,6 +824,13 @@ async fn main() -> Result<()> {
 
                                     // Return capital to available pool
                                     available_capital += capital_to_return;
+
+                                    // Safety check: prevent negative capital
+                                    if available_capital < 0.0 {
+                                        info!("⚠️  Available capital went negative (${:.2}), resetting to $0.00", available_capital);
+                                        available_capital = 0.0;
+                                    }
+
                                     info!("Capital returned to pool: ${:.2}, New available capital: ${:.2}",
                                           capital_to_return, available_capital);
 
@@ -770,6 +905,14 @@ async fn main() -> Result<()> {
         let win_rate = if total_trades > 0 {
             winning_trades as f64 / total_trades as f64 * 100.0
         } else { 0.0 };
+
+        // Log iteration summary
+        info!("===== Iteration {} Summary =====", iteration);
+        info!("Assets analyzed: {}, Signals generated: {}", assets_analyzed, signals_generated);
+        if assets_analyzed > 0 {
+            info!("Signal generation rate: {:.1}% ({} signals from {} assets)",
+                  signals_generated as f64 / assets_analyzed as f64 * 100.0, signals_generated, assets_analyzed);
+        }
 
         info!("===== OMNI-ALPHA VΩ∞∞ Trading System Status =====");
         info!("Iteration: {}, Elapsed time: {:.2} days", iteration, elapsed_days);

@@ -72,30 +72,30 @@ const ActiveTradesTable = ({ trades = [] }) => {
                 <TableCell>
                   <Box sx={{ display: 'flex', alignItems: 'center' }}>
                     <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                      {trade.symbol}
+                      {trade.symbol || 'N/A'}
                     </Typography>
                   </Box>
                 </TableCell>
                 <TableCell>
                   <Chip
                     size="small"
-                    label={trade.direction}
-                    icon={trade.direction === 'long' ? <ArrowUpward fontSize="small" /> : <ArrowDownward fontSize="small" />}
-                    color={trade.direction === 'long' ? 'success' : 'error'}
+                    label={trade.direction || 'N/A'}
+                    icon={(trade.direction || 'long') === 'long' ? <ArrowUpward fontSize="small" /> : <ArrowDownward fontSize="small" />}
+                    color={(trade.direction || 'long') === 'long' ? 'success' : 'error'}
                     sx={{ height: 24 }}
                   />
                 </TableCell>
                 <TableCell>
                   <Typography variant="body2">
-                    {formatCurrency(trade.entryPrice, 'USD', trade.symbol.includes('BTC') ? 0 : 2)}
+                    {formatCurrency(trade.entryPrice || 0, 'USD', (trade.symbol || '').includes('BTC') ? 0 : 2)}
                   </Typography>
                 </TableCell>
                 <TableCell>
                   <Box sx={{ display: 'flex', alignItems: 'center' }}>
                     <Typography variant="body2">
-                      {formatCurrency(trade.currentPrice, 'USD', trade.symbol.includes('BTC') ? 0 : 2)}
+                      {formatCurrency(trade.currentPrice || 0, 'USD', (trade.symbol || '').includes('BTC') ? 0 : 2)}
                     </Typography>
-                    {trade.currentPrice > trade.entryPrice ? (
+                    {(trade.currentPrice || 0) > (trade.entryPrice || 0) ? (
                       <TrendingUp fontSize="small" sx={{ ml: 0.5, color: theme.palette.success.main }} />
                     ) : (
                       <TrendingDown fontSize="small" sx={{ ml: 0.5, color: theme.palette.error.main }} />
@@ -106,20 +106,20 @@ const ActiveTradesTable = ({ trades = [] }) => {
                   <Typography
                     variant="body2"
                     sx={{
-                      color: trade.pnl >= 0 ? theme.palette.success.main : theme.palette.error.main,
+                      color: (trade.pnl || 0) >= 0 ? theme.palette.success.main : theme.palette.error.main,
                       fontWeight: 600,
                     }}
                   >
-                    {trade.pnl >= 0 ? '+' : ''}
-                    {formatCurrency(trade.pnl)} ({trade.pnlPercentage >= 0 ? '+' : ''}
-                    {formatPercentage(trade.pnlPercentage)})
+                    {(trade.pnl || 0) >= 0 ? '+' : ''}
+                    {formatCurrency(trade.pnl || 0)} ({(trade.pnlPercentage || 0) >= 0 ? '+' : ''}
+                    {formatPercentage(trade.pnlPercentage || 0)})
                   </Typography>
                 </TableCell>
                 <TableCell>
-                  <Tooltip title={`Confidence: ${trade.confidence.toFixed(2)}%`}>
+                  <Tooltip title={`Confidence: ${(trade.confidence || 95).toFixed(2)}%`}>
                     <Chip
                       size="small"
-                      label={trade.agent}
+                      label={trade.agent || 'AI Agent'}
                       sx={{
                         height: 24,
                         backgroundColor: alpha(theme.palette.primary.main, 0.1),
@@ -130,7 +130,7 @@ const ActiveTradesTable = ({ trades = [] }) => {
                 </TableCell>
                 <TableCell>
                   <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                    {formatDate(trade.entryTime, 'short')}
+                    {formatDate(trade.entryTime || new Date().toISOString(), 'short')}
                   </Typography>
                 </TableCell>
               </TableRow>

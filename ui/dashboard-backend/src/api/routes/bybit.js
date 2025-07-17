@@ -11,11 +11,22 @@ const axios = require('axios');
 const logger = require('../../utils/logger');
 const dataCache = require('../../utils/data-cache');
 
-// Bybit API configuration
-const BYBIT_API_KEY = process.env.BYBIT_API_KEY || 'lCMnwPKIzXASNWn6UE';
-const BYBIT_API_SECRET = process.env.BYBIT_API_SECRET || 'aXjs1SF9tmW3riHMktmjtyOyAT85puvrVstr';
-const BYBIT_API_URL = process.env.BYBIT_API_URL || 'https://api-demo.bybit.com';
+// 🔄 HYBRID CONFIGURATION: Real Data + Demo Trading
+// Market Data: Real Bybit API (live market data)
+// Trading: Demo Bybit API (safe execution)
+const REAL_API_URL = 'https://api.bybit.com'; // Real API for market data
+const DEMO_API_KEY = process.env.BYBIT_DEMO_API_KEY || 'lCMnwPKIzXASNWn6UE';
+const DEMO_API_SECRET = process.env.BYBIT_DEMO_API_SECRET || 'aXjs1SF9tmW3riHMktmjtyOyAT85puvrVstr';
+const DEMO_API_URL = 'https://api-demo.bybit.com'; // Demo API for trading
 const BYBIT_WS_URL = process.env.BYBIT_WS_URL || 'wss://stream-demo.bybit.com';
+
+// Use demo credentials for API requests
+const BYBIT_API_KEY = DEMO_API_KEY;
+const BYBIT_API_SECRET = DEMO_API_SECRET;
+const BYBIT_API_URL = DEMO_API_URL;
+
+logger.info(`🔄 HYBRID API ROUTES: Real data from ${REAL_API_URL}, Demo trading on ${DEMO_API_URL}`);
+logger.info(`🔑 Using Demo API Key: ${BYBIT_API_KEY.substring(0, 3)}...${BYBIT_API_KEY.substring(BYBIT_API_KEY.length - 3)}`);
 
 // Helper function to generate signature for Bybit API
 function getSignature(parameters, secret) {
@@ -48,6 +59,11 @@ function getSignature(parameters, secret) {
 // Helper function to make authenticated requests to Bybit API
 async function makeBybitRequest(endpoint, method = 'GET', params = {}) {
   try {
+    // Validate API credentials
+    if (!BYBIT_API_KEY || !BYBIT_API_SECRET) {
+      throw new Error('BYBIT_API_KEY is not defined');
+    }
+
     const timestamp = Date.now().toString();
     const recvWindow = '5000';
 

@@ -79,14 +79,14 @@ const Agents = () => {
   
   // Get unique agent types
   const getUniqueTypes = () => {
-    if (!agentStatus) return [];
-    return [...new Set(agentStatus.map(agent => agent.type))];
+    if (!agentStatus || !Array.isArray(agentStatus)) return [];
+    return [...new Set(agentStatus.map(agent => agent?.type || '').filter(Boolean))];
   };
   
   // Get unique agent statuses
   const getUniqueStatuses = () => {
-    if (!agentStatus) return [];
-    return [...new Set(agentStatus.map(agent => agent.status))];
+    if (!agentStatus || !Array.isArray(agentStatus)) return [];
+    return [...new Set(agentStatus.map(agent => agent?.status || '').filter(Boolean))];
   };
   
   // Create network visualization
@@ -107,13 +107,13 @@ const Agents = () => {
       .attr('height', height);
     
     // Create nodes and links
-    const nodes = agentStatus.map(agent => ({
+    const nodes = agentStatus.filter(agent => agent && agent.id).map(agent => ({
       id: agent.id,
-      name: agent.name,
-      type: agent.type,
-      status: agent.status,
-      color: agent.color,
-      connections: agent.connections,
+      name: agent.name || 'Unknown Agent',
+      type: agent.type || 'Unknown',
+      status: agent.status || 'Unknown',
+      color: agent.color || '#666666',
+      connections: agent.connections || 0,
     }));
     
     // Create links based on connections
@@ -201,11 +201,11 @@ const Agents = () => {
       .attr('font-size', '10px')
       .attr('font-weight', 'bold')
       .attr('pointer-events', 'none')
-      .text(d => d.name.substring(0, 2));
+      .text(d => (d.name && typeof d.name === 'string') ? d.name.substring(0, 2) : '??');
     
     // Add title for tooltip
     node.append('title')
-      .text(d => `${d.name} (${d.type})\nStatus: ${d.status}`);
+      .text(d => `${d.name || 'Unknown'} (${d.type || 'Unknown'})\nStatus: ${d.status || 'Unknown'}`);
     
     // Update positions
     simulation.on('tick', () => {

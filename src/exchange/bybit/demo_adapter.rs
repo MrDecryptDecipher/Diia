@@ -166,6 +166,52 @@ impl BybitDemoAdapter {
             .as_millis() as u64
     }
 
+    /// Get all available linear perpetual symbols
+    pub async fn get_all_linear_symbols(&self) -> Result<Vec<String>> {
+        let url = format!("{}/v5/market/instruments-info", self.base_url);
+
+        let mut params = HashMap::new();
+        params.insert("category".to_string(), "linear".to_string());
+
+        let query_string = params.iter()
+            .map(|(k, v)| format!("{}={}", k, v))
+            .collect::<Vec<_>>()
+            .join("&");
+
+        let full_url = format!("{}?{}", url, query_string);
+
+        let response = self.client.get(&full_url)
+            .header("X-BAPI-API-KEY", &self.api_key)
+            .send()
+            .await?;
+
+        let response_text = response.text().await?;
+        debug!("Instruments response: {}", response_text);
+
+        let json: serde_json::Value = serde_json::from_str(&response_text)?;
+
+        if let Some(result) = json.get("result") {
+            if let Some(list) = result.get("list") {
+                if let Some(instruments) = list.as_array() {
+                    let symbols: Vec<String> = instruments
+                        .iter()
+                        .filter_map(|instrument| {
+                            instrument.get("symbol")
+                                .and_then(|s| s.as_str())
+                                .map(|s| s.to_string())
+                        })
+                        .filter(|symbol| symbol.ends_with("USDT")) // Only USDT pairs
+                        .collect();
+
+                    info!("Found {} linear perpetual symbols", symbols.len());
+                    return Ok(symbols);
+                }
+            }
+        }
+
+        Err(anyhow!("Failed to parse instruments response"))
+    }
+
     /// Get wallet balance
     pub async fn get_wallet_balance(&self, coin: Option<&str>) -> Result<HashMap<String, BybitBalance>> {
         let base_url = format!("{}/v5/account/wallet-balance", self.base_url);
@@ -345,8 +391,8 @@ impl BybitDemoAdapter {
                     let ticker = BybitTicker {
                         symbol: item.get("symbol").and_then(|v| v.as_str()).unwrap_or("").to_string(),
                         last_price: item.get("lastPrice").and_then(|v| v.as_str()).unwrap_or("0").parse::<f64>().unwrap_or(0.0),
-                        index_price: item.get("indexPrice").and_then(|v| v.as_str()).unwrap_or("0").parse::<f64>().unwrap_or(0.0),
-                        mark_price: item.get("markPrice").and_then(|v| v.as_str()).unwrap_or("0").parse::<f64>().unwrap_or(0.0),
+                        index_price: item.get("indexPrice").and_then(|v| v.as_str()).and_then(|s| s.parse::<f64>().ok()),
+                        mark_price: item.get("markPrice").and_then(|v| v.as_str()).and_then(|s| s.parse::<f64>().ok()),
                         prev_price_24h: item.get("prevPrice24h").and_then(|v| v.as_str()).unwrap_or("0").parse::<f64>().unwrap_or(0.0),
                         price_24h_pcnt: item.get("price24hPcnt").and_then(|v| v.as_str()).unwrap_or("0").parse::<f64>().unwrap_or(0.0),
                         high_price_24h: item.get("highPrice24h").and_then(|v| v.as_str()).unwrap_or("0").parse::<f64>().unwrap_or(0.0),
@@ -431,11 +477,9 @@ impl BybitDemoAdapter {
                             stop_loss: Option<f64>,
                             take_profit: Option<f64>,
                             time_in_force: Option<&str>) -> Result<String> {
-        // Set leverage to 1x for futures trading
-        match self.set_leverage(symbol, 1).await {
-            Ok(_) => info!("Leverage set to 1x for {}", symbol),
-            Err(e) => warn!("Failed to set leverage: {}", e),
-        }
+        // NOTE: Leverage should be set separately via set_leverage() method
+        // Do not hardcode leverage to 1x - use the leverage set by the trading system
+        info!("Placing order for {} with quantity: {:.6}", symbol, qty);
 
         let url = format!("{}/v5/order/create", self.base_url);
 
@@ -449,45 +493,47 @@ impl BybitDemoAdapter {
         json_body.insert("side".to_string(), json!(side));
         json_body.insert("orderType".to_string(), json!(order_type));
 
-        // Format quantity with appropriate precision
-        // For linear contracts, qty is in contracts, not in the base currency
-        // Use appropriate minimum quantity based on the symbol
-        let min_qty = match symbol {
-            "BTCUSDT" => 0.001,
-            "ETHUSDT" => 0.01,
-            "BNBUSDT" => 0.01,
-            "SOLUSDT" => 0.1,
-            "ADAUSDT" => 1.0,
-            "DOGEUSDT" => 100.0,
-            "XRPUSDT" => 1.0,
-            "DOTUSDT" => 0.1,
-            "MATICUSDT" => 1.0,
-            "LINKUSDT" => 0.1,
-            "UNIUSDT" => 0.1,
-            "LTCUSDT" => 0.01,
-            "ATOMUSDT" => 0.1,
-            "NEARUSDT" => 1.0,
-            s if s.contains("BTC") => 0.001,  // BTC has lower minimum
-            s if s.contains("ETH") => 0.01,   // ETH minimum
-            s if s.contains("BNB") => 0.01,   // BNB minimum
-            s if s.contains("ADA") => 1.0,    // ADA needs higher minimum
-            s if s.contains("SOL") => 0.1,    // SOL minimum
-            s if s.contains("XRP") => 1.0,    // XRP minimum
-            s if s.contains("DOGE") => 100.0, // DOGE minimum
-            s if s.contains("DOT") => 0.1,    // DOT minimum
-            s if s.contains("AVAX") => 0.1,   // AVAX minimum
-            s if s.contains("MATIC") => 1.0,  // MATIC minimum
-            s if s.contains("LINK") => 0.1,   // LINK minimum
-            s if s.contains("UNI") => 0.1,    // UNI minimum
-            s if s.contains("LTC") => 0.01,   // LTC minimum
-            s if s.contains("ATOM") => 0.1,   // ATOM minimum
-            s if s.contains("NEAR") => 1.0,   // NEAR minimum
-            _ => 0.1,                        // Default minimum
+        // 💰 DYNAMIC QUANTITY: Use the exact quantity calculated by the trading system
+        // The trading system already handles minimum quantity requirements and precision
+        // Do not override with hardcoded minimums - this breaks dynamic position sizing
+
+        // Determine appropriate precision based on symbol
+        let precision = match symbol {
+            "BTCUSDT" => 3,
+            "ETHUSDT" => 3,
+            "BNBUSDT" => 2,
+            "SOLUSDT" => 1,
+            "ADAUSDT" => 0,
+            "DOGEUSDT" => 0,
+            "XRPUSDT" => 0,
+            "DOTUSDT" => 1,
+            "MATICUSDT" => 0,
+            "LINKUSDT" => 1,
+            "UNIUSDT" => 1,
+            "LTCUSDT" => 2,
+            "ATOMUSDT" => 1,
+            "NEARUSDT" => 0,
+            s if s.contains("BTC") => 3,
+            s if s.contains("ETH") => 3,
+            s if s.contains("BNB") => 2,
+            s if s.contains("SOL") => 1,
+            s if s.contains("ADA") => 0,
+            s if s.contains("XRP") => 0,
+            s if s.contains("DOGE") => 0,
+            s if s.contains("DOT") => 1,
+            s if s.contains("AVAX") => 1,
+            s if s.contains("MATIC") => 0,
+            s if s.contains("LINK") => 1,
+            s if s.contains("UNI") => 1,
+            s if s.contains("LTC") => 2,
+            s if s.contains("ATOM") => 1,
+            s if s.contains("NEAR") => 0,
+            _ => 3,  // Default precision
         };
 
-        let adjusted_qty = if qty < min_qty { min_qty } else { qty };
-        let qty_str = format!("{:.3}", adjusted_qty);
-        info!("Using quantity {} for {}", qty_str, symbol);
+        // Use the exact quantity from the trading system with appropriate precision
+        let qty_str = format!("{:.prec$}", qty, prec = precision);
+        info!("💰 DYNAMIC Using calculated quantity {} for {} (precision: {})", qty_str, symbol, precision);
         json_body.insert("qty".to_string(), json!(qty_str));
 
         if let Some(p) = price {
@@ -513,8 +559,9 @@ impl BybitDemoAdapter {
         // Add position mode (required for linear contracts)
         json_body.insert("positionIdx".to_string(), json!(0)); // 0: One-Way Mode
 
-        // Add leverage (required for linear contracts)
-        json_body.insert("leverage".to_string(), json!("1"));
+        // 💰 DYNAMIC LEVERAGE: Do not hardcode leverage in order placement
+        // Leverage should be set separately via set_leverage() method
+        // Remove hardcoded leverage from order placement
 
         // Create a JSON string from the body for signature generation
         let json_string = serde_json::to_string(&json_body)?;
@@ -895,9 +942,12 @@ impl BybitDemoAdapter {
         let mut params = HashMap::new();
         params.insert("category".to_string(), "linear".to_string());
 
-        // Add symbol if provided
+        // Add symbol if provided, otherwise use settleCoin
         if let Some(symbol) = symbol_opt {
             params.insert("symbol".to_string(), symbol.to_string());
+        } else {
+            // If no specific symbol, get all USDT positions
+            params.insert("settleCoin".to_string(), "USDT".to_string());
         }
 
         // Sort parameters alphabetically for consistent query string

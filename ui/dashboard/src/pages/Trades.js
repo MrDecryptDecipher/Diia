@@ -356,30 +356,30 @@ const Trades = () => {
                         >
                           <TableCell>
                             <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                              {trade.symbol}
+                              {trade.symbol || 'Unknown'}
                             </Typography>
                           </TableCell>
                           <TableCell>
                             <Chip
                               size="small"
-                              label={trade.direction}
-                              icon={trade.direction === 'long' ? <ArrowUpward fontSize="small" /> : <ArrowDownward fontSize="small" />}
-                              color={trade.direction === 'long' ? 'success' : 'error'}
+                              label={trade.side || trade.direction || 'unknown'}
+                              icon={(trade.side === 'buy' || trade.direction === 'long' || trade.direction === 'buy') ? <ArrowUpward fontSize="small" /> : <ArrowDownward fontSize="small" />}
+                              color={(trade.side === 'buy' || trade.direction === 'long' || trade.direction === 'buy') ? 'success' : 'error'}
                               sx={{ height: 24 }}
                             />
                           </TableCell>
                           <TableCell>
                             <Typography variant="body2">
-                              {formatCurrency(trade.entryPrice, 'USD', trade.symbol.includes('BTC') ? 0 : 2)}
+                              {formatCurrency(trade.price || trade.entryPrice || 0, 'USD', (trade.symbol || '').includes('BTC') ? 0 : 2)}
                             </Typography>
                           </TableCell>
                           <TableCell>
                             <Box sx={{ display: 'flex', alignItems: 'center' }}>
                               <Typography variant="body2">
-                                {formatCurrency(tabValue === 0 ? trade.currentPrice : trade.exitPrice || 0, 'USD', trade.symbol.includes('BTC') ? 0 : 2)}
+                                {formatCurrency(tabValue === 0 ? (trade.currentPrice || trade.price || 0) : (trade.exitPrice || 0), 'USD', (trade.symbol || '').includes('BTC') ? 0 : 2)}
                               </Typography>
                               {tabValue === 0 && (
-                                trade.currentPrice > trade.entryPrice ? (
+                                (trade.currentPrice || trade.price || 0) > (trade.price || trade.entryPrice || 0) ? (
                                   <TrendingUp fontSize="small" sx={{ ml: 0.5, color: theme.palette.success.main }} />
                                 ) : (
                                   <TrendingDown fontSize="small" sx={{ ml: 0.5, color: theme.palette.error.main }} />
@@ -391,25 +391,24 @@ const Trades = () => {
                             <Typography
                               variant="body2"
                               sx={{
-                                color: trade.pnl >= 0 ? theme.palette.success.main : theme.palette.error.main,
+                                color: (trade.targetProfit || 0) >= 0 ? theme.palette.success.main : theme.palette.error.main,
                                 fontWeight: 600,
                               }}
                             >
-                              {trade.pnl >= 0 ? '+' : ''}
-                              {formatCurrency(trade.pnl)} ({trade.pnlPercentage >= 0 ? '+' : ''}
-                              {formatPercentage(trade.pnlPercentage)})
+                              {(trade.targetProfit || 0) >= 0 ? '+' : ''}
+                              {formatCurrency(trade.targetProfit || 0)} (Target)
                             </Typography>
                           </TableCell>
                           <TableCell>
                             <Typography variant="body2">
-                              {trade.positionSize.toFixed(4)}
+                              {(trade.quantity || trade.positionSize || 0).toFixed(4)}
                             </Typography>
                           </TableCell>
                           <TableCell>
-                            <Tooltip title={`Confidence: ${trade.confidence.toFixed(2)}%`}>
+                            <Tooltip title={`Target Profit: $${trade.targetProfit || '0.00'}`}>
                               <Chip
                                 size="small"
-                                label={trade.agent}
+                                label={trade.agent || 'OMNI-Agent'}
                                 sx={{
                                   height: 24,
                                   backgroundColor: alpha(theme.palette.primary.main, 0.1),
@@ -420,12 +419,12 @@ const Trades = () => {
                           </TableCell>
                           <TableCell>
                             <Typography variant="body2">
-                              {trade.strategy}
+                              {trade.strategy || trade.orderType || 'Market'}
                             </Typography>
                           </TableCell>
                           <TableCell>
                             <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                              {formatDate(trade.entryTime, 'short')}
+                              {trade.timestamp ? formatDate(trade.timestamp, 'short') : (trade.entryTime ? formatDate(trade.entryTime, 'short') : '-')}
                             </Typography>
                           </TableCell>
                           {tabValue === 1 && (
@@ -438,7 +437,7 @@ const Trades = () => {
                           <TableCell>
                             <Chip
                               size="small"
-                              label={trade.status}
+                              label={trade.status || 'unknown'}
                               color={
                                 trade.status === 'active' ? 'info' :
                                 trade.status === 'profit' ? 'success' :

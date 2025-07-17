@@ -39,7 +39,7 @@ async fn main() -> Result<()> {
     let api_secret = "aXjs1SF9tmW3riHMktmjtyOyAT85puvrVstr";
     
     // Create Bybit adapter
-    let bybit_adapter = Arc::new(BybitAdapter::new(api_key, api_secret, false)); // false = use demo API
+    let bybit_adapter = Arc::new(BybitAdapter::new(api_key, api_secret, true)); // true = use demo API
     
     // Create message bus
     let message_bus = Arc::new(MessageBus::new());

@@ -842,7 +842,7 @@ const Settings = () => {
                 color: theme.palette.text.secondary,
               }}
             >
-              Configure your OMNI-ALPHA system preferences
+              Configure your Nija DilA system preferences
             </Typography>
           </Box>
         </motion.div>

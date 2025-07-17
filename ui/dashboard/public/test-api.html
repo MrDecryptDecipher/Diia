@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OMNI API Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #fff;
+        }
+        .container {
+            background: #2a2a2a;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .success { background: #4caf50; }
+        .error { background: #f44336; }
+        .loading { background: #ff9800; }
+        pre {
+            background: #333;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+        button {
+            background: #2196f3;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #1976d2;
+        }
+    </style>
+</head>
+<body>
+    <h1>🚀 OMNI-ALPHA VΩ∞∞ Trading System API Test</h1>
+    
+    <div class="container">
+        <h2>API Connection Test</h2>
+        <button onclick="testAllEndpoints()">Test All Endpoints</button>
+        <button onclick="testSystemStatus()">Test System Status</button>
+        <button onclick="testTradingStatus()">Test Trading Status</button>
+        <button onclick="testMetrics()">Test Metrics</button>
+        <div id="status"></div>
+    </div>
+
+    <div class="container">
+        <h2>System Status</h2>
+        <div id="systemStatus"></div>
+    </div>
+
+    <div class="container">
+        <h2>Trading Status</h2>
+        <div id="tradingStatus"></div>
+    </div>
+
+    <div class="container">
+        <h2>Metrics</h2>
+        <div id="metrics"></div>
+    </div>
+
+    <div class="container">
+        <h2>Active Trades</h2>
+        <div id="activeTrades"></div>
+    </div>
+
+    <script>
+        const API_URL = 'http://3.111.22.56:10002';
+        
+        function showStatus(message, type = 'loading') {
+            const statusDiv = document.getElementById('status');
+            statusDiv.innerHTML = `<div class="status ${type}">${message}</div>`;
+        }
+        
+        function showData(elementId, data) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+        }
+        
+        async function makeApiCall(endpoint) {
+            try {
+                showStatus(`Making request to ${endpoint}...`, 'loading');
+                const response = await fetch(`${API_URL}${endpoint}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Origin': 'http://3.111.22.56:10001'
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                showStatus(`✅ Successfully fetched ${endpoint}`, 'success');
+                return data;
+            } catch (error) {
+                showStatus(`❌ Error fetching ${endpoint}: ${error.message}`, 'error');
+                console.error(`Error fetching ${endpoint}:`, error);
+                return null;
+            }
+        }
+        
+        async function testSystemStatus() {
+            const data = await makeApiCall('/api/system/status');
+            if (data) {
+                showData('systemStatus', data);
+            }
+        }
+        
+        async function testTradingStatus() {
+            const data = await makeApiCall('/api/trading/status');
+            if (data) {
+                showData('tradingStatus', data);
+            }
+        }
+        
+        async function testMetrics() {
+            const data = await makeApiCall('/api/metrics');
+            if (data) {
+                showData('metrics', data);
+            }
+        }
+        
+        async function testActiveTrades() {
+            const data = await makeApiCall('/api/trades/active');
+            if (data) {
+                showData('activeTrades', data);
+            }
+        }
+        
+        async function testAllEndpoints() {
+            showStatus('🔄 Testing all endpoints...', 'loading');
+            
+            await testSystemStatus();
+            await testTradingStatus();
+            await testMetrics();
+            await testActiveTrades();
+            
+            showStatus('✅ All endpoint tests completed!', 'success');
+        }
+        
+        // Auto-run tests on page load
+        window.onload = function() {
+            showStatus('🚀 OMNI API Test Page Loaded', 'success');
+            setTimeout(testAllEndpoints, 1000);
+        };
+    </script>
+</body>
+</html>

@@ -83,11 +83,36 @@ impl AssetDiscovery {
         
         // Get instrument info
         let mut adapter = self.adapter.lock().await;
-        let instruments = adapter.get_instruments(self.category.clone()).await?;
+        let instruments = adapter.get_instruments(&self.category.to_string()).await?;
         
         // Store assets
         self.assets.clear();
-        for instrument in instruments.list {
+        for bybit_instrument in instruments.list {
+            // Convert BybitInstrument to InstrumentInfo
+            let instrument = InstrumentInfo {
+                symbol: bybit_instrument.symbol.clone(),
+                base_currency: "".to_string(), // BybitInstrument doesn't have this field
+                quote_currency: "USDT".to_string(), // Default to USDT
+                status: "Trading".to_string(), // Default status
+                lot_size_filter: crate::exchange::bybit::types::LotSizeFilter {
+                    min_trading_qty: bybit_instrument.lot_size_filter.min_trading_qty,
+                    max_trading_qty: bybit_instrument.lot_size_filter.max_trading_qty,
+                    qty_step: bybit_instrument.lot_size_filter.qty_step,
+                },
+                price_filter: crate::exchange::bybit::types::PriceFilter {
+                    min_price: bybit_instrument.price_filter.min_price,
+                    max_price: bybit_instrument.price_filter.max_price,
+                    tick_size: bybit_instrument.price_filter.tick_size,
+                },
+                leverage_filter: crate::exchange::bybit::types::LeverageFilter {
+                    min_leverage: bybit_instrument.leverage_filter.min_leverage as i32,
+                    max_leverage: bybit_instrument.leverage_filter.max_leverage as i32,
+                    leverage_step: bybit_instrument.leverage_filter.leverage_step,
+                },
+                last_price: "0".to_string(), // Default
+                volume_24h: "0".to_string(), // Default
+                price_change_24h: "0".to_string(), // Default
+            };
             self.assets.insert(instrument.symbol.clone(), instrument);
         }
         
@@ -235,7 +260,7 @@ impl AssetDiscovery {
         scored_assets.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap_or(std::cmp::Ordering::Equal));
         
         // Take top N assets
-        let optimal = scored_assets.into_iter()
+        let optimal: Vec<String> = scored_assets.into_iter()
             .take(max_assets)
             .map(|(symbol, _)| symbol)
             .collect();

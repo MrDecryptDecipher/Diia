@@ -5,3 +5,4 @@
 pub mod simple_strategy;
 pub mod indicators;
 pub mod advanced_strategy;
+pub mod advanced_multi_factor_strategy;

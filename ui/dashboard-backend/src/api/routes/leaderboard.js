@@ -19,7 +19,7 @@ router.get('/', async (req, res) => {
     }
 
     // Get tickers from Bybit
-    const response = await bybitClient.getTickers('linear');
+    const response = await bybitClient.getAllTickers();
 
     if (response.retCode === 0 && response.result && response.result.list) {
       const tickers = response.result.list;

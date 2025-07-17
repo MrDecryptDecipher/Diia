@@ -19,6 +19,7 @@ pub mod anti_loss_hedger;
 pub mod god_kernel;
 pub mod asset_scanner_agent;
 pub mod high_frequency_trader;
+pub mod main_strategy_controller;
 
 // Re-export key types
 pub use agent_coordinator::{AgentCoordinator, TradingDecision, DecisionType};

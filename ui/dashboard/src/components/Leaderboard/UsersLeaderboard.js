@@ -52,9 +52,11 @@ const UsersLeaderboard = ({ users = [] }) => {
           <TableHead>
             <TableRow>
               <TableCell sx={{ color: 'text.secondary', fontWeight: 600 }}>Rank</TableCell>
-              <TableCell sx={{ color: 'text.secondary', fontWeight: 600 }}>User</TableCell>
+              <TableCell sx={{ color: 'text.secondary', fontWeight: 600 }}>Elite Trader</TableCell>
+              <TableCell sx={{ color: 'text.secondary', fontWeight: 600 }}>Agent Type</TableCell>
               <TableCell sx={{ color: 'text.secondary', fontWeight: 600 }}>Level</TableCell>
               <TableCell sx={{ color: 'text.secondary', fontWeight: 600 }}>Performance</TableCell>
+              <TableCell sx={{ color: 'text.secondary', fontWeight: 600 }}>Intelligence</TableCell>
               <TableCell sx={{ color: 'text.secondary', fontWeight: 600 }}>Win Rate</TableCell>
               <TableCell sx={{ color: 'text.secondary', fontWeight: 600 }}>Total PnL</TableCell>
               <TableCell sx={{ color: 'text.secondary', fontWeight: 600 }}>Trades</TableCell>
@@ -64,9 +66,9 @@ const UsersLeaderboard = ({ users = [] }) => {
           <TableBody>
             {sortedUsers.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={8} align="center" sx={{ py: 3 }}>
+                <TableCell colSpan={10} align="center" sx={{ py: 3 }}>
                   <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                    No users found
+                    No elite traders found
                   </Typography>
                 </TableCell>
               </TableRow>
@@ -122,6 +124,17 @@ const UsersLeaderboard = ({ users = [] }) => {
                   </TableCell>
                   <TableCell>
                     <Chip
+                      label={user.agentType ? user.agentType.replace(/_/g, ' ').toUpperCase() : 'AGENT'}
+                      size="small"
+                      sx={{
+                        backgroundColor: alpha(theme.palette.secondary.main, 0.1),
+                        color: theme.palette.secondary.main,
+                        fontWeight: 600,
+                      }}
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <Chip
                       icon={<WorkspacePremium fontSize="small" />}
                       label={`Level ${user.level}`}
                       size="small"
@@ -156,6 +169,23 @@ const UsersLeaderboard = ({ users = [] }) => {
                         }}
                       >
                         {formatPercentage(user.performance / 100)}
+                      </Typography>
+                    </Box>
+                  </TableCell>
+                  <TableCell>
+                    <Box sx={{ display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          fontWeight: 600,
+                          color: user.intelligence >= 90 ? theme.palette.success.main :
+                                 user.intelligence >= 70 ? theme.palette.info.main : theme.palette.warning.main,
+                        }}
+                      >
+                        {user.intelligence ? `${user.intelligence.toFixed(1)}%` : 'N/A'}
+                      </Typography>
+                      <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                        IQ
                       </Typography>
                     </Box>
                   </TableCell>

@@ -43,7 +43,7 @@ const TradingDocs = () => {
         Trading Documentation
       </Typography>
       <Typography variant="body1" sx={{ mb: 3 }}>
-        This documentation provides detailed information about the trading capabilities of the OMNI-ALPHA system,
+        This documentation provides detailed information about the trading capabilities of the Nija DiIa system,
         including supported strategies, risk management features, and optimization techniques.
       </Typography>
 
@@ -52,7 +52,7 @@ const TradingDocs = () => {
         Trading Strategies
       </Typography>
       <Typography variant="body1" sx={{ mb: 2 }}>
-        OMNI-ALPHA supports multiple trading strategies that can be used individually or in combination:
+        Nija DiIa supports multiple trading strategies that can be used individually or in combination:
       </Typography>
 
       <Accordion sx={{ mb: 1, background: alpha(theme.palette.background.paper, 0.1) }}>
@@ -220,7 +220,7 @@ const TradingDocs = () => {
         Risk Management
       </Typography>
       <Typography variant="body1" sx={{ mb: 2 }}>
-        OMNI-ALPHA incorporates sophisticated risk management features to protect your capital:
+        Nija DilA incorporates sophisticated risk management features to protect your capital:
       </Typography>
 
       <TableContainer component={Paper} sx={{ mb: 4, background: alpha(theme.palette.background.paper, 0.1) }}>
@@ -267,7 +267,7 @@ const TradingDocs = () => {
         Performance Metrics
       </Typography>
       <Typography variant="body1" sx={{ mb: 2 }}>
-        OMNI-ALPHA tracks the following key performance metrics to help you evaluate your trading strategies:
+        Nija DilA tracks the following key performance metrics to help you evaluate your trading strategies:
       </Typography>
 
       <Grid container spacing={2} sx={{ mb: 4 }}>

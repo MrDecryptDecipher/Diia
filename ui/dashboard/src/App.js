@@ -16,6 +16,8 @@ import Agents from './pages/Agents';
 import AgentDetail from './pages/AgentDetail';
 import Assets from './pages/Assets';
 import AssetDetails from './pages/AssetDetails';
+import SocialMediaInsights from './pages/SocialMediaInsights';
+import GeminiIntelligence from './pages/GeminiIntelligence';
 import Leaderboard from './pages/Leaderboard';
 import Metrics from './pages/Metrics';
 import QuantumAnalytics from './pages/QuantumAnalytics';
@@ -68,7 +70,7 @@ function App() {
               sx={{
                 flexGrow: 1,
                 p: 3,
-                mt: 8,
+                mt: 10,
                 ml: { sm: isSidebarOpen ? '240px' : 0 },
                 transition: 'margin 0.2s ease-in-out',
                 width: { sm: `calc(100% - ${isSidebarOpen ? '240px' : '0px'})` }
@@ -84,6 +86,8 @@ function App() {
                     <Route path="agents/:id" element={<AgentDetail />} />
                     <Route path="assets" element={<Assets />} />
                     <Route path="assets/:symbol" element={<AssetDetails />} />
+                    <Route path="social-insights" element={<SocialMediaInsights />} />
+                    <Route path="gemini-intelligence" element={<GeminiIntelligence />} />
                     <Route path="leaderboard" element={<Leaderboard />} />
                     <Route path="metrics" element={<Metrics />} />
                     <Route path="quantum" element={<QuantumAnalytics />} />

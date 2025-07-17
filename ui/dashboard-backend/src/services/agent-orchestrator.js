@@ -23,7 +23,18 @@ const AGENT_TYPES = {
   HYPERDIMENSIONAL_COMPUTING: { id: 'hyperdimensional_computing', uiType: 'hybrid', color: '#FF8C00' },
   ANNEALER: { id: 'annealer', uiType: 'quantum', color: '#7B68EE' },
   ZERO_LOSS_ENFORCER: { id: 'zero_loss_enforcer', uiType: 'risk', color: '#FF4500' },
-  GENETIC_OPTIMIZER: { id: 'genetic_optimizer', uiType: 'genetic', color: '#32CD32' }
+  GENETIC_OPTIMIZER: { id: 'genetic_optimizer', uiType: 'genetic', color: '#32CD32' },
+  NEURAL_NETWORK: { id: 'neural_network', uiType: 'neural', color: '#FF00FF' },
+  PATTERN_RECOGNIZER: { id: 'pattern_recognizer', uiType: 'neural', color: '#FF00FF' },
+  SENTIMENT_ANALYZER: { id: 'sentiment_analyzer', uiType: 'neural', color: '#FF00FF' },
+  VOLATILITY_PREDICTOR: { id: 'volatility_predictor', uiType: 'neural', color: '#FF00FF' },
+  TREND_ANALYZER: { id: 'trend_analyzer', uiType: 'neural', color: '#FF00FF' },
+  MOMENTUM_TRACKER: { id: 'momentum_tracker', uiType: 'neural', color: '#FF00FF' },
+  VOLUME_ANALYZER: { id: 'volume_analyzer', uiType: 'neural', color: '#FF00FF' },
+  ORDER_FLOW_ANALYZER: { id: 'order_flow_analyzer', uiType: 'neural', color: '#FF00FF' },
+  MARKET_MAKER: { id: 'market_maker', uiType: 'neural', color: '#FF00FF' },
+  ARBITRAGE_DETECTOR: { id: 'arbitrage_detector', uiType: 'neural', color: '#FF00FF' },
+  RISK_MANAGER: { id: 'risk_manager', uiType: 'neural', color: '#FF00FF' }
 };
 
 // Agent orchestrator state
@@ -52,316 +63,284 @@ let orchestratorState = {
  */
 function initialize() {
   logger.info('Initializing Agent Orchestrator');
+  
+  // Initialize agent types
+  const agentTypes = [
+    'GHOST_TRADER',
+    'MACRO_SENTINEL',
+    'QUANTUM_PREDICTOR',
+    'PATTERN_ANALYZER',
+    'VOLUME_PROFILER',
+    'ORDER_BOOK_ANALYZER',
+    'MARKET_SENTIMENT_ANALYZER',
+    'CORRELATION_ANALYZER',
+    'VOLATILITY_ANALYZER',
+    'MOMENTUM_ANALYZER',
+    'TREND_ANALYZER',
+    'SUPPORT_RESISTANCE_ANALYZER',
+    'FIBONACCI_ANALYZER',
+    'ELLIOTT_WAVE_ANALYZER',
+    'HARMONIC_PATTERN_ANALYZER',
+    'ICHIMOKU_ANALYZER',
+    'RSI_ANALYZER',
+    'MACD_ANALYZER',
+    'BOLLINGER_BANDS_ANALYZER',
+    'STOCHASTIC_ANALYZER',
+    'ADX_ANALYZER',
+    'CCI_ANALYZER',
+    'MFI_ANALYZER',
+    'OBV_ANALYZER',
+    'VOLUME_DELTA_ANALYZER',
+    'ORDER_FLOW_ANALYZER',
+    'LIQUIDITY_ANALYZER',
+    'SPREAD_ANALYZER',
+    'ARBITRAGE_ANALYZER',
+    'MARKET_MAKER_ANALYZER'
+  ];
 
-  orchestratorState.active = true;
-  orchestratorState.startTime = Date.now();
+  // Initialize each agent type
+  agentTypes.forEach((type, index) => {
+    const agentId = `agent-${index + 1}`;
+    orchestratorState.agents[type] = {
+      id: agentId,
+      name: type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+      type: type.toLowerCase(),
+      uiType: type.toLowerCase().includes('predictor') ? 'predictor' :
+              type.toLowerCase().includes('analyzer') ? 'analyzer' : 'executor',
+      active: true,
+      state: 'active',
+      successRate: 85 + Math.random() * 15,
+      intelligence: 85 + Math.random() * 15,
+      accuracy: 90 + Math.random() * 9.9,
+      efficiency: 85 + Math.random() * 14.9,
+      confidence: 88 + Math.random() * 11.9,
+      evolutionStage: Math.floor(Math.random() * 5) + 1,
+      learningProgress: Math.random() * 100,
+      lastActive: Date.now(),
+      lastAction: 'System initialization',
+      lastActionTime: new Date().toISOString(),
+      action: 'Initializing',
+      config: getAgentConfig(type)
+    };
+  });
 
-  // Initialize agents
-  initializeAgents();
-
-  // Start the orchestration loop
-  startOrchestrationLoop();
-
-  logger.info('Agent Orchestrator initialized successfully');
-
-  return orchestratorState;
+  logger.info(`Initialized ${agentTypes.length} agent types`);
 }
 
 /**
- * Initialize all trading agents
+ * Get agent-specific configuration
  */
-function initializeAgents() {
-  logger.info('Initializing trading agents');
+function getAgentConfig(agentType) {
+  const baseConfig = {
+    minConfidence: 0.7,
+    maxPositionSize: 1.0,
+    riskPerTrade: 0.01,
+    timeframes: ['1', '3', '5', '15', '30', '60'],
+    lookbackPeriod: 100
+  };
 
-  // Create 3 instances of each agent type to reach 30 agents total
-  for (let i = 0; i < 3; i++) {
-    // Initialize Ghost Trader
-    const ghostTrader = {
-      id: uuidv4(),
-      type: AGENT_TYPES.GHOST_TRADER.id,
-      uiType: AGENT_TYPES.GHOST_TRADER.uiType,
-      color: AGENT_TYPES.GHOST_TRADER.color,
-      name: 'Ghost Trader',
-      description: 'Simulates trades before execution to validate profitability',
-      active: true,
-      lastActive: Date.now(),
-      successRate: 0.95 + (Math.random() * 0.04),
-      intelligence: 0.9 + (Math.random() * 0.09),
-      accuracy: 95.2 + (Math.random() * 4.7),
-      efficiency: 92.7 + (Math.random() * 7.2),
-      confidence: 94.5 + (Math.random() * 5.4),
-      evolutionStage: 7 + Math.floor(Math.random() * 2),
-      tradeCount: Math.floor(Math.random() * 500) + 50,
-      lastAction: 'Simulated trade execution',
-      lastActionTime: new Date().toISOString(),
-      connections: 8 + Math.floor(Math.random() * 5),
-      config: {
-        minRoiThreshold: orchestratorState.profitTarget / orchestratorState.initialCapital * 100,
-        simulationTime: 60, // seconds
-        maxConcurrentSimulations: 5
-      }
-    };
-    orchestratorState.agents[ghostTrader.id] = ghostTrader;
-
-    // Initialize Macro Sentinel
-    const macroSentinel = {
-      id: uuidv4(),
-      type: AGENT_TYPES.MACRO_SENTINEL.id,
-      uiType: AGENT_TYPES.MACRO_SENTINEL.uiType,
-      color: AGENT_TYPES.MACRO_SENTINEL.color,
-      name: 'Macro Sentinel',
-      description: 'Monitors macroeconomic conditions and market sentiment',
-      active: true,
-      lastActive: Date.now(),
-      successRate: 0.92 + (Math.random() * 0.07),
-      intelligence: 0.85 + (Math.random() * 0.14),
-      accuracy: 92.8 + (Math.random() * 7.1),
-      efficiency: 89.5 + (Math.random() * 10.4),
-      confidence: 91.3 + (Math.random() * 8.6),
-      evolutionStage: 6 + Math.floor(Math.random() * 2),
-      alertCount: Math.floor(Math.random() * 70) + 10,
-      lastAction: 'Analyzed market sentiment',
-      lastActionTime: new Date().toISOString(),
-      connections: 6 + Math.floor(Math.random() * 4),
-      config: {
-        updateInterval: 300, // seconds
-        sentimentThreshold: 0.7,
-        volatilityThreshold: 0.05
-      }
-    };
-    orchestratorState.agents[macroSentinel.id] = macroSentinel;
-
-    // Initialize Memory Node
-    const memoryNode = {
-      id: uuidv4(),
-      type: AGENT_TYPES.MEMORY_NODE.id,
-      uiType: AGENT_TYPES.MEMORY_NODE.uiType,
-      color: AGENT_TYPES.MEMORY_NODE.color,
-      name: 'Memory Node',
-      description: 'Stores and analyzes historical trade patterns',
-      active: true,
-      lastActive: Date.now(),
-      successRate: 0.97 + (Math.random() * 0.02),
-      intelligence: 0.95 + (Math.random() * 0.04),
-      accuracy: 97.1 + (Math.random() * 2.8),
-      efficiency: 95.8 + (Math.random() * 4.1),
-      confidence: 96.2 + (Math.random() * 3.7),
-      evolutionStage: 8,
-      memorySize: Math.floor(Math.random() * 2000) + 500,
-      lastAction: 'Pattern recognition analysis',
-      lastActionTime: new Date().toISOString(),
-      connections: 10 + Math.floor(Math.random() * 3),
-      config: {
-        maxMemorySize: 10000,
-        patternRecognitionThreshold: 0.8,
-        learningRate: 0.01
-      }
-    };
-    orchestratorState.agents[memoryNode.id] = memoryNode;
-
-    // Initialize Quantum Predictor
-    const quantumPredictor = {
-      id: uuidv4(),
-      type: AGENT_TYPES.QUANTUM_PREDICTOR.id,
-      uiType: AGENT_TYPES.QUANTUM_PREDICTOR.uiType,
-      color: AGENT_TYPES.QUANTUM_PREDICTOR.color,
-      name: 'Quantum Predictor',
-      description: 'Uses quantum-inspired algorithms for price prediction',
-      active: true,
-      lastActive: Date.now(),
-      successRate: 0.88 + (Math.random() * 0.11),
-      intelligence: 0.92 + (Math.random() * 0.07),
-      accuracy: 88.5 + (Math.random() * 11.4),
-      efficiency: 90.2 + (Math.random() * 9.7),
-      confidence: 89.7 + (Math.random() * 10.2),
-      evolutionStage: 7 + Math.floor(Math.random() * 2),
-      predictionCount: Math.floor(Math.random() * 600) + 100,
-      lastAction: 'Price movement prediction',
-      lastActionTime: new Date().toISOString(),
-      connections: 7 + Math.floor(Math.random() * 3),
-      config: {
-        quantumStates: 64,
-        coherenceFactor: orchestratorState.quantumCoherence,
-        entanglementFactor: 0.7,
-        predictionHorizon: 300 // seconds
-      }
-    };
-    orchestratorState.agents[quantumPredictor.id] = quantumPredictor;
-
-    // Initialize Quantum Entanglement
-    const quantumEntanglement = {
-      id: uuidv4(),
-      type: AGENT_TYPES.QUANTUM_ENTANGLEMENT.id,
-      uiType: AGENT_TYPES.QUANTUM_ENTANGLEMENT.uiType,
-      color: AGENT_TYPES.QUANTUM_ENTANGLEMENT.color,
-      name: 'Quantum Entanglement',
-      description: 'Detects and exploits correlations between assets',
-      active: true,
-      lastActive: Date.now(),
-      successRate: 0.85 + (Math.random() * 0.14),
-      intelligence: 0.9 + (Math.random() * 0.09),
-      accuracy: 85.3 + (Math.random() * 14.6),
-      efficiency: 87.9 + (Math.random() * 12.0),
-      confidence: 86.4 + (Math.random() * 13.5),
-      evolutionStage: 6 + Math.floor(Math.random() * 2),
-      entanglementCount: Math.floor(Math.random() * 180) + 20,
-      lastAction: 'Asset correlation analysis',
-      lastActionTime: new Date().toISOString(),
-      connections: 9 + Math.floor(Math.random() * 4),
-      config: {
+  switch (agentType) {
+    case 'GHOST_TRADER':
+      return {
+        ...baseConfig,
+        orderBookDepth: 20,
+        tradeHistoryLookback: 1000,
+        minVolumeThreshold: 100000
+      };
+    case 'MACRO_SENTINEL':
+      return {
+        ...baseConfig,
         correlationThreshold: 0.7,
-        entanglementStrength: 0.8,
-        maxEntangledPairs: 20
-      }
-    };
-    orchestratorState.agents[quantumEntanglement.id] = quantumEntanglement;
-
-    // Initialize Spectral Tree
-    const spectralTree = {
-      id: uuidv4(),
-      type: AGENT_TYPES.SPECTRAL_TREE.id,
-      uiType: AGENT_TYPES.SPECTRAL_TREE.uiType,
-      color: AGENT_TYPES.SPECTRAL_TREE.color,
-      name: 'Spectral Tree',
-      description: 'Analyzes market structure using spectral decomposition',
-      active: true,
-      lastActive: Date.now(),
-      successRate: 0.9 + (Math.random() * 0.09),
-      intelligence: 0.88 + (Math.random() * 0.11),
-      accuracy: 90.4 + (Math.random() * 9.5),
-      efficiency: 88.7 + (Math.random() * 11.2),
-      confidence: 89.5 + (Math.random() * 10.4),
-      evolutionStage: 7 + Math.floor(Math.random() * 2),
-      analysisCount: Math.floor(Math.random() * 550) + 50,
-      lastAction: 'Market structure analysis',
-      lastActionTime: new Date().toISOString(),
-      connections: 6 + Math.floor(Math.random() * 7),
-      config: {
-        treeDepth: 5,
-        spectralResolution: 0.01,
-        frequencyBands: 8
-      }
-    };
-    orchestratorState.agents[spectralTree.id] = spectralTree;
-
-    // Initialize Hyperdimensional Computing
-    const hyperdimensionalComputing = {
-      id: uuidv4(),
-      type: AGENT_TYPES.HYPERDIMENSIONAL_COMPUTING.id,
-      uiType: AGENT_TYPES.HYPERDIMENSIONAL_COMPUTING.uiType,
-      color: AGENT_TYPES.HYPERDIMENSIONAL_COMPUTING.color,
-      name: 'Hyperdimensional Computing',
-      description: 'Processes market data in high-dimensional space',
-      active: true,
-      lastActive: Date.now(),
-      successRate: 0.87 + (Math.random() * 0.12),
-      intelligence: 0.93 + (Math.random() * 0.06),
-      accuracy: 87.6 + (Math.random() * 12.3),
-      efficiency: 91.2 + (Math.random() * 8.7),
-      confidence: 89.3 + (Math.random() * 10.6),
-      evolutionStage: 7 + Math.floor(Math.random() * 2),
-      computationCount: Math.floor(Math.random() * 580) + 20,
-      lastAction: 'Hyperdimensional pattern detection',
-      lastActionTime: new Date().toISOString(),
-      connections: 8 + Math.floor(Math.random() * 4),
-      config: {
-        dimensions: 10000,
-        sparsity: 0.1,
-        bindingOperations: 5
-      }
-    };
-    orchestratorState.agents[hyperdimensionalComputing.id] = hyperdimensionalComputing;
-
-    // Initialize Annealer
-    const annealer = {
-      id: uuidv4(),
-      type: AGENT_TYPES.ANNEALER.id,
-      uiType: AGENT_TYPES.ANNEALER.uiType,
-      color: AGENT_TYPES.ANNEALER.color,
-      name: 'Quantum Annealer',
-      description: 'Optimizes trading parameters using quantum annealing',
-      active: true,
-      lastActive: Date.now(),
-      successRate: 0.89 + (Math.random() * 0.10),
-      intelligence: 0.91 + (Math.random() * 0.08),
-      accuracy: 89.8 + (Math.random() * 10.1),
-      efficiency: 90.5 + (Math.random() * 9.4),
-      confidence: 90.1 + (Math.random() * 9.8),
-      evolutionStage: 7,
-      annealingCount: Math.floor(Math.random() * 30) + 5,
-      lastAction: 'Parameter optimization',
-      lastActionTime: new Date().toISOString(),
-      connections: 7 + Math.floor(Math.random() * 5),
-      config: {
-        annealingCycles: 1000,
-        temperatureDecay: 0.99,
-        energyThreshold: 0.001
-      }
-    };
-    orchestratorState.agents[annealer.id] = annealer;
-
-    // Initialize Zero Loss Enforcer
-    const zeroLossEnforcer = {
-      id: uuidv4(),
-      type: AGENT_TYPES.ZERO_LOSS_ENFORCER.id,
-      uiType: AGENT_TYPES.ZERO_LOSS_ENFORCER.uiType,
-      color: AGENT_TYPES.ZERO_LOSS_ENFORCER.color,
-      name: 'Zero Loss Enforcer',
-      description: 'Ensures all trades result in profit with no losses',
-      active: true,
-      lastActive: Date.now(),
-      successRate: 0.98 + (Math.random() * 0.01),
-      intelligence: 0.94 + (Math.random() * 0.05),
-      accuracy: 98.2 + (Math.random() * 1.7),
-      efficiency: 93.7 + (Math.random() * 6.2),
-      confidence: 97.5 + (Math.random() * 2.4),
-      evolutionStage: 8 + Math.floor(Math.random() * 2),
-      preventedLosses: Math.floor(Math.random() * 60) + 10,
-      lastAction: 'Trade risk assessment',
-      lastActionTime: new Date().toISOString(),
-      connections: 9 + Math.floor(Math.random() * 2),
-      config: {
-        minProfitThreshold: 2.2, // Minimum 2.2 USDT profit
-        riskToleranceLevel: 0.01, // Very low risk tolerance
-        hedgingFactor: 0.95
-      }
-    };
-    orchestratorState.agents[zeroLossEnforcer.id] = zeroLossEnforcer;
-
-    // Initialize Genetic Optimizer
-    const geneticOptimizer = {
-      id: uuidv4(),
-      type: AGENT_TYPES.GENETIC_OPTIMIZER.id,
-      uiType: AGENT_TYPES.GENETIC_OPTIMIZER.uiType,
-      color: AGENT_TYPES.GENETIC_OPTIMIZER.color,
-      name: 'Genetic Optimizer',
-      description: 'Evolves trading strategies through genetic algorithms',
-      active: true,
-      lastActive: Date.now(),
-      successRate: 0.91 + (Math.random() * 0.08),
-      intelligence: 0.92 + (Math.random() * 0.07),
-      accuracy: 91.3 + (Math.random() * 8.6),
-      efficiency: 92.8 + (Math.random() * 7.1),
-      confidence: 91.9 + (Math.random() * 8.0),
-      evolutionStage: 7,
-      generationCount: Math.floor(Math.random() * 30) + 5,
-      lastAction: 'Strategy evolution',
-      lastActionTime: new Date().toISOString(),
-      connections: 8 + Math.floor(Math.random() * 6),
-      config: {
-        populationSize: 100,
-        mutationRate: 0.05,
-        crossoverRate: 0.7,
-        generationLimit: 50
-      }
-    };
-    orchestratorState.agents[geneticOptimizer.id] = geneticOptimizer;
+        marketSentimentWeight: 0.3,
+        correlationWeight: 0.7
+      };
+    case 'QUANTUM_PREDICTOR':
+      return {
+        ...baseConfig,
+        quantumStateSize: 1000,
+        patternRecognitionThreshold: 0.8,
+        predictionHorizon: 100
+      };
+    case 'PATTERN_ANALYZER':
+      return {
+        ...baseConfig,
+        patternTypes: ['double_top', 'double_bottom', 'head_shoulders', 'triangles'],
+        minPatternConfidence: 0.8
+      };
+    case 'VOLUME_PROFILER':
+      return {
+        ...baseConfig,
+        volumeProfilePeriods: 20,
+        volumeThreshold: 1000000,
+        imbalanceThreshold: 0.2
+      };
+    case 'ORDER_BOOK_ANALYZER':
+      return {
+        ...baseConfig,
+        orderBookDepth: 50,
+        imbalanceThreshold: 0.3,
+        spreadThreshold: 0.001
+      };
+    case 'MARKET_SENTIMENT_ANALYZER':
+      return {
+        ...baseConfig,
+        sentimentSources: ['news', 'social', 'technical'],
+        sentimentWeight: 0.3
+      };
+    case 'CORRELATION_ANALYZER':
+      return {
+        ...baseConfig,
+        correlationPeriods: 100,
+        minCorrelation: 0.7,
+        maxCorrelation: 0.95
+      };
+    case 'VOLATILITY_ANALYZER':
+      return {
+        ...baseConfig,
+        volatilityPeriods: 20,
+        minVolatility: 0.5,
+        maxVolatility: 10
+      };
+    case 'MOMENTUM_ANALYZER':
+      return {
+        ...baseConfig,
+        momentumPeriods: 14,
+        minMomentum: 0.5,
+        maxMomentum: 2
+      };
+    case 'TREND_ANALYZER':
+      return {
+        ...baseConfig,
+        trendPeriods: 50,
+        minTrendStrength: 0.6,
+        trendConfirmationPeriods: 3
+      };
+    case 'SUPPORT_RESISTANCE_ANALYZER':
+      return {
+        ...baseConfig,
+        srPeriods: 100,
+        minTouchPoints: 3,
+        zoneSize: 0.002
+      };
+    case 'FIBONACCI_ANALYZER':
+      return {
+        ...baseConfig,
+        fibLevels: [0, 0.236, 0.382, 0.5, 0.618, 0.786, 1],
+        minRetracement: 0.236,
+        maxRetracement: 0.786
+      };
+    case 'ELLIOTT_WAVE_ANALYZER':
+      return {
+        ...baseConfig,
+        wavePatterns: ['impulsive', 'corrective'],
+        minWaveConfidence: 0.8
+      };
+    case 'HARMONIC_PATTERN_ANALYZER':
+      return {
+        ...baseConfig,
+        patternTypes: ['Gartley', 'Butterfly', 'Bat', 'Crab'],
+        minPatternConfidence: 0.8
+      };
+    case 'ICHIMOKU_ANALYZER':
+      return {
+        ...baseConfig,
+        conversionPeriods: 9,
+        basePeriods: 26,
+        spanBPeriods: 52,
+        displacement: 26
+      };
+    case 'RSI_ANALYZER':
+      return {
+        ...baseConfig,
+        rsiPeriods: 14,
+        overboughtLevel: 70,
+        oversoldLevel: 30
+      };
+    case 'MACD_ANALYZER':
+      return {
+        ...baseConfig,
+        fastPeriod: 12,
+        slowPeriod: 26,
+        signalPeriod: 9
+      };
+    case 'BOLLINGER_BANDS_ANALYZER':
+      return {
+        ...baseConfig,
+        bbPeriods: 20,
+        bbStdDev: 2
+      };
+    case 'STOCHASTIC_ANALYZER':
+      return {
+        ...baseConfig,
+        kPeriod: 14,
+        dPeriod: 3,
+        slowing: 3
+      };
+    case 'ADX_ANALYZER':
+      return {
+        ...baseConfig,
+        adxPeriod: 14,
+        minStrength: 25
+      };
+    case 'CCI_ANALYZER':
+      return {
+        ...baseConfig,
+        cciPeriod: 20,
+        overboughtLevel: 100,
+        oversoldLevel: -100
+      };
+    case 'MFI_ANALYZER':
+      return {
+        ...baseConfig,
+        mfiPeriod: 14,
+        overboughtLevel: 80,
+        oversoldLevel: 20
+      };
+    case 'OBV_ANALYZER':
+      return {
+        ...baseConfig,
+        obvPeriod: 20,
+        volumeThreshold: 1000000
+      };
+    case 'VOLUME_DELTA_ANALYZER':
+      return {
+        ...baseConfig,
+        deltaPeriod: 20,
+        minDelta: 1000
+      };
+    case 'ORDER_FLOW_ANALYZER':
+      return {
+        ...baseConfig,
+        flowPeriod: 20,
+        minFlow: 1000
+      };
+    case 'LIQUIDITY_ANALYZER':
+      return {
+        ...baseConfig,
+        liquidityPeriod: 20,
+        minLiquidity: 1000000
+      };
+    case 'SPREAD_ANALYZER':
+      return {
+        ...baseConfig,
+        spreadPeriod: 20,
+        maxSpread: 0.001
+      };
+    case 'ARBITRAGE_ANALYZER':
+      return {
+        ...baseConfig,
+        arbitragePeriod: 20,
+        minProfit: 0.001
+      };
+    case 'MARKET_MAKER_ANALYZER':
+      return {
+        ...baseConfig,
+        makerPeriod: 20,
+        minMakerVolume: 1000000
+      };
+    default:
+      return baseConfig;
   }
-
-  // Update agent count
-  orchestratorState.agentCount = Object.keys(orchestratorState.agents).length;
-
-  logger.info(`Initialized ${orchestratorState.agentCount} trading agents`);
 }
 
 /**
@@ -407,77 +386,186 @@ async function orchestrationCycle() {
  */
 function updateAgentStates() {
   const now = Date.now();
-
+  
   // Update each agent's state
   Object.values(orchestratorState.agents).forEach(agent => {
-    // Simulate agent activity
-    if (Math.random() < 0.2) { // 20% chance of activity per cycle
-      agent.lastActive = now;
-      agent.lastActionTime = new Date().toISOString();
-
-      // Generate a random action based on agent type
-      const actions = {
-        ghost_trader: ['Simulated trade execution', 'Validated trade profitability', 'Optimized entry parameters'],
-        macro_sentinel: ['Analyzed market sentiment', 'Detected volatility change', 'Monitored economic indicators'],
-        memory_node: ['Pattern recognition analysis', 'Historical data processing', 'Trade pattern identification'],
-        quantum_predictor: ['Price movement prediction', 'Quantum probability calculation', 'Market state analysis'],
-        quantum_entanglement: ['Asset correlation analysis', 'Entanglement detection', 'Cross-market analysis'],
-        spectral_tree: ['Market structure analysis', 'Frequency domain analysis', 'Spectral decomposition'],
-        hyperdimensional_computing: ['Hyperdimensional pattern detection', 'High-dimensional data processing', 'Complex pattern recognition'],
-        annealer: ['Parameter optimization', 'Strategy annealing', 'Global optimization search'],
-        zero_loss_enforcer: ['Trade risk assessment', 'Loss prevention analysis', 'Profit guarantee calculation'],
-        genetic_optimizer: ['Strategy evolution', 'Parameter mutation', 'Fitness evaluation']
-      };
-
-      // Set a random action for the agent
-      const agentActions = actions[agent.type] || ['System activity'];
-      agent.lastAction = agentActions[Math.floor(Math.random() * agentActions.length)];
-
-      // Update agent-specific counters
-      switch (agent.type) {
+    // Update last active time
+    agent.lastActive = now;
+    
+    // 30% chance to enter learning state
+    if (Math.random() < 0.3) {
+      agent.state = 'learning';
+      
+      // Update intelligence and learning progress based on agent type
+      switch(agent.type) {
         case 'ghost_trader':
-          agent.tradeCount = (agent.tradeCount || 0) + 1;
+          agent.intelligence = Math.min(100, agent.intelligence + 0.5);
+          agent.learningProgress = Math.min(100, agent.learningProgress + 1);
+          agent.action = 'Learning from simulated trades';
           break;
+          
         case 'macro_sentinel':
-          agent.alertCount = (agent.alertCount || 0) + (Math.random() < 0.1 ? 1 : 0);
+          agent.intelligence = Math.min(100, agent.intelligence + 0.4);
+          agent.learningProgress = Math.min(100, agent.learningProgress + 0.8);
+          agent.action = 'Analyzing market sentiment';
           break;
+          
         case 'memory_node':
-          agent.memorySize = (agent.memorySize || 0) + Math.floor(Math.random() * 10);
+          agent.intelligence = Math.min(100, agent.intelligence + 0.6);
+          agent.learningProgress = Math.min(100, agent.learningProgress + 1.2);
+          agent.action = 'Learning from historical patterns';
           break;
+          
         case 'quantum_predictor':
-          agent.predictionCount = (agent.predictionCount || 0) + 1;
+          agent.intelligence = Math.min(100, agent.intelligence + 0.7);
+          agent.learningProgress = Math.min(100, agent.learningProgress + 1.4);
+          agent.action = 'Processing quantum predictions';
           break;
+          
         case 'quantum_entanglement':
-          agent.entanglementCount = (agent.entanglementCount || 0) + (Math.random() < 0.3 ? 1 : 0);
+          agent.intelligence = Math.min(100, agent.intelligence + 0.8);
+          agent.learningProgress = Math.min(100, agent.learningProgress + 1.6);
+          agent.action = 'Analyzing market correlations';
           break;
+          
         case 'spectral_tree':
-          agent.analysisCount = (agent.analysisCount || 0) + 1;
+          agent.intelligence = Math.min(100, agent.intelligence + 0.5);
+          agent.learningProgress = Math.min(100, agent.learningProgress + 1);
+          agent.action = 'Learning market structure';
           break;
+          
         case 'hyperdimensional_computing':
-          agent.computationCount = (agent.computationCount || 0) + 1;
+          agent.intelligence = Math.min(100, agent.intelligence + 0.9);
+          agent.learningProgress = Math.min(100, agent.learningProgress + 1.8);
+          agent.action = 'Processing complex patterns';
           break;
+          
         case 'annealer':
-          agent.annealingCount = (agent.annealingCount || 0) + (Math.random() < 0.05 ? 1 : 0);
+          agent.intelligence = Math.min(100, agent.intelligence + 0.6);
+          agent.learningProgress = Math.min(100, agent.learningProgress + 1.2);
+          agent.action = 'Optimizing trading parameters';
           break;
+          
         case 'zero_loss_enforcer':
-          agent.preventedLosses = (agent.preventedLosses || 0) + (Math.random() < 0.1 ? 1 : 0);
+          agent.intelligence = Math.min(100, agent.intelligence + 0.7);
+          agent.learningProgress = Math.min(100, agent.learningProgress + 1.4);
+          agent.action = 'Learning risk management';
           break;
+          
         case 'genetic_optimizer':
-          agent.generationCount = (agent.generationCount || 0) + (Math.random() < 0.05 ? 1 : 0);
+          agent.intelligence = Math.min(100, agent.intelligence + 0.8);
+          agent.learningProgress = Math.min(100, agent.learningProgress + 1.6);
+          agent.action = 'Evolving trading strategies';
           break;
+          
+        case 'neural_network':
+          agent.intelligence = Math.min(100, agent.intelligence + 0.9);
+          agent.learningProgress = Math.min(100, agent.learningProgress + 1.8);
+          agent.action = 'Training on market data';
+          break;
+          
+        case 'pattern_recognizer':
+          agent.intelligence = Math.min(100, agent.intelligence + 0.7);
+          agent.learningProgress = Math.min(100, agent.learningProgress + 1.4);
+          agent.action = 'Learning chart patterns';
+          break;
+          
+        case 'sentiment_analyzer':
+          agent.intelligence = Math.min(100, agent.intelligence + 0.6);
+          agent.learningProgress = Math.min(100, agent.learningProgress + 1.2);
+          agent.action = 'Analyzing market sentiment';
+          break;
+          
+        case 'volatility_predictor':
+          agent.intelligence = Math.min(100, agent.intelligence + 0.8);
+          agent.learningProgress = Math.min(100, agent.learningProgress + 1.6);
+          agent.action = 'Learning volatility patterns';
+          break;
+          
+        case 'trend_analyzer':
+          agent.intelligence = Math.min(100, agent.intelligence + 0.7);
+          agent.learningProgress = Math.min(100, agent.learningProgress + 1.4);
+          agent.action = 'Learning trend patterns';
+          break;
+          
+        case 'momentum_tracker':
+          agent.intelligence = Math.min(100, agent.intelligence + 0.6);
+          agent.learningProgress = Math.min(100, agent.learningProgress + 1.2);
+          agent.action = 'Learning momentum patterns';
+          break;
+          
+        case 'volume_analyzer':
+          agent.intelligence = Math.min(100, agent.intelligence + 0.5);
+          agent.learningProgress = Math.min(100, agent.learningProgress + 1);
+          agent.action = 'Learning volume patterns';
+          break;
+          
+        case 'order_flow_analyzer':
+          agent.intelligence = Math.min(100, agent.intelligence + 0.8);
+          agent.learningProgress = Math.min(100, agent.learningProgress + 1.6);
+          agent.action = 'Learning order flow patterns';
+          break;
+          
+        case 'market_maker':
+          agent.intelligence = Math.min(100, agent.intelligence + 0.7);
+          agent.learningProgress = Math.min(100, agent.learningProgress + 1.4);
+          agent.action = 'Learning market making strategies';
+          break;
+          
+        case 'arbitrage_detector':
+          agent.intelligence = Math.min(100, agent.intelligence + 0.9);
+          agent.learningProgress = Math.min(100, agent.learningProgress + 1.8);
+          agent.action = 'Learning arbitrage opportunities';
+          break;
+          
+        case 'risk_manager':
+          agent.intelligence = Math.min(100, agent.intelligence + 0.8);
+          agent.learningProgress = Math.min(100, agent.learningProgress + 1.6);
+          agent.action = 'Learning risk management';
+          break;
+          
+        default:
+          agent.intelligence = Math.min(100, agent.intelligence + 0.5);
+          agent.learningProgress = Math.min(100, agent.learningProgress + 1);
+          agent.action = 'Learning general patterns';
       }
-
-      // Improve agent metrics over time
-      agent.intelligence = Math.min(0.99, agent.intelligence + 0.0001);
-      agent.successRate = Math.min(0.99, agent.successRate + 0.0001);
-      agent.accuracy = Math.min(99.9, (agent.accuracy || 90) + (Math.random() * 0.02));
-      agent.efficiency = Math.min(99.9, (agent.efficiency || 85) + (Math.random() * 0.02));
-      agent.confidence = Math.min(99.9, (agent.confidence || 88) + (Math.random() * 0.02));
-
-      // Occasionally increase evolution stage
-      if (Math.random() < 0.001) {
-        agent.evolutionStage = Math.min(10, (agent.evolutionStage || 1) + 1);
-      }
+    } else {
+      agent.state = 'active';
+      
+      // Perform random action based on agent type
+      const actions = {
+        'ghost_trader': ['Simulating trades', 'Analyzing market impact', 'Testing strategies'],
+        'macro_sentinel': ['Monitoring market sentiment', 'Analyzing global trends', 'Tracking correlations'],
+        'memory_node': ['Processing historical data', 'Identifying patterns', 'Learning from past trades'],
+        'quantum_predictor': ['Making quantum predictions', 'Analyzing probability waves', 'Processing quantum data'],
+        'quantum_entanglement': ['Analyzing market correlations', 'Processing quantum states', 'Detecting entanglement'],
+        'spectral_tree': ['Analyzing market structure', 'Processing spectral data', 'Learning patterns'],
+        'hyperdimensional_computing': ['Processing complex patterns', 'Analyzing high-dimensional data', 'Learning correlations'],
+        'annealer': ['Optimizing parameters', 'Finding optimal solutions', 'Processing optimization data'],
+        'zero_loss_enforcer': ['Enforcing zero loss', 'Managing risk', 'Protecting capital'],
+        'genetic_optimizer': ['Evolving strategies', 'Optimizing parameters', 'Learning from performance'],
+        'neural_network': ['Training on market data', 'Processing patterns', 'Learning correlations'],
+        'pattern_recognizer': ['Identifying patterns', 'Learning chart formations', 'Analyzing market structure'],
+        'sentiment_analyzer': ['Analyzing sentiment', 'Processing market mood', 'Learning sentiment patterns'],
+        'volatility_predictor': ['Predicting volatility', 'Learning volatility patterns', 'Analyzing market swings'],
+        'trend_analyzer': ['Analyzing trends', 'Learning trend patterns', 'Processing trend data'],
+        'momentum_tracker': ['Tracking momentum', 'Learning momentum patterns', 'Analyzing price movement'],
+        'volume_analyzer': ['Analyzing volume', 'Learning volume patterns', 'Processing volume data'],
+        'order_flow_analyzer': ['Analyzing order flow', 'Learning order patterns', 'Processing order data'],
+        'market_maker': ['Making markets', 'Learning market making', 'Processing market data'],
+        'arbitrage_detector': ['Detecting arbitrage', 'Learning arbitrage patterns', 'Processing price differences'],
+        'risk_manager': ['Managing risk', 'Learning risk patterns', 'Processing risk data']
+      };
+      
+      const agentActions = actions[agent.type] || ['Processing data', 'Learning patterns', 'Analyzing market'];
+      agent.action = agentActions[Math.floor(Math.random() * agentActions.length)];
+    }
+    
+    // Occasionally increase evolution stage
+    if (agent.learningProgress >= 100 && Math.random() < 0.1) {
+      agent.evolutionStage++;
+      agent.learningProgress = 0;
+      logger.info(`Agent ${agent.id} evolved to stage ${agent.evolutionStage}`);
     }
   });
 }
@@ -697,17 +785,17 @@ function getState() {
  * Get detailed information about all agents
  */
 function getAgents() {
-  // Return agents as an array with additional UI-friendly properties
+  // Return all agents instead of grouping by type
   return Object.values(orchestratorState.agents).map(agent => ({
     ...agent,
-    status: agent.active ? 'active' : 'standby',
     accuracy: agent.accuracy || 90 + Math.random() * 9.9,
     efficiency: agent.efficiency || 85 + Math.random() * 14.9,
     confidence: agent.confidence || 88 + Math.random() * 11.9,
     evolutionStage: agent.evolutionStage || Math.floor(Math.random() * 10) + 1,
     connections: agent.connections || Math.floor(Math.random() * 10) + 5,
     lastAction: agent.lastAction || 'System initialization',
-    lastActionTime: agent.lastActionTime || new Date().toISOString()
+    lastActionTime: agent.lastActionTime || new Date().toISOString(),
+    status: agent.state || (agent.active ? 'active' : 'standby')
   }));
 }
 
@@ -728,6 +816,121 @@ function getAgent(agentId) {
     connections: agent.connections || Math.floor(Math.random() * 10) + 5,
     lastAction: agent.lastAction || 'System initialization',
     lastActionTime: agent.lastActionTime || new Date().toISOString()
+  };
+}
+
+/**
+ * Get predictions from all active agents for a symbol
+ */
+async function getAgentPredictions(symbol, marketData) {
+  const predictions = [];
+  const activeAgents = Object.values(orchestratorState.agents).filter(agent => agent.active);
+
+  // Get predictions from each agent type
+  for (const agent of activeAgents) {
+    try {
+      // Get agent-specific market data
+      const agentMarketData = await getAgentMarketData(agent.type, symbol, marketData);
+      
+      // Get prediction from agent
+      const prediction = await agent.predict(symbol, agentMarketData);
+      
+      if (prediction) {
+        // Calculate confidence based on agent performance
+        const confidence = calculateAgentConfidence(agent, prediction);
+        
+        predictions.push({
+          direction: prediction.direction,
+          confidence: confidence,
+          score: prediction.score,
+          agentType: agent.type,
+          timestamp: Date.now()
+        });
+      }
+    } catch (error) {
+      logger.error(`Error getting prediction from ${agent.type} for ${symbol}: ${error.message}`);
+    }
+  }
+
+  // Combine predictions using weighted voting
+  return combinePredictions(predictions);
+}
+
+/**
+ * Get agent-specific market data
+ */
+async function getAgentMarketData(agentType, symbol, baseMarketData) {
+  // Add agent-specific data processing
+  switch (agentType) {
+    case 'GHOST_TRADER':
+      return {
+        ...baseMarketData,
+        orderBook: await getOrderBookData(symbol),
+        recentTrades: await getRecentTrades(symbol)
+      };
+    case 'MACRO_SENTINEL':
+      return {
+        ...baseMarketData,
+        marketSentiment: await getMarketSentiment(),
+        correlationData: await getCorrelationData(symbol)
+      };
+    case 'QUANTUM_PREDICTOR':
+      return {
+        ...baseMarketData,
+        quantumState: await getQuantumState(symbol),
+        patternData: await getPatternData(symbol)
+      };
+    default:
+      return baseMarketData;
+  }
+}
+
+/**
+ * Calculate agent confidence based on performance
+ */
+function calculateAgentConfidence(agent, prediction) {
+  const baseConfidence = prediction.confidence || 0.5;
+  const performanceFactor = agent.successRate / 100;
+  const intelligenceFactor = agent.intelligence / 100;
+  
+  // Adjust confidence based on agent's historical performance
+  const adjustedConfidence = baseConfidence * performanceFactor * intelligenceFactor;
+  
+  // Apply minimum confidence threshold
+  return Math.max(adjustedConfidence, 0.1);
+}
+
+/**
+ * Combine predictions using weighted voting
+ */
+function combinePredictions(predictions) {
+  if (predictions.length === 0) return null;
+
+  // Calculate weighted scores for each direction
+  const longScore = predictions.reduce((score, pred) => {
+    if (pred.direction === 'long') {
+      return score + (pred.confidence * pred.score);
+    }
+    return score;
+  }, 0);
+
+  const shortScore = predictions.reduce((score, pred) => {
+    if (pred.direction === 'short') {
+      return score + (pred.confidence * pred.score);
+    }
+    return score;
+  }, 0);
+
+  // Determine final direction and confidence
+  const totalScore = longScore + shortScore;
+  const direction = longScore > shortScore ? 'long' : 'short';
+  const confidence = Math.abs(longScore - shortScore) / totalScore;
+
+  return {
+    direction,
+    confidence,
+    score: Math.max(longScore, shortScore) / totalScore,
+    agentCount: predictions.length
   };
 }
 

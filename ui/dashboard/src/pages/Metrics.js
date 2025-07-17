@@ -42,17 +42,33 @@ const Metrics = () => {
   const fetchMetrics = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`${API_URL}/api/metrics`);
+      // Add cache-busting parameter and disable caching
+      const response = await axios.get(`${API_URL}/api/metrics?t=${Date.now()}`, {
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        }
+      });
+      console.log('🔧 Metrics received:', response.data);
+      console.log('🔧 Current Capital:', response.data.currentCapital);
+      console.log('🔧 Win Rate:', response.data.winRate);
+      console.log('🔧 Total Trades:', response.data.totalTrades);
       setMetrics(response.data);
       setLastUpdated(new Date());
       setError(null);
     } catch (error) {
       console.error('Error fetching metrics:', error);
-      setError('Failed to fetch metrics. Please try again.');
+      // Only set error if WebSocket is not connected (to avoid overriding WebSocket data)
+      if (!connected) {
+        setError('Failed to fetch metrics. Trying WebSocket connection...');
+      } else {
+        console.log('🔧 HTTP API failed but WebSocket is connected, using WebSocket data');
+      }
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [connected]);
 
   // Initialize WebSocket connection
   useEffect(() => {
@@ -87,9 +103,13 @@ const Metrics = () => {
     });
 
     newSocket.on('metrics', (data) => {
-      console.log('Received metrics update via WebSocket');
+      console.log('🔧 Received metrics update via WebSocket:', data);
+      console.log('🔧 WebSocket Current Capital:', data.currentCapital);
+      console.log('🔧 WebSocket Win Rate:', data.winRate);
+      console.log('🔧 WebSocket Total Trades:', data.totalTrades);
       setMetrics(data);
       setLastUpdated(new Date());
+      setError(null); // Clear any previous errors since WebSocket is working
     });
 
     // Save socket to state
@@ -132,6 +152,8 @@ const Metrics = () => {
 
   // Handle manual refresh
   const handleRefresh = () => {
+    console.log('🔧 Manual refresh triggered');
+    setMetrics(null); // Clear current data to force re-render
     fetchMetrics();
   };
 
@@ -164,7 +186,7 @@ const Metrics = () => {
     <Box sx={{ p: 3 }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
         <Typography variant="h4" sx={{ fontWeight: 'bold', color: theme.palette.primary.main }}>
-          OMNI-ALPHA System Metrics
+          Nija DiIa System Metrics
         </Typography>
 
         <Box sx={{ display: 'flex', alignItems: 'center' }}>

@@ -118,3 +118,74 @@ Desktop.ini
 # Rust
 /target/
 **/*.rs.bk
+
+# OMNI Project Specific Exclusions
+# ================================
+
+# Exclude videos folder (as per user requirements)
+data/videos/
+videos/
+
+# Exclude sensitive configuration files
+Webmcps.txt
+*.env
+*.env.*
+demo.env
+testnet.env
+
+# Exclude conversation and PRD files (as per user requirements)
+conversation.txt
+*conversation*.txt
+*prd*.txt
+autoapplierprd.txt
+
+# Exclude temporary files
+temp/
+tmp/
+*.tmp
+
+# Exclude PM2 logs and runtime files
+logs/
+*.log
+.pm2/
+pm2.log
+ecosystem.config.js.backup
+
+# Exclude build artifacts
+ui/dashboard/build/
+ui/dashboard-backend/dist/
+standalone_bybit_test/target/
+
+# Exclude cache directories
+.cache/
+.next/
+.nuxt/
+
+# Exclude database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Exclude backup files
+*.backup
+*.bak
+*~
+
+# Keep important files (override exclusions)
+!README.md
+!LICENSE
+!package.json
+!Cargo.toml
+!ecosystem.config.js
+!start-omni.sh
+!omni-nginx*.conf
+
+# Keep logo files (as per user requirements)
+!logos/
+!logos/*.jpeg
+!logos/*.png
+!logos/*.jpg
+
+# Keep essential documentation
+!docs/
+!*.md

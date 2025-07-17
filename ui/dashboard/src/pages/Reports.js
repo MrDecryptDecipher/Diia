@@ -21,8 +21,26 @@ const Reports = () => {
 
   return (
     <Box sx={{ p: 3 }}>
-      <Typography variant="h4" sx={{ mb: 3, fontWeight: 'bold', color: theme.palette.primary.main }}>
-        Reports
+      <Typography
+        variant="h4"
+        sx={{
+          mb: 1,
+          fontFamily: 'Orbitron, sans-serif',
+          fontWeight: 700,
+        }}
+        className="glow-text"
+      >
+        Nija DiIA Reports
+      </Typography>
+      <Typography
+        variant="subtitle1"
+        sx={{
+          mb: 3,
+          fontFamily: 'Rajdhani, sans-serif',
+          color: theme.palette.text.secondary,
+        }}
+      >
+        Comprehensive trading system performance analysis and reporting
       </Typography>
       
       <Paper 

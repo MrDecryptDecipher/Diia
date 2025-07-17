@@ -51,7 +51,7 @@ const StrategyPerformance = ({ performance, isLoading = false }) => {
           Running Backtest...
         </Typography>
         <Box sx={{ width: '80%', mb: 2 }}>
-          <LinearProgress color="primary" />
+          <LinearProgress variant="indeterminate" color="primary" />
         </Box>
         <Typography variant="body2" color="text.secondary">
           Analyzing strategy performance with quantum computing...

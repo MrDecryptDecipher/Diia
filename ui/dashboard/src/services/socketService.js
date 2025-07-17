@@ -2,7 +2,8 @@ import { io } from 'socket.io-client';
 
 // Initialize socket connection
 export const initializeSocket = () => {
-  const SOCKET_URL = process.env.REACT_APP_WEBSOCKET_URL || 'http://3.111.22.56:10002';
+  const SOCKET_URL = process.env.REACT_APP_WEBSOCKET_URL || 'http://3.111.22.56:10003';
+  console.log('[Socket] Initializing connection to:', SOCKET_URL);
 
   try {
     const socket = io(SOCKET_URL, {
@@ -24,23 +25,33 @@ export const initializeSocket = () => {
 
     // Add connection error handling
     socket.on('connect_error', (error) => {
-      console.warn(`[Socket] Connection error: ${error.message}`);
+      console.error('[Socket] Connection error:', error.message);
+      console.error('[Socket] Error details:', error);
     });
 
     socket.on('connect_timeout', () => {
-      console.warn('[Socket] Connection timeout');
+      console.error('[Socket] Connection timeout');
     });
 
     socket.on('reconnect_attempt', (attemptNumber) => {
-      console.log(`[Socket] Reconnection attempt ${attemptNumber}`);
+      console.log('[Socket] Reconnection attempt', attemptNumber);
     });
 
     socket.on('reconnect_error', (error) => {
-      console.warn(`[Socket] Reconnection error: ${error.message}`);
+      console.error('[Socket] Reconnection error:', error.message);
+      console.error('[Socket] Error details:', error);
     });
 
     socket.on('reconnect_failed', () => {
       console.error('[Socket] Failed to reconnect');
+    });
+
+    socket.on('connect', () => {
+      console.log('[Socket] Connected successfully');
+    });
+
+    socket.on('disconnect', (reason) => {
+      console.log('[Socket] Disconnected:', reason);
     });
 
     // Log socket events in development

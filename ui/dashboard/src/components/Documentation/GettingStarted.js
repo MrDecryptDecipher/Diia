@@ -27,10 +27,10 @@ const GettingStarted = () => {
     <Box>
       {/* Introduction */}
       <Typography variant="h5" sx={{ mb: 2, fontWeight: 600 }}>
-        Welcome to OMNI-ALPHA
+        Welcome to Nija DilA
       </Typography>
       <Typography variant="body1" sx={{ mb: 3 }}>
-        OMNI-ALPHA is a cutting-edge trading system that leverages quantum-inspired algorithms, 
+        Nija DilA is a cutting-edge trading system that leverages quantum-inspired algorithms, 
         neural networks, and advanced analytics to provide optimal trading strategies. This guide 
         will help you get started with the system and understand its core features.
       </Typography>
@@ -48,7 +48,7 @@ const GettingStarted = () => {
           System Overview
         </Typography>
         <Typography variant="body1" sx={{ mb: 2 }}>
-          OMNI-ALPHA consists of several interconnected components:
+          Nija DilA consists of several interconnected components:
         </Typography>
         <List>
           <ListItem>
@@ -208,7 +208,7 @@ const GettingStarted = () => {
             <PlayArrow color="error" />
           </ListItemIcon>
           <ListItemText 
-            primary="Getting Started with OMNI-ALPHA" 
+            primary="Getting Started with Nija DiIa"
             secondary="A comprehensive introduction to the system (10:23)" 
           />
         </ListItem>
@@ -264,7 +264,7 @@ const GettingStarted = () => {
           </ListItemIcon>
           <ListItemText 
             primary="API Documentation" 
-            secondary="Integrate OMNI-ALPHA with your existing systems" 
+            secondary="Integrate Nija DilA with your existing systems" 
           />
         </ListItem>
       </List>

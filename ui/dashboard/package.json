@@ -40,6 +40,7 @@
     "uuid": "^9.0.0",
     "web-vitals": "^4.2.4"
   },
+  "proxy": "http://localhost:10002",
   "scripts": {
     "start": "PORT=10001 react-scripts start",
     "build": "react-scripts build",

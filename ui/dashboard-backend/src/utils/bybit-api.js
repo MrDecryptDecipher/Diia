@@ -236,6 +236,7 @@ async function getOrderHistory(limit = 50) {
 async function getTradeHistory(limit = 50) {
   return get('/v5/execution/list', {
     category: 'linear',
+    settleCoin: 'USDT',
     limit
   });
 }

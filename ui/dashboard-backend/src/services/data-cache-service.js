@@ -5,27 +5,7 @@
  * and ensure stable data for the dashboard.
  */
 
-const winston = require('winston');
-
-// Create logger
-const logger = winston.createLogger({
-  level: 'info',
-  format: winston.format.combine(
-    winston.format.timestamp(),
-    winston.format.json()
-  ),
-  defaultMeta: { service: 'data-cache-service' },
-  transports: [
-    new winston.transports.Console({
-      format: winston.format.combine(
-        winston.format.colorize(),
-        winston.format.simple()
-      )
-    }),
-    new winston.transports.File({ filename: 'logs/cache-error.log', level: 'error' }),
-    new winston.transports.File({ filename: 'logs/cache.log' })
-  ]
-});
+const logger = require('../utils/logger');
 
 // Cache storage
 const cache = new Map();

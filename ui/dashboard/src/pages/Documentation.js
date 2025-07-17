@@ -83,7 +83,7 @@ const Documentation = () => {
                 color: theme.palette.text.secondary,
               }}
             >
-              Comprehensive guides and references for the OMNI-ALPHA system
+              Comprehensive guides and references for the Nija DilA system
             </Typography>
           </Box>
         </motion.div>

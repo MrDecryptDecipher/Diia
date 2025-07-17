@@ -15,6 +15,7 @@ use chrono::Utc;
 use super::types::*;
 
 /// Bybit adapter
+#[derive(Clone)]
 pub struct BybitAdapter {
     /// API key
     api_key: String,
@@ -50,7 +51,7 @@ impl BybitAdapter {
         }
     }
 
-    /// Generate signature
+    /// Generate signature for GET requests
     fn generate_signature(&self, timestamp: u64, params: &HashMap<String, String>) -> String {
         // Sort parameters
         let mut sorted_params: Vec<(String, String)> = params.iter()
@@ -61,12 +62,34 @@ impl BybitAdapter {
 
         // Create parameter string
         let param_str = sorted_params.iter()
-            .map(|(k, v)| format!("{}{}", k, v))
+            .map(|(k, v)| format!("{}={}", k, v))
             .collect::<Vec<String>>()
-            .join("");
+            .join("&");
 
-        // Create signature string
-        let signature_str = format!("{}{}{}", timestamp, self.api_key, param_str);
+        // Create signature string for V5 API: timestamp + api_key + recv_window + param_string
+        let recv_window = "5000";
+        let signature_str = format!("{}{}{}{}", timestamp, self.api_key, recv_window, param_str);
+
+        // Create HMAC-SHA256 signature
+        let mut mac = Hmac::<Sha256>::new_from_slice(self.api_secret.as_bytes())
+            .expect("HMAC can take key of any size");
+
+        mac.update(signature_str.as_bytes());
+
+        // Convert to hex string
+        let result = mac.finalize();
+        let bytes = result.into_bytes();
+
+        bytes.iter()
+            .map(|b| format!("{:02x}", b))
+            .collect::<String>()
+    }
+
+    /// Generate signature for POST requests with JSON body
+    fn generate_signature_post(&self, timestamp: u64, json_body: &str) -> String {
+        // Create signature string for V5 API POST: timestamp + api_key + recv_window + json_body
+        let recv_window = "5000";
+        let signature_str = format!("{}{}{}{}", timestamp, self.api_key, recv_window, json_body);
 
         // Create HMAC-SHA256 signature
         let mut mac = Hmac::<Sha256>::new_from_slice(self.api_secret.as_bytes())
@@ -150,7 +173,7 @@ impl BybitAdapter {
             .query(&params)
             .send()
             .await?
-            .json::<BybitResponse<serde_json::Value>>()
+            .json::<BybitResponse<BybitTickerListResponse>>()
             .await?;
 
         if response.ret_code != 0 {
@@ -158,32 +181,12 @@ impl BybitAdapter {
         }
 
         let result = response.result.ok_or_else(|| anyhow::anyhow!("No result"))?;
-        let list = result["list"].as_array().ok_or_else(|| anyhow::anyhow!("No list"))?;
 
-        if list.is_empty() {
+        if result.list.is_empty() {
             return Err(anyhow::anyhow!("No ticker data"));
         }
 
-        let mut tickers = Vec::new();
-
-        for item in list {
-            let ticker = BybitTicker {
-                symbol: item["symbol"].as_str().unwrap_or("").to_string(),
-                last_price: item["lastPrice"].as_str().unwrap_or("0").parse::<f64>().unwrap_or(0.0),
-                index_price: item["indexPrice"].as_str().unwrap_or("0").parse::<f64>().unwrap_or(0.0),
-                mark_price: item["markPrice"].as_str().unwrap_or("0").parse::<f64>().unwrap_or(0.0),
-                prev_price_24h: item["prevPrice24h"].as_str().unwrap_or("0").parse::<f64>().unwrap_or(0.0),
-                price_24h_pcnt: item["price24hPcnt"].as_str().unwrap_or("0").parse::<f64>().unwrap_or(0.0),
-                high_price_24h: item["highPrice24h"].as_str().unwrap_or("0").parse::<f64>().unwrap_or(0.0),
-                low_price_24h: item["lowPrice24h"].as_str().unwrap_or("0").parse::<f64>().unwrap_or(0.0),
-                volume_24h: item["volume24h"].as_str().unwrap_or("0").parse::<f64>().unwrap_or(0.0),
-                turnover_24h: item["turnover24h"].as_str().unwrap_or("0").parse::<f64>().unwrap_or(0.0),
-            };
-
-            tickers.push(ticker);
-        }
-
-        Ok(tickers)
+        Ok(result.list)
     }
 
     /// Get orderbook
@@ -355,7 +358,10 @@ impl BybitAdapter {
         }
 
         let timestamp = self.get_timestamp();
-        let signature = self.generate_signature(timestamp, &params);
+
+        // Convert params to JSON for signature
+        let json_body = serde_json::to_string(&params)?;
+        let signature = self.generate_signature_post(timestamp, &json_body);
 
         let response = self.client.post(&url)
             .json(&params)
@@ -806,7 +812,10 @@ impl BybitAdapter {
         });
 
         let timestamp = self.get_timestamp();
-        let signature = self.generate_signature(timestamp, &params);
+
+        // Convert JSON to string for signature
+        let json_body = serde_json::to_string(&params_json)?;
+        let signature = self.generate_signature_post(timestamp, &json_body);
 
         let response = self.client.post(&url)
             .json(&params_json)
@@ -890,6 +899,45 @@ impl BybitAdapter {
         })
     }
 
+    /// Get instruments with pagination support
+    pub async fn get_instruments_paginated(
+        &self,
+        category: &str,
+        cursor: Option<&str>,
+        limit: usize
+    ) -> Result<BybitInstrumentInfoPaginated> {
+        let url = format!("{}/v5/market/instruments-info", self.base_url);
+
+        let mut params = vec![
+            ("category", category.to_string()),
+            ("limit", limit.to_string()),
+        ];
+
+        if let Some(cursor_val) = cursor {
+            params.push(("cursor", cursor_val.to_string()));
+        }
+
+        let response = self.client.get(&url)
+            .query(&params)
+            .send()
+            .await?
+            .json::<BybitResponse<serde_json::Value>>()
+            .await?;
+
+        if response.ret_code != 0 {
+            return Err(anyhow::anyhow!("Bybit API error: {}", response.ret_msg));
+        }
+
+        let result = response.result.ok_or_else(|| anyhow::anyhow!("No result"))?;
+        let list = result["list"].as_array().ok_or_else(|| anyhow::anyhow!("No list"))?;
+        let next_page_cursor = result["nextPageCursor"].as_str().unwrap_or("").to_string();
+
+        Ok(BybitInstrumentInfoPaginated {
+            list: list.clone(),
+            next_page_cursor,
+        })
+    }
+
     /// Get funding rate
     pub async fn get_funding_rate(&self, symbol: &str) -> Result<BybitFundingRate> {
         let url = format!("{}/v5/market/funding/history", self.base_url);
@@ -940,7 +988,10 @@ impl BybitAdapter {
         params.insert("sellLeverage".to_string(), leverage.to_string());
 
         let timestamp = self.get_timestamp();
-        let signature = self.generate_signature(timestamp, &params);
+
+        // Convert params to JSON for signature
+        let json_body = serde_json::to_string(&params)?;
+        let signature = self.generate_signature_post(timestamp, &json_body);
 
         let response = self.client.post(&url)
             .json(&params)

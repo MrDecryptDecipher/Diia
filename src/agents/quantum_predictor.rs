@@ -239,8 +239,9 @@ impl QuantumPredictor {
             // Collapse superposition based on fractal dimension
             let collapse_weight = (fractal_dim - 1.0) / 1.0; // Normalize to 0-1
             let collapse_index = (collapse_weight * (superposition_states.len() - 1) as f64).round() as usize;
+            let safe_index = collapse_index.min(superposition_states.len() - 1);
 
-            predicted_price = superposition_states[collapse_index];
+            predicted_price = superposition_states[safe_index];
             confidence = quantum_state.superposition_probability * (1.0 - entropy);
         } else {
             // Classical prediction mode

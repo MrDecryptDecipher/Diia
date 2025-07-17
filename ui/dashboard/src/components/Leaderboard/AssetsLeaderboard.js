@@ -47,6 +47,7 @@ const AssetsLeaderboard = ({ assets = [] }) => {
               <TableCell sx={{ color: 'text.secondary', fontWeight: 600 }}>Price</TableCell>
               <TableCell sx={{ color: 'text.secondary', fontWeight: 600 }}>24h Change</TableCell>
               <TableCell sx={{ color: 'text.secondary', fontWeight: 600 }}>Volume</TableCell>
+              <TableCell sx={{ color: 'text.secondary', fontWeight: 600 }}>System Trades</TableCell>
               <TableCell sx={{ color: 'text.secondary', fontWeight: 600 }}>Opportunity</TableCell>
               <TableCell sx={{ color: 'text.secondary', fontWeight: 600 }}>Status</TableCell>
             </TableRow>
@@ -54,7 +55,7 @@ const AssetsLeaderboard = ({ assets = [] }) => {
           <TableBody>
             {sortedAssets.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={8} align="center" sx={{ py: 3 }}>
+                <TableCell colSpan={9} align="center" sx={{ py: 3 }}>
                   <Typography variant="body2" sx={{ color: 'text.secondary' }}>
                     No assets found
                   </Typography>
@@ -135,6 +136,22 @@ const AssetsLeaderboard = ({ assets = [] }) => {
                   </TableCell>
                   <TableCell>
                     <Box sx={{ display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          fontWeight: 600,
+                          color: asset.systemTrades > 0 ? theme.palette.success.main : theme.palette.text.secondary,
+                        }}
+                      >
+                        {asset.systemTrades || 0}
+                      </Typography>
+                      <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                        trades
+                      </Typography>
+                    </Box>
+                  </TableCell>
+                  <TableCell>
+                    <Box sx={{ display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
                       <Box sx={{ width: '100%', mb: 1 }}>
                         <LinearProgress
                           variant="determinate"
@@ -159,7 +176,7 @@ const AssetsLeaderboard = ({ assets = [] }) => {
                             color: getOpportunityColor(asset.opportunityScore),
                           }}
                         >
-                          {asset.opportunityScore}/100
+                          {asset.opportunityScore.toFixed(1)}/100
                         </Typography>
                       </Box>
                     </Box>

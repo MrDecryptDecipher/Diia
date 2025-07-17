@@ -1,0 +1,72 @@
+[package]
+name = "standalone_bybit_test"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "find_suitable_assets"
+path = "find_suitable_assets.rs"
+
+[[bin]]
+name = "smart_trading_system"
+path = "smart_trading_system.rs"
+
+[[bin]]
+name = "position_monitor"
+path = "position_monitor.rs"
+
+[[bin]]
+name = "omni_alpha_complete_system"
+path = "omni_alpha_complete_system.rs"
+
+[[bin]]
+name = "omni_alpha_super_advanced_system"
+path = "omni_alpha_super_advanced_system.rs"
+
+[[bin]]
+name = "omni_alpha_realtime_market_scanner"
+path = "omni_alpha_realtime_market_scanner.rs"
+
+[[bin]]
+name = "omni_alpha_real_comprehensive_system"
+path = "omni_alpha_real_comprehensive_system.rs"
+
+[[bin]]
+name = "omni_alpha_true_integration"
+path = "omni_alpha_true_integration.rs"
+
+[[bin]]
+name = "omni_alpha_true_analysis"
+path = "omni_alpha_true_analysis.rs"
+
+[[bin]]
+name = "omni_alpha_ultimate_profit_system"
+path = "omni_alpha_ultimate_profit_system.rs"
+
+[[bin]]
+name = "omni_alpha_real_omni_system"
+path = "omni_alpha_real_omni_system.rs"
+
+[[bin]]
+name = "omni_alpha_final_realistic_system"
+path = "omni_alpha_final_realistic_system.rs"
+
+[dependencies]
+tokio = { version = "1.0", features = ["full"] }
+reqwest = { version = "0.11", features = ["json"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+anyhow = "1.0"
+chrono = { version = "0.4", features = ["serde"] }
+hmac = "0.12"
+sha2 = "0.10"
+hex = "0.4"
+dotenv = "0.15"
+rand = "0.8"
+rand_distr = "0.4"
+futures = "0.3"
+omni = { path = "../", optional = true }
+tracing = "0.1"
+tracing-subscriber = "0.3"
+async-trait = "0.1"
+uuid = { version = "1.0", features = ["v4"] }

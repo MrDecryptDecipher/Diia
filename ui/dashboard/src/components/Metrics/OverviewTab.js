@@ -14,17 +14,28 @@ import BoltIcon from '@mui/icons-material/Bolt';
 
 const OverviewTab = ({ metrics, performance }) => {
   const theme = useTheme();
-  
+
+  // Handle null/undefined metrics
+  if (!metrics) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '400px' }}>
+        <Typography variant="h6" color="text.secondary">
+          Loading metrics data...
+        </Typography>
+      </Box>
+    );
+  }
+
   // Generate performance chart data
   const performanceData = Array.from({ length: 30 }, (_, i) => ({
     date: new Date(Date.now() - (29 - i) * 86400000).toISOString().split('T')[0],
-    capital: metrics.initialCapital * (1 + i / 10 + Math.random() * 0.1)
+    capital: (metrics.initialCapital || 12) * (1 + i / 10 + Math.random() * 0.1)
   }));
-  
+
   // Generate win rate data
   const winRateData = [
-    { name: 'Winning', value: metrics.winningTrades },
-    { name: 'Losing', value: metrics.losingTrades }
+    { name: 'Winning', value: metrics.winningTrades || 0 },
+    { name: 'Losing', value: metrics.losingTrades || 0 }
   ];
   
   return (
@@ -38,40 +49,40 @@ const OverviewTab = ({ metrics, performance }) => {
         <Grid item xs={12} sm={6} md={3}>
           <MetricCard
             title="Current Capital"
-            value={metrics.currentCapital}
+            value={metrics.currentCapital || 0}
             unit="USDT"
-            trend={metrics.pnlPercentage > 0 ? 'up' : metrics.pnlPercentage < 0 ? 'down' : 'flat'}
+            trend={(metrics.pnlPercentage || 0) > 0 ? 'up' : (metrics.pnlPercentage || 0) < 0 ? 'down' : 'flat'}
             color={theme.palette.primary.main}
             icon={AttachMoneyIcon}
           />
         </Grid>
-        
+
         <Grid item xs={12} sm={6} md={3}>
           <MetricCard
             title="Profit & Loss"
-            value={metrics.pnlPercentage}
+            value={metrics.pnlPercentage || 0}
             unit="%"
-            trend={metrics.pnlPercentage > 0 ? 'up' : metrics.pnlPercentage < 0 ? 'down' : 'flat'}
-            color={metrics.pnlPercentage >= 0 ? theme.palette.success.main : theme.palette.error.main}
+            trend={(metrics.pnlPercentage || 0) > 0 ? 'up' : (metrics.pnlPercentage || 0) < 0 ? 'down' : 'flat'}
+            color={(metrics.pnlPercentage || 0) >= 0 ? theme.palette.success.main : theme.palette.error.main}
             icon={ShowChartIcon}
           />
         </Grid>
-        
+
         <Grid item xs={12} sm={6} md={3}>
           <MetricCard
             title="Win Rate"
-            value={metrics.winRate}
+            value={metrics.winRate || 0}
             unit="%"
-            trend={metrics.winRate > 50 ? 'up' : metrics.winRate < 50 ? 'down' : 'flat'}
+            trend={(metrics.winRate || 0) > 50 ? 'up' : (metrics.winRate || 0) < 50 ? 'down' : 'flat'}
             color={theme.palette.info.main}
             icon={PercentIcon}
           />
         </Grid>
-        
+
         <Grid item xs={12} sm={6} md={3}>
           <MetricCard
             title="Total Trades"
-            value={metrics.totalTrades}
+            value={metrics.totalTrades || 0}
             trend="up"
             color={theme.palette.secondary.main}
             icon={BarChartIcon}
@@ -97,7 +108,7 @@ const OverviewTab = ({ metrics, performance }) => {
         <Grid item xs={12} md={4}>
           <MetricProgress
             title="System Efficiency"
-            value={metrics.systemEfficiency}
+            value={metrics.systemEfficiency || 0}
             maxValue={100}
             type="circular"
             color={theme.palette.success.main}
@@ -105,32 +116,32 @@ const OverviewTab = ({ metrics, performance }) => {
             size="large"
           />
         </Grid>
-        
+
         {/* Advanced metrics */}
         <Grid item xs={12} sm={6} md={4}>
           <MetricProgress
             title="Quantum Prediction Accuracy"
-            value={metrics.quantumPredictionAccuracy}
+            value={metrics.quantumPredictionAccuracy || 0}
             maxValue={100}
             color={theme.palette.info.main}
             description="Accuracy of quantum-based predictions"
           />
         </Grid>
-        
+
         <Grid item xs={12} sm={6} md={4}>
           <MetricProgress
             title="Hyperdimensional Pattern Accuracy"
-            value={metrics.hyperdimensionalPatternAccuracy}
+            value={metrics.hyperdimensionalPatternAccuracy || 0}
             maxValue={100}
             color={theme.palette.secondary.main}
             description="Accuracy of hyperdimensional pattern recognition"
           />
         </Grid>
-        
+
         <Grid item xs={12} sm={6} md={4}>
           <MetricProgress
             title="Zero Loss Enforcement Efficiency"
-            value={metrics.zeroLossEnforcementEfficiency}
+            value={metrics.zeroLossEnforcementEfficiency || 0}
             maxValue={100}
             color={theme.palette.success.dark}
             description="Efficiency of the zero loss enforcement system"
@@ -141,18 +152,18 @@ const OverviewTab = ({ metrics, performance }) => {
         <Grid item xs={12} sm={6} md={4}>
           <MetricCard
             title="Sharpe Ratio"
-            value={metrics.sharpeRatio}
-            trend={metrics.sharpeRatio > 1 ? 'up' : 'flat'}
+            value={metrics.sharpeRatio || 0}
+            trend={(metrics.sharpeRatio || 0) > 1 ? 'up' : 'flat'}
             color={theme.palette.warning.main}
             icon={SpeedIcon}
             description="Risk-adjusted return measure"
           />
         </Grid>
-        
+
         <Grid item xs={12} sm={6} md={4}>
           <MetricCard
             title="Max Drawdown"
-            value={metrics.maxDrawdown}
+            value={metrics.maxDrawdown || 0}
             unit="%"
             trend="down"
             color={theme.palette.error.main}
@@ -160,11 +171,11 @@ const OverviewTab = ({ metrics, performance }) => {
             description="Maximum observed loss from a peak to a trough"
           />
         </Grid>
-        
+
         <Grid item xs={12} sm={6} md={4}>
           <MetricCard
             title="God Kernel Evolution Stage"
-            value={metrics.godKernelEvolutionStage}
+            value={metrics.godKernelEvolutionStage || 0}
             unit="/10"
             trend="up"
             color={theme.palette.info.dark}

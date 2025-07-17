@@ -42,6 +42,35 @@ pub mod position;
 // Backtesting framework
 pub mod backtest;
 
+// Capital management
+pub mod capital;
+
+// Monitoring and performance
+pub mod monitoring;
+
+// Deployment and production management
+pub mod deployment;
+
+// Testing framework
+pub mod tests;
+
+// Performance optimization
+pub mod performance;
+
+// Trade execution
+pub mod execution;
+
+// Bybit integration
+pub mod bybit;
+
+// Market data
+pub mod market_data;
+
+// Re-export adapters for backwards compatibility
+pub mod adapters {
+    pub use crate::exchange::bybit::adapter::BybitAdapter;
+}
+
 /// Re-export modules
 pub mod prelude {
     // Engine components
@@ -71,6 +100,7 @@ pub mod prelude {
     pub use crate::agents::trade_executor::TradeExecutor;
     pub use crate::agents::zero_loss_enforcer::ZeroLossEnforcer;
     pub use crate::agents::quantum_predictor::QuantumPredictor as QuantumPredictorAgent;
+    pub use crate::agents::main_strategy_controller::{MainStrategyController, MainStrategyControllerConfig, TradingCommand, CommandType, ExecutionResponse};
     // HyperdimensionalPatternRecognizer already imported above
 
     // Recursive intelligence components
@@ -97,6 +127,9 @@ pub mod prelude {
 
     // Backtesting components
     pub use crate::backtest::backtest_engine::{BacktestEngine, BacktestConfig, BacktestResult, BacktestTrade};
+
+    // Capital management components
+    pub use crate::capital::{PreciseCapitalTracker, CapitalAllocation};
 }
 
 /// Initialize the OMNI-ALPHA system

@@ -16,7 +16,7 @@ module.exports = {
       args: 'start',
       env: {
         PORT: 10001,
-        NODE_ENV: 'production',
+        NODE_ENV: 'development',
         REACT_APP_API_URL: 'http://3.111.22.56:10002',
         REACT_APP_WEBSOCKET_URL: 'http://3.111.22.56:10003',
         REACT_APP_GRPC_URL: 'http://3.111.22.56:10004',

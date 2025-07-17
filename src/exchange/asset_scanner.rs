@@ -127,7 +127,7 @@ impl AssetScanner {
     }
 
     /// Scan all assets
-    pub async fn scan_all_assets(&self) -> Result<Vec<TradingOpportunity>> {
+    pub async fn scan_all_assets(&mut self) -> Result<Vec<TradingOpportunity>> {
         debug!("Scanning all assets...");
 
         // Get all instruments
@@ -171,14 +171,14 @@ impl AssetScanner {
     }
 
     /// Analyze asset
-    async fn analyze_asset(&self, symbol: &str, klines: &[BybitKline]) -> Result<Option<TradingOpportunity>> {
+    async fn analyze_asset(&mut self, symbol: &str, klines: &[BybitKline]) -> Result<Option<TradingOpportunity>> {
         if klines.len() < 30 {
             return Ok(None);
         }
 
         // Convert to candles
-        let candles: Vec<ExchangeCandle> = klines.iter().map(|k| {
-            ExchangeCandle {
+        let candles: Vec<Candle> = klines.iter().map(|k| {
+            Candle {
                 timestamp: chrono::DateTime::from_timestamp(k.start_time, 0).unwrap_or_else(|| Utc::now()),
                 open: k.open,
                 high: k.high,
@@ -192,7 +192,7 @@ impl AssetScanner {
         // Convert to strategy candles for quantum predictor
         let simple_candles: Vec<crate::strategy::simple_strategy::Candle> = candles.iter().map(|k| {
             crate::strategy::simple_strategy::Candle {
-                timestamp: k.timestamp,
+                open_time: k.timestamp.timestamp(),
                 open: k.open,
                 high: k.high,
                 low: k.low,

@@ -17,6 +17,8 @@ import {
   ShowChart as ShowChartIcon,
   People as PeopleIcon,
   Insights as InsightsIcon,
+  Share as SocialIcon,
+  AutoAwesome as GeminiIcon,
   Leaderboard as LeaderboardIcon,
   BarChart as BarChartIcon,
   Science as ScienceIcon,
@@ -45,6 +47,8 @@ const Sidebar = ({ open, onClose }) => {
     { text: 'Trades', icon: <ShowChartIcon />, path: '/trades' },
     { text: 'Agents', icon: <PeopleIcon />, path: '/agents' },
     { text: 'Assets', icon: <InsightsIcon />, path: '/assets' },
+    { text: 'Social Media Insights', icon: <SocialIcon />, path: '/social-insights' },
+    { text: 'Gemini Intelligence', icon: <GeminiIcon />, path: '/gemini-intelligence' },
     { text: 'Leaderboard', icon: <LeaderboardIcon />, path: '/leaderboard' },
     { text: 'Metrics', icon: <BarChartIcon />, path: '/metrics' },
     { text: 'Quantum Analytics', icon: <ScienceIcon />, path: '/quantum' },
@@ -200,7 +204,7 @@ const Sidebar = ({ open, onClose }) => {
           }}
         >
           <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-            OMNI-ALPHA VΩ∞∞ v1.0.0
+            Nija DiIa v1.0.0
           </Typography>
         </Box>
       </Box>

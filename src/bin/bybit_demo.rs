@@ -15,7 +15,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     // Create Bybit adapter with demo API credentials
     let api_key = "lCMnwPKIzXASNWn6UE";
     let api_secret = "aXjs1SF9tmW3riHMktmjtyOyAT85puvrVstr";
-    let adapter = BybitAdapter::new(api_key, api_secret, false); // false = use demo API
+    let adapter = BybitAdapter::new(api_key, api_secret, true); // true = use demo API
     
     // Get wallet balance
     println!("\nChecking wallet balance...");

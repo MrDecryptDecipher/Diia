@@ -13,14 +13,16 @@ import {
   useTheme,
   alpha,
 } from '@mui/material';
-import { 
-  TrendingUp, 
+import {
+  TrendingUp,
   TrendingDown,
   Timeline,
   ShowChart,
   BarChart,
   Insights,
   Psychology,
+  Security,
+  Star,
 } from '@mui/icons-material';
 import { formatPercentage, formatCurrency } from '../../utils/formatters';
 
@@ -32,7 +34,29 @@ const StrategiesLeaderboard = ({ strategies = [] }) => {
   
   // Get strategy icon based on type
   const getStrategyIcon = (type) => {
-    switch (type.toLowerCase()) {
+    const typeStr = type.toLowerCase();
+
+    if (typeStr.includes('quantum')) {
+      return <Insights fontSize="small" />;
+    }
+    if (typeStr.includes('neural') || typeStr.includes('network')) {
+      return <Psychology fontSize="small" />;
+    }
+    if (typeStr.includes('pattern') || typeStr.includes('candlestick')) {
+      return <BarChart fontSize="small" />;
+    }
+    if (typeStr.includes('sentiment') || typeStr.includes('volume')) {
+      return <ShowChart fontSize="small" />;
+    }
+    if (typeStr.includes('fibonacci') || typeStr.includes('technical')) {
+      return <Timeline fontSize="small" />;
+    }
+    if (typeStr.includes('risk') || typeStr.includes('ghost')) {
+      return <Security fontSize="small" />;
+    }
+
+    // Legacy types
+    switch (typeStr) {
       case 'trend':
         return <Timeline fontSize="small" />;
       case 'momentum':
@@ -66,6 +90,8 @@ const StrategiesLeaderboard = ({ strategies = [] }) => {
               <TableCell sx={{ color: 'text.secondary', fontWeight: 600 }}>Performance</TableCell>
               <TableCell sx={{ color: 'text.secondary', fontWeight: 600 }}>Win Rate</TableCell>
               <TableCell sx={{ color: 'text.secondary', fontWeight: 600 }}>Avg. Profit</TableCell>
+              <TableCell sx={{ color: 'text.secondary', fontWeight: 600 }}>Accuracy</TableCell>
+              <TableCell sx={{ color: 'text.secondary', fontWeight: 600 }}>Risk Score</TableCell>
               <TableCell sx={{ color: 'text.secondary', fontWeight: 600 }}>Trades</TableCell>
               <TableCell sx={{ color: 'text.secondary', fontWeight: 600 }}>Agents</TableCell>
             </TableRow>
@@ -73,7 +99,7 @@ const StrategiesLeaderboard = ({ strategies = [] }) => {
           <TableBody>
             {sortedStrategies.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={8} align="center" sx={{ py: 3 }}>
+                <TableCell colSpan={10} align="center" sx={{ py: 3 }}>
                   <Typography variant="body2" sx={{ color: 'text.secondary' }}>
                     No strategies found
                   </Typography>
@@ -176,6 +202,35 @@ const StrategiesLeaderboard = ({ strategies = [] }) => {
                       {strategy.avgProfit >= 0 ? '+' : ''}
                       {formatCurrency(strategy.avgProfit)}
                     </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                      <Star sx={{ color: theme.palette.warning.main, fontSize: 16, mr: 0.5 }} />
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          fontWeight: 600,
+                          color: strategy.accuracy >= 90 ? theme.palette.success.main :
+                                 strategy.accuracy >= 80 ? theme.palette.info.main : theme.palette.warning.main,
+                        }}
+                      >
+                        {strategy.accuracy ? `${strategy.accuracy.toFixed(1)}%` : 'N/A'}
+                      </Typography>
+                    </Box>
+                  </TableCell>
+                  <TableCell>
+                    <Chip
+                      label={strategy.riskScore ? `${strategy.riskScore}/100` : 'N/A'}
+                      size="small"
+                      sx={{
+                        backgroundColor: strategy.riskScore <= 20 ? alpha(theme.palette.success.main, 0.1) :
+                                        strategy.riskScore <= 40 ? alpha(theme.palette.warning.main, 0.1) :
+                                        alpha(theme.palette.error.main, 0.1),
+                        color: strategy.riskScore <= 20 ? theme.palette.success.main :
+                               strategy.riskScore <= 40 ? theme.palette.warning.main :
+                               theme.palette.error.main,
+                      }}
+                    />
                   </TableCell>
                   <TableCell>
                     <Typography variant="body2">

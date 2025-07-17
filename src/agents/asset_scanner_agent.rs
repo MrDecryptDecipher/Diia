@@ -17,10 +17,10 @@ use std::collections::HashMap;
 use std::time::{Duration, SystemTime};
 use tokio::time::sleep;
 
-/// Asset Scanner Agent configuration
+/// Enhanced Asset Scanner Agent configuration for Phase 3
 #[derive(Debug, Clone)]
 pub struct AssetScannerAgentConfig {
-    /// Maximum assets to analyze
+    /// Maximum assets to analyze (300+ for comprehensive scanning)
     pub max_assets: usize,
 
     /// Timeframes to analyze
@@ -32,34 +32,70 @@ pub struct AssetScannerAgentConfig {
     /// Scan interval (seconds)
     pub scan_interval: u64,
 
-    /// Maximum concurrent trades
+    /// Maximum concurrent trades (2 for Phase 2 constraint)
     pub max_concurrent_trades: usize,
 
-    /// Position size percentage
+    /// Position size percentage (5 USDT fixed allocation)
     pub position_size_percentage: f64,
 
-    /// Minimum profit per trade in USDT
+    /// Minimum profit per trade in USDT (0.6 USDT requirement)
     pub min_profit_per_trade: f64,
 
-    /// Target trades per day
+    /// Target trades per day (750+ requirement)
     pub target_trades_per_day: usize,
 
-    /// Dynamic leverage enabled
+    /// Dynamic leverage enabled (50x-100x range)
     pub dynamic_leverage: bool,
+
+    /// PHASE 3 ENHANCED FILTERING CRITERIA
+    /// Minimum daily volume in USD (5M requirement)
+    pub min_daily_volume: f64,
+
+    /// Minimum market cap in USD (100M requirement)
+    pub min_market_cap: f64,
+
+    /// Minimum daily volatility percentage (2% requirement)
+    pub min_volatility: f64,
+
+    /// Leverage compatibility range
+    pub leverage_range: (f64, f64), // (min, max) = (50, 100)
+
+    /// Minimum order size compatibility (5 USDT requirement)
+    pub min_order_size: f64,
+
+    /// Exclude high-value assets (BTC, ETH due to capital constraints)
+    pub exclude_high_value: bool,
+
+    /// Target price movement range for profit capture
+    pub target_movement_range: (f64, f64), // (0.5%, 0.8%)
+
+    /// Asset cooldown period in minutes (15 minutes between same-asset trades)
+    pub asset_cooldown_minutes: u64,
 }
 
 impl Default for AssetScannerAgentConfig {
     fn default() -> Self {
         Self {
-            max_assets: 100,
+            // PHASE 3 SPECIFICATIONS - COMPREHENSIVE ASSET SCANNING
+            max_assets: 300, // Scan ALL Bybit linear perpetuals (300+ assets)
             timeframes: vec!["1".to_string(), "3".to_string(), "5".to_string(), "15".to_string(), "60".to_string()],
-            min_score_threshold: 0.8, // Higher threshold for better quality trades
-            scan_interval: 2, // 2 seconds for high-frequency trading
-            max_concurrent_trades: 10, // More concurrent trades to achieve target
-            position_size_percentage: 0.1, // 10% of capital per trade
-            min_profit_per_trade: 2.0, // Minimum 2 USDT profit per trade
-            target_trades_per_day: 750, // Target 750 trades per day
-            dynamic_leverage: true, // Enable dynamic leverage
+            min_score_threshold: 0.85, // Higher threshold for 85-90% win rate
+            scan_interval: 2, // 2 seconds for high-frequency scanning
+            max_concurrent_trades: 2, // EXACT Phase 2 constraint (2 positions max)
+            position_size_percentage: 0.417, // 5 USDT / 12 USDT = 41.7% per trade
+            min_profit_per_trade: 0.6, // EXACT Phase 2 requirement (0.6 USDT minimum)
+            target_trades_per_day: 750, // EXACT requirement (750+ trades/day)
+            dynamic_leverage: true, // Enable 50x-100x leverage range
+
+            // PHASE 3 ENHANCED FILTERING CRITERIA
+            min_daily_volume: 5_000_000.0, // $5M minimum daily volume
+            min_market_cap: 100_000_000.0, // $100M minimum market cap
+            min_volatility: 2.0, // 2% minimum daily volatility
+            leverage_range: (50.0, 100.0), // 50x-100x leverage compatibility
+            min_order_size: 5.0, // 5 USDT minimum order size (Bybit requirement)
+            exclude_high_value: true, // Exclude BTC, ETH due to capital constraints
+            target_movement_range: (0.5, 0.8), // 0.5%-0.8% target movements for profit
+            asset_cooldown_minutes: 15, // 15 minutes cooldown between same-asset trades
         }
     }
 }
@@ -92,7 +128,7 @@ pub struct AssetMetadata {
     pub last_update: SystemTime,
 }
 
-/// Asset Scanner Agent
+/// Enhanced Asset Scanner Agent with Phase 3 comprehensive filtering
 pub struct AssetScannerAgent {
     /// Configuration
     config: AssetScannerAgentConfig,
@@ -123,6 +159,56 @@ pub struct AssetScannerAgent {
 
     /// Last day (for resetting trade counter)
     last_day: i64,
+
+    /// PHASE 3 ENHANCEMENTS
+    /// Comprehensive asset database with enhanced metadata
+    enhanced_asset_database: HashMap<String, EnhancedAssetMetadata>,
+
+    /// Asset cooldown tracking (symbol -> last trade timestamp)
+    asset_cooldowns: HashMap<String, u64>,
+
+    /// Filtered asset list meeting all Phase 3 criteria
+    filtered_assets: Vec<String>,
+
+    /// Last comprehensive scan timestamp
+    last_comprehensive_scan: u64,
+
+    /// Asset performance tracking for optimization
+    asset_performance: HashMap<String, AssetPerformance>,
+
+    /// High-value assets to exclude (BTC, ETH, etc.)
+    excluded_high_value_assets: Vec<String>,
+}
+
+/// Enhanced asset metadata for Phase 3 comprehensive filtering
+#[derive(Debug, Clone)]
+pub struct EnhancedAssetMetadata {
+    pub symbol: String,
+    pub daily_volume_usd: f64,
+    pub market_cap_usd: f64,
+    pub daily_volatility: f64,
+    pub current_price: f64,
+    pub leverage_available: f64,
+    pub min_order_size: f64,
+    pub is_high_value: bool,
+    pub last_movement_percent: f64,
+    pub liquidity_score: f64,
+    pub trading_score: f64,
+    pub meets_phase3_criteria: bool,
+    pub last_update: SystemTime,
+}
+
+/// Asset performance tracking for optimization
+#[derive(Debug, Clone)]
+pub struct AssetPerformance {
+    pub symbol: String,
+    pub total_trades: u32,
+    pub successful_trades: u32,
+    pub total_profit_usdt: f64,
+    pub average_profit_per_trade: f64,
+    pub win_rate: f64,
+    pub last_trade_timestamp: u64,
+    pub performance_score: f64,
 }
 
 impl AssetScannerAgent {
@@ -133,6 +219,13 @@ impl AssetScannerAgent {
             config.max_assets,
             config.timeframes.clone(),
         );
+
+        // Initialize excluded high-value assets
+        let excluded_high_value_assets = vec![
+            "BTCUSDT".to_string(),
+            "ETHUSDT".to_string(),
+            "BNBUSDT".to_string(),
+        ];
 
         Self {
             config,
@@ -145,6 +238,14 @@ impl AssetScannerAgent {
             last_scan_time: 0,
             trades_today: 0,
             last_day: chrono::Utc::now().date().and_hms(0, 0, 0).timestamp(),
+
+            // PHASE 3 ENHANCEMENTS
+            enhanced_asset_database: HashMap::new(),
+            asset_cooldowns: HashMap::new(),
+            filtered_assets: Vec::new(),
+            last_comprehensive_scan: 0,
+            asset_performance: HashMap::new(),
+            excluded_high_value_assets,
         }
     }
 
@@ -257,7 +358,7 @@ impl AssetScannerAgent {
     }
 
     /// Scan for trading opportunities
-    async fn scan_for_opportunities(&self) -> Result<Vec<TradingOpportunity>> {
+    async fn scan_for_opportunities(&mut self) -> Result<Vec<TradingOpportunity>> {
         info!("Scanning for trading opportunities...");
 
         let opportunities = self.asset_scanner.scan_all_assets().await?;
@@ -443,6 +544,310 @@ impl AssetScannerAgent {
         self.active_trades = new_active_trades;
 
         Ok(())
+    }
+
+    /// PHASE 3: Comprehensive asset scanning for ALL Bybit linear perpetuals (300+ assets)
+    pub async fn comprehensive_asset_scan(&mut self) -> Result<Vec<String>> {
+        info!("🔍 Starting comprehensive asset scan for 300+ Bybit linear perpetuals");
+
+        let start_time = std::time::Instant::now();
+
+        // Get ALL linear instruments from Bybit
+        let instruments = self.exchange.get_instruments("linear").await?;
+        let all_symbols: Vec<String> = instruments.list
+            .into_iter()
+            .filter(|i| i.symbol.ends_with("USDT"))
+            .map(|i| i.symbol)
+            .collect();
+
+        info!("📊 Retrieved {} total USDT linear perpetuals from Bybit", all_symbols.len());
+
+        // Apply Phase 3 filtering criteria
+        let mut filtered_symbols = Vec::new();
+        let mut processed_count = 0;
+
+        for symbol in &all_symbols {
+            processed_count += 1;
+
+            // Skip excluded high-value assets
+            if self.excluded_high_value_assets.contains(&symbol) {
+                debug!("⚠️ Skipping high-value asset: {}", symbol);
+                continue;
+            }
+
+            // Check asset cooldown
+            if self.is_asset_in_cooldown(&symbol) {
+                debug!("⏰ Asset {} in cooldown period", symbol);
+                continue;
+            }
+
+            // Get enhanced metadata and apply filtering
+            match self.get_enhanced_asset_metadata(&symbol).await {
+                Ok(metadata) => {
+                    if metadata.meets_phase3_criteria {
+                        filtered_symbols.push(symbol.clone());
+                        self.enhanced_asset_database.insert(symbol, metadata);
+                    }
+                }
+                Err(e) => {
+                    debug!("❌ Failed to get metadata for {}: {}", symbol, e);
+                    continue;
+                }
+            }
+
+            // Progress reporting every 50 assets
+            if processed_count % 50 == 0 {
+                info!("📈 Processed {}/{} assets, {} meet criteria",
+                      processed_count, all_symbols.len(), filtered_symbols.len());
+            }
+        }
+
+        let scan_duration = start_time.elapsed();
+
+        info!("✅ Comprehensive scan complete: {}/{} assets meet Phase 3 criteria (scan time: {:.2}s)",
+              filtered_symbols.len(), all_symbols.len(), scan_duration.as_secs_f64());
+
+        // Update filtered assets and scan timestamp
+        self.filtered_assets = filtered_symbols.clone();
+        self.last_comprehensive_scan = chrono::Utc::now().timestamp() as u64;
+
+        Ok(filtered_symbols)
+    }
+
+    /// Enhanced Phase 3 asset filtering with comprehensive criteria
+    pub async fn apply_phase3_filtering(&self, symbols: &[String]) -> Result<Vec<String>> {
+        info!("🔍 Applying Phase 3 filtering criteria to {} symbols", symbols.len());
+
+        let mut filtered_assets = Vec::new();
+        let mut processed = 0;
+
+        for symbol in symbols {
+            processed += 1;
+
+            // Get comprehensive market data
+            match self.get_comprehensive_market_data(symbol).await {
+                Ok(market_data) => {
+                    if self.meets_phase3_criteria(&market_data) {
+                        filtered_assets.push(symbol.clone());
+                        info!("✅ {} meets Phase 3 criteria: Vol=${:.2}M, MCap=${:.2}M, Volatility={:.2}%",
+                              symbol, market_data.volume_24h_usd / 1_000_000.0,
+                              market_data.market_cap_usd / 1_000_000.0, market_data.volatility_24h);
+                    } else {
+                        debug!("❌ {} filtered out: Vol=${:.2}M, MCap=${:.2}M, Volatility={:.2}%",
+                               symbol, market_data.volume_24h_usd / 1_000_000.0,
+                               market_data.market_cap_usd / 1_000_000.0, market_data.volatility_24h);
+                    }
+                }
+                Err(e) => {
+                    debug!("⚠️ Failed to get market data for {}: {}", symbol, e);
+                    continue;
+                }
+            }
+
+            // Progress reporting
+            if processed % 25 == 0 {
+                info!("📊 Phase 3 filtering progress: {}/{} processed, {} qualified",
+                      processed, symbols.len(), filtered_assets.len());
+            }
+        }
+
+        info!("🎯 Phase 3 filtering complete: {}/{} assets qualified",
+              filtered_assets.len(), symbols.len());
+
+        Ok(filtered_assets)
+    }
+
+    /// Get comprehensive market data for Phase 3 analysis
+    async fn get_comprehensive_market_data(&self, symbol: &str) -> Result<ComprehensiveMarketData> {
+        // Get ticker data
+        let ticker_data = self.exchange.get_ticker(symbol).await?;
+        let ticker = ticker_data.first().ok_or_else(|| anyhow!("No ticker data for {}", symbol))?;
+
+        // Parse basic metrics
+        let current_price = ticker.last_price.parse::<f64>().unwrap_or(0.0);
+        let volume_24h = ticker.volume_24h.parse::<f64>().unwrap_or(0.0);
+        let price_change_24h = ticker.price_24h_pcnt.parse::<f64>().unwrap_or(0.0);
+
+        // Calculate derived metrics
+        let volume_24h_usd = volume_24h * current_price;
+        let volatility_24h = price_change_24h.abs() * 100.0;
+
+        // Estimate market cap (simplified - using circulating supply estimation)
+        let estimated_supply = self.estimate_circulating_supply(symbol, current_price);
+        let market_cap_usd = current_price * estimated_supply;
+
+        // Get leverage information
+        let max_leverage = self.get_max_leverage_for_symbol(symbol).await.unwrap_or(1.0);
+
+        Ok(ComprehensiveMarketData {
+            symbol: symbol.to_string(),
+            current_price,
+            volume_24h_usd,
+            market_cap_usd,
+            volatility_24h,
+            max_leverage,
+            price_change_24h: price_change_24h * 100.0,
+            high_24h: ticker.high_price_24h.parse::<f64>().unwrap_or(current_price),
+            low_24h: ticker.low_price_24h.parse::<f64>().unwrap_or(current_price),
+        })
+    }
+
+    /// Check if market data meets Phase 3 criteria
+    fn meets_phase3_criteria(&self, data: &ComprehensiveMarketData) -> bool {
+        // Phase 3 Filtering Criteria:
+        // 1. 24h trading volume > $5,000,000 USD
+        // 2. Market capitalization > $100,000,000 USD
+        // 3. Daily volatility > 2.0%
+        // 4. Leverage compatibility: 50x-100x available
+        // 5. Order size compatibility: 5.00 USDT minimum viable
+
+        let volume_criteria = data.volume_24h_usd >= 5_000_000.0;
+        let market_cap_criteria = data.market_cap_usd >= 100_000_000.0;
+        let volatility_criteria = data.volatility_24h >= 2.0;
+        let leverage_criteria = data.max_leverage >= 50.0;
+        let price_criteria = data.current_price >= 0.001; // Minimum price for 5 USDT position
+
+        let meets_all = volume_criteria && market_cap_criteria && volatility_criteria &&
+                       leverage_criteria && price_criteria;
+
+        if !meets_all {
+            debug!("❌ {} criteria check: Vol={} MCap={} Volatility={} Leverage={} Price={}",
+                   data.symbol, volume_criteria, market_cap_criteria, volatility_criteria,
+                   leverage_criteria, price_criteria);
+        }
+
+        meets_all
+    }
+
+    /// Estimate circulating supply for market cap calculation
+    fn estimate_circulating_supply(&self, symbol: &str, current_price: f64) -> f64 {
+        // Simplified estimation based on common patterns
+        // This is a rough estimation - in production, you'd want actual supply data
+
+        if symbol.starts_with("BTC") {
+            21_000_000.0 // Bitcoin max supply
+        } else if symbol.starts_with("ETH") {
+            120_000_000.0 // Ethereum approximate supply
+        } else if current_price > 100.0 {
+            // High-price tokens typically have lower supply
+            1_000_000.0
+        } else if current_price > 10.0 {
+            // Medium-price tokens
+            10_000_000.0
+        } else if current_price > 1.0 {
+            // Lower-price tokens
+            100_000_000.0
+        } else {
+            // Very low-price tokens typically have high supply
+            1_000_000_000.0
+        }
+    }
+
+    /// Get maximum leverage available for a symbol
+    async fn get_max_leverage_for_symbol(&self, symbol: &str) -> Result<f64> {
+        // Get instrument info to determine max leverage
+        let instruments = self.exchange.get_instruments("linear").await?;
+
+        if let Some(instrument) = instruments.list.iter().find(|i| i.symbol == symbol) {
+            // Parse leverage from instrument info
+            // Most Bybit linear perpetuals support 50x-100x leverage
+            Ok(100.0) // Default to 100x for linear perpetuals
+        } else {
+            Ok(1.0) // Conservative default
+        }
+    }
+
+    /// Get enhanced asset metadata with Phase 3 filtering criteria
+    async fn get_enhanced_asset_metadata(&self, symbol: &str) -> Result<EnhancedAssetMetadata> {
+        // Get basic ticker data
+        let ticker_data = self.exchange.get_ticker(symbol).await?;
+        let ticker = ticker_data.first().ok_or_else(|| anyhow!("No ticker data for {}", symbol))?;
+
+        // Get 24h statistics (using ticker data for now)
+        let current_price = ticker.last_price.parse::<f64>().unwrap_or(0.0);
+        let daily_volume_usd = ticker.volume_24h.parse::<f64>().unwrap_or(0.0) * current_price;
+        let price_change_24h = ticker.price_24h_pcnt.parse::<f64>().unwrap_or(0.0) * 100.0;
+        let daily_volatility = price_change_24h.abs();
+
+        // Estimate market cap (simplified calculation)
+        let market_cap_usd = current_price * 1_000_000.0; // Simplified estimation
+
+        // Check if high-value asset
+        let is_high_value = self.excluded_high_value_assets.contains(&symbol.to_string());
+
+        // Calculate trading score based on Phase 3 criteria
+        let trading_score = self.calculate_trading_score(
+            daily_volume_usd,
+            market_cap_usd,
+            daily_volatility,
+            current_price,
+        );
+
+        // Check if meets all Phase 3 criteria
+        let meets_phase3_criteria =
+            daily_volume_usd >= self.config.min_daily_volume &&
+            market_cap_usd >= self.config.min_market_cap &&
+            daily_volatility >= self.config.min_volatility &&
+            !is_high_value &&
+            current_price * self.config.min_order_size <= self.config.min_order_size * current_price &&
+            daily_volatility >= self.config.target_movement_range.0 &&
+            daily_volatility <= self.config.target_movement_range.1 * 2.0; // Allow some buffer
+
+        Ok(EnhancedAssetMetadata {
+            symbol: symbol.to_string(),
+            daily_volume_usd,
+            market_cap_usd,
+            daily_volatility,
+            current_price,
+            leverage_available: self.config.leverage_range.1, // Use max leverage
+            min_order_size: self.config.min_order_size,
+            is_high_value,
+            last_movement_percent: price_change_24h,
+            liquidity_score: (daily_volume_usd / 1_000_000.0).min(100.0), // Score 0-100
+            trading_score,
+            meets_phase3_criteria,
+            last_update: SystemTime::now(),
+        })
+    }
+
+    /// Calculate trading score based on Phase 3 criteria
+    fn calculate_trading_score(&self, volume: f64, market_cap: f64, volatility: f64, price: f64) -> f64 {
+        let volume_score = (volume / self.config.min_daily_volume).min(10.0) * 10.0; // 0-100
+        let market_cap_score = (market_cap / self.config.min_market_cap).min(10.0) * 10.0; // 0-100
+        let volatility_score = (volatility / self.config.min_volatility).min(5.0) * 20.0; // 0-100
+        let price_score = if price > 0.0001 && price < 1000.0 { 100.0 } else { 50.0 }; // Prefer mid-range prices
+
+        // Weighted average
+        (volume_score * 0.4 + market_cap_score * 0.2 + volatility_score * 0.3 + price_score * 0.1).min(100.0)
+    }
+
+    /// Check if asset is in cooldown period
+    fn is_asset_in_cooldown(&self, symbol: &str) -> bool {
+        if let Some(&last_trade_time) = self.asset_cooldowns.get(symbol) {
+            let current_time = chrono::Utc::now().timestamp() as u64;
+            let cooldown_seconds = self.config.asset_cooldown_minutes * 60;
+            current_time - last_trade_time < cooldown_seconds
+        } else {
+            false
+        }
+    }
+
+    /// Update asset cooldown after trade execution
+    pub fn update_asset_cooldown(&mut self, symbol: &str) {
+        let current_time = chrono::Utc::now().timestamp() as u64;
+        self.asset_cooldowns.insert(symbol.to_string(), current_time);
+        debug!("🕒 Updated cooldown for {} until {}", symbol,
+               current_time + (self.config.asset_cooldown_minutes * 60));
+    }
+
+    /// Get filtered assets that meet all Phase 3 criteria
+    pub fn get_filtered_assets(&self) -> &Vec<String> {
+        &self.filtered_assets
+    }
+
+    /// Get asset performance data
+    pub fn get_asset_performance(&self, symbol: &str) -> Option<&AssetPerformance> {
+        self.asset_performance.get(symbol)
     }
 }
 

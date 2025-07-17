@@ -41,6 +41,10 @@ import AssetPerformanceCard from '../components/Dashboard/AssetPerformanceCard';
 import SystemStatusCard from '../components/Dashboard/SystemStatusCard';
 import TradeActivityFeed from '../components/Dashboard/TradeActivityFeed';
 import QuantumVisualization from '../components/Visualizations/QuantumVisualization';
+import SocialMediaInsightsDashboard from '../components/Dashboard/SocialMediaInsightsDashboard';
+import GeminiIntelligenceDashboard from '../components/Dashboard/GeminiIntelligenceDashboard';
+
+
 
 const Dashboard = () => {
   const muiTheme = useTheme();
@@ -103,7 +107,7 @@ const Dashboard = () => {
               }}
               className="glow-text"
             >
-              OMNI-ALPHA VΩ∞∞ Dashboard
+              Nija Diia Dashboard
             </Typography>
             <Typography
               variant="subtitle1"
@@ -361,8 +365,8 @@ const Dashboard = () => {
 
             {/* Asset Performance */}
             <motion.div variants={itemVariants}>
-              <Card 
-                sx={{ 
+              <Card
+                sx={{
                   mb: 3,
                   background: 'rgba(17, 24, 39, 0.7)',
                   backdropFilter: 'blur(10px)',
@@ -391,6 +395,16 @@ const Dashboard = () => {
                   <AssetPerformanceCard assets={assetInfo} />
                 </CardContent>
               </Card>
+            </motion.div>
+
+            {/* Social Media Insights */}
+            <motion.div variants={itemVariants}>
+              <SocialMediaInsightsDashboard />
+            </motion.div>
+
+            {/* Gemini Intelligence */}
+            <motion.div variants={itemVariants}>
+              <GeminiIntelligenceDashboard />
             </motion.div>
 
             {/* Trade Activity */}

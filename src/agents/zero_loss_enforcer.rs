@@ -15,6 +15,27 @@ use crate::agents::risk_manager::RiskAssessment;
 use crate::agents::trade_executor::TradeExecution;
 use crate::engine::message_bus::{MessageBus, TradeDirection, BusMessage};
 
+/// Configuration for Zero-Loss Enforcer
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ZeroLossEnforcerConfig {
+    /// Maximum allowed loss percentage
+    pub max_loss_percent: f64,
+    /// Minimum risk-reward ratio
+    pub min_risk_reward_ratio: f64,
+    /// Enable emergency stop
+    pub emergency_stop_enabled: bool,
+}
+
+impl Default for ZeroLossEnforcerConfig {
+    fn default() -> Self {
+        Self {
+            max_loss_percent: 0.5,
+            min_risk_reward_ratio: 2.0,
+            emergency_stop_enabled: true,
+        }
+    }
+}
+
 /// Zero-loss enforcement result
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ZeroLossAssessment {

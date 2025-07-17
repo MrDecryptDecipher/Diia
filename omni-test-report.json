@@ -1,0 +1,539 @@
+{
+  "summary": {
+    "totalTests": 9,
+    "passedTests": 7,
+    "failedTests": 2,
+    "successRate": 77.77777777777779,
+    "totalTime": 10189
+  },
+  "results": [
+    {
+      "name": "Health Check",
+      "status": "PASS",
+      "duration": 29,
+      "result": {
+        "status": "ok",
+        "timestamp": "2025-06-28T23:27:36.501Z"
+      }
+    },
+    {
+      "name": "Trading Status",
+      "status": "PASS",
+      "duration": 3,
+      "result": {
+        "isActive": true,
+        "currentCapital": 12,
+        "totalTrades": 62,
+        "successfulTrades": 62,
+        "totalProfit": 136.40000000000006,
+        "openTrades": 62,
+        "startTime": 1751152063400,
+        "dailyTradeCount": 62,
+        "dailyProfit": 0,
+        "evolutionStage": 1
+      }
+    },
+    {
+      "name": "System Metrics",
+      "status": "PASS",
+      "duration": 82,
+      "result": {
+        "initialCapital": 12,
+        "currentCapital": 284.80000000000007,
+        "pnl": 272.80000000000007,
+        "pnlPercentage": 2273.333333333334,
+        "totalTrades": 124,
+        "winningTrades": 62,
+        "losingTrades": 0,
+        "winRate": 100,
+        "averageProfitPerTrade": 2.2000000000000006,
+        "averageLossPerTrade": 0,
+        "maxDrawdown": 0,
+        "sharpeRatio": 10,
+        "sortinoRatio": 10,
+        "calmarRatio": 10,
+        "volatility": 5,
+        "bestTrade": 2.2,
+        "worstTrade": 0,
+        "averageTradeHoldingTime": "3 minutes",
+        "tradingFrequency": "124 trades/session",
+        "profitFactor": 272.80000000000007,
+        "expectancy": 2.2000000000000006,
+        "systemEfficiency": 95,
+        "capitalUtilization": 85,
+        "riskRewardRatio": 10,
+        "quantumPredictionAccuracy": 95,
+        "hyperdimensionalPatternAccuracy": 94,
+        "zeroLossEnforcementEfficiency": 100,
+        "godKernelEvolutionStage": 2,
+        "antiLossHedgingEfficiency": 100
+      }
+    },
+    {
+      "name": "Trading Report",
+      "status": "PASS",
+      "duration": 6,
+      "result": {
+        "performanceMetrics": {
+          "tradesPerHour": 187.06063379360978,
+          "successRate": 100,
+          "avgProfitPerTrade": 2.200000000000001,
+          "profitPerHour": 0,
+          "dailyTradeCount": 62,
+          "targetTradesPerDay": 750,
+          "dailyProfit": 0,
+          "dailyProfitTarget": 1650.0000000000002,
+          "totalProfit": 136.40000000000006,
+          "openTrades": 62,
+          "maxOpenTrades": 5
+        },
+        "bestPerformingSymbols": [
+          {
+            "symbol": "GOATUSDT",
+            "totalTrades": 5,
+            "successfulTrades": 5,
+            "totalProfit": 11,
+            "avgProfit": 2.2,
+            "successRate": 100
+          },
+          {
+            "symbol": "AERGOUSDT",
+            "totalTrades": 4,
+            "successfulTrades": 4,
+            "totalProfit": 8.8,
+            "avgProfit": 2.2,
+            "successRate": 100
+          },
+          {
+            "symbol": "BANANAS31USDT",
+            "totalTrades": 5,
+            "successfulTrades": 5,
+            "totalProfit": 11,
+            "avgProfit": 2.2,
+            "successRate": 100
+          },
+          {
+            "symbol": "GRIFFAINUSDT",
+            "totalTrades": 2,
+            "successfulTrades": 2,
+            "totalProfit": 4.4,
+            "avgProfit": 2.2,
+            "successRate": 100
+          },
+          {
+            "symbol": "GRTUSDT",
+            "totalTrades": 2,
+            "successfulTrades": 2,
+            "totalProfit": 4.4,
+            "avgProfit": 2.2,
+            "successRate": 100
+          },
+          {
+            "symbol": "KAITOUSDT",
+            "totalTrades": 2,
+            "successfulTrades": 2,
+            "totalProfit": 4.4,
+            "avgProfit": 2.2,
+            "successRate": 100
+          },
+          {
+            "symbol": "AEROUSDT",
+            "totalTrades": 2,
+            "successfulTrades": 2,
+            "totalProfit": 4.4,
+            "avgProfit": 2.2,
+            "successRate": 100
+          },
+          {
+            "symbol": "LDOUSDT",
+            "totalTrades": 2,
+            "successfulTrades": 2,
+            "totalProfit": 4.4,
+            "avgProfit": 2.2,
+            "successRate": 100
+          },
+          {
+            "symbol": "AIXBTUSDT",
+            "totalTrades": 2,
+            "successfulTrades": 2,
+            "totalProfit": 4.4,
+            "avgProfit": 2.2,
+            "successRate": 100
+          },
+          {
+            "symbol": "LAUSDT",
+            "totalTrades": 7,
+            "successfulTrades": 7,
+            "totalProfit": 15.399999999999999,
+            "avgProfit": 2.1999999999999997,
+            "successRate": 100
+          }
+        ],
+        "bestPerformingAgents": [
+          {
+            "agentType": "undefined",
+            "totalTrades": 62,
+            "successfulTrades": 62,
+            "totalProfit": 136.40000000000006,
+            "avgProfit": 2.200000000000001,
+            "successRate": 100
+          }
+        ],
+        "recentTrades": [
+          {
+            "symbol": "KAITOUSDT",
+            "profit": 2.2,
+            "timestamp": 1751152088953
+          },
+          {
+            "symbol": "GRIFFAINUSDT",
+            "profit": 2.2,
+            "timestamp": 1751152088982
+          },
+          {
+            "symbol": "AEROUSDT",
+            "profit": 2.2,
+            "timestamp": 1751152088984
+          },
+          {
+            "symbol": "LDOUSDT",
+            "profit": 2.2,
+            "timestamp": 1751152088986
+          },
+          {
+            "symbol": "AIXBTUSDT",
+            "profit": 2.2,
+            "timestamp": 1751152088987
+          },
+          {
+            "symbol": "GRTUSDT",
+            "profit": 2.2,
+            "timestamp": 1751152088990
+          },
+          {
+            "symbol": "AIXBTUSDT",
+            "profit": 2.2,
+            "timestamp": 1751152088991
+          },
+          {
+            "symbol": "KAITOUSDT",
+            "profit": 2.2,
+            "timestamp": 1751152089025
+          },
+          {
+            "symbol": "AEROUSDT",
+            "profit": 2.2,
+            "timestamp": 1751152089028
+          },
+          {
+            "symbol": "LDOUSDT",
+            "profit": 2.2,
+            "timestamp": 1751152091101
+          }
+        ],
+        "openTrades": [
+          {
+            "symbol": "GOATUSDT",
+            "timestamp": 1751152080133
+          },
+          {
+            "symbol": "LAUSDT",
+            "timestamp": 1751152080134
+          },
+          {
+            "symbol": "HIFIUSDT",
+            "timestamp": 1751152080134
+          },
+          {
+            "symbol": "ARBUSDT",
+            "timestamp": 1751152080142
+          },
+          {
+            "symbol": "AERGOUSDT",
+            "timestamp": 1751152080143
+          },
+          {
+            "symbol": "LQTYUSDT",
+            "timestamp": 1751152080144
+          },
+          {
+            "symbol": "BSWUSDT",
+            "timestamp": 1751152080161
+          },
+          {
+            "symbol": "BSWUSDT",
+            "timestamp": 1751152080300
+          },
+          {
+            "symbol": "HIFIUSDT",
+            "timestamp": 1751152080352
+          },
+          {
+            "symbol": "GOATUSDT",
+            "timestamp": 1751152080353
+          },
+          {
+            "symbol": "ARBUSDT",
+            "timestamp": 1751152080360
+          },
+          {
+            "symbol": "BANANAS31USDT",
+            "timestamp": 1751152080362
+          },
+          {
+            "symbol": "HIFIUSDT",
+            "timestamp": 1751152080371
+          },
+          {
+            "symbol": "HIFIUSDT",
+            "timestamp": 1751152080524
+          },
+          {
+            "symbol": "BANANAS31USDT",
+            "timestamp": 1751152081286
+          },
+          {
+            "symbol": "BSWUSDT",
+            "timestamp": 1751152081292
+          },
+          {
+            "symbol": "AERGOUSDT",
+            "timestamp": 1751152081293
+          },
+          {
+            "symbol": "LAUSDT",
+            "timestamp": 1751152081294
+          },
+          {
+            "symbol": "LQTYUSDT",
+            "timestamp": 1751152081295
+          },
+          {
+            "symbol": "ARBUSDT",
+            "timestamp": 1751152081297
+          },
+          {
+            "symbol": "HIFIUSDT",
+            "timestamp": 1751152081312
+          },
+          {
+            "symbol": "ARBUSDT",
+            "timestamp": 1751152081419
+          },
+          {
+            "symbol": "GOATUSDT",
+            "timestamp": 1751152081430
+          },
+          {
+            "symbol": "LQTYUSDT",
+            "timestamp": 1751152081592
+          },
+          {
+            "symbol": "ARBUSDT",
+            "timestamp": 1751152081600
+          },
+          {
+            "symbol": "BANANAS31USDT",
+            "timestamp": 1751152083379
+          },
+          {
+            "symbol": "AERGOUSDT",
+            "timestamp": 1751152083386
+          },
+          {
+            "symbol": "BSWUSDT",
+            "timestamp": 1751152083389
+          },
+          {
+            "symbol": "ARBUSDT",
+            "timestamp": 1751152083410
+          },
+          {
+            "symbol": "LAUSDT",
+            "timestamp": 1751152083416
+          },
+          {
+            "symbol": "GOATUSDT",
+            "timestamp": 1751152083418
+          },
+          {
+            "symbol": "HIFIUSDT",
+            "timestamp": 1751152083422
+          },
+          {
+            "symbol": "LQTYUSDT",
+            "timestamp": 1751152083426
+          },
+          {
+            "symbol": "LAUSDT",
+            "timestamp": 1751152083440
+          },
+          {
+            "symbol": "ARBUSDT",
+            "timestamp": 1751152083441
+          },
+          {
+            "symbol": "BSWUSDT",
+            "timestamp": 1751152083531
+          },
+          {
+            "symbol": "GOATUSDT",
+            "timestamp": 1751152083667
+          },
+          {
+            "symbol": "BSWUSDT",
+            "timestamp": 1751152087506
+          },
+          {
+            "symbol": "LQTYUSDT",
+            "timestamp": 1751152087509
+          },
+          {
+            "symbol": "HIFIUSDT",
+            "timestamp": 1751152087515
+          },
+          {
+            "symbol": "AERGOUSDT",
+            "timestamp": 1751152087517
+          },
+          {
+            "symbol": "BANANAS31USDT",
+            "timestamp": 1751152087519
+          },
+          {
+            "symbol": "BSWUSDT",
+            "timestamp": 1751152087521
+          },
+          {
+            "symbol": "LAUSDT",
+            "timestamp": 1751152087523
+          },
+          {
+            "symbol": "LAUSDT",
+            "timestamp": 1751152087634
+          },
+          {
+            "symbol": "LQTYUSDT",
+            "timestamp": 1751152087635
+          },
+          {
+            "symbol": "BANANAS31USDT",
+            "timestamp": 1751152087635
+          },
+          {
+            "symbol": "BSWUSDT",
+            "timestamp": 1751152087636
+          },
+          {
+            "symbol": "HIFIUSDT",
+            "timestamp": 1751152087724
+          },
+          {
+            "symbol": "LAUSDT",
+            "timestamp": 1751152087864
+          },
+          {
+            "symbol": "GRIFFAINUSDT",
+            "timestamp": 1751152088007
+          },
+          {
+            "symbol": "GRTUSDT",
+            "timestamp": 1751152088947
+          },
+          {
+            "symbol": "KAITOUSDT",
+            "timestamp": 1751152088953
+          },
+          {
+            "symbol": "GRIFFAINUSDT",
+            "timestamp": 1751152088982
+          },
+          {
+            "symbol": "AEROUSDT",
+            "timestamp": 1751152088984
+          },
+          {
+            "symbol": "LDOUSDT",
+            "timestamp": 1751152088986
+          },
+          {
+            "symbol": "AIXBTUSDT",
+            "timestamp": 1751152088987
+          },
+          {
+            "symbol": "GRTUSDT",
+            "timestamp": 1751152088990
+          },
+          {
+            "symbol": "AIXBTUSDT",
+            "timestamp": 1751152088991
+          },
+          {
+            "symbol": "KAITOUSDT",
+            "timestamp": 1751152089025
+          },
+          {
+            "symbol": "AEROUSDT",
+            "timestamp": 1751152089028
+          },
+          {
+            "symbol": "LDOUSDT",
+            "timestamp": 1751152091101
+          }
+        ],
+        "systemMetrics": {
+          "evolutionStage": 1,
+          "systemEfficiency": 99,
+          "quantumPredictionAccuracy": 95,
+          "hyperdimensionalPatternAccuracy": 94,
+          "zeroLossEnforcementEfficiency": 100,
+          "antiLossHedgingEfficiency": 100
+        }
+      }
+    },
+    {
+      "name": "Bybit Connection",
+      "status": "FAIL",
+      "duration": 7,
+      "error": "Request failed with status code 500"
+    },
+    {
+      "name": "Position Management",
+      "status": "FAIL",
+      "duration": 3,
+      "error": "Position count out of range: 62"
+    },
+    {
+      "name": "Trading Frequency",
+      "status": "PASS",
+      "duration": 10009,
+      "result": {
+        "initialTrades": 62,
+        "finalTrades": 62,
+        "newTrades": 0,
+        "tradesPerMinute": 0
+      }
+    },
+    {
+      "name": "API Performance",
+      "status": "PASS",
+      "duration": 21,
+      "result": {
+        "/health": 2.6666666666666665,
+        "/api/trading/status": 2,
+        "/api/metrics": 2
+      }
+    },
+    {
+      "name": "Stress Load Test",
+      "status": "PASS",
+      "duration": 23,
+      "result": {
+        "concurrentRequests": 10,
+        "successCount": 10,
+        "successRate": 100,
+        "totalTime": 22
+      }
+    }
+  ]
+}

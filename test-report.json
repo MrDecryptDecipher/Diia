@@ -1,0 +1,17 @@
+{
+  "summary": {
+    "totalTests": 1,
+    "passedTests": 0,
+    "failedTests": 1,
+    "successRate": 0,
+    "totalTime": 27
+  },
+  "results": [
+    {
+      "name": "System Health Check",
+      "status": "FAIL",
+      "error": "connect ECONNREFUSED 127.0.0.1:10002",
+      "stack": "Error: connect ECONNREFUSED 127.0.0.1:10002\n    at AxiosError.from (/home/ubuntu/Sandeep/projects/node_modules/axios/dist/node/axios.cjs:863:14)\n    at RedirectableRequest.handleRequestError (/home/ubuntu/Sandeep/projects/node_modules/axios/dist/node/axios.cjs:3191:25)\n    at RedirectableRequest.emit (node:events:519:28)\n    at eventHandlers.<computed> (/home/ubuntu/Sandeep/projects/node_modules/follow-redirects/index.js:49:24)\n    at ClientRequest.emit (node:events:519:28)\n    at emitErrorEvent (node:_http_client:101:11)\n    at Socket.socketErrorListener (node:_http_client:504:5)\n    at Socket.emit (node:events:519:28)\n    at emitErrorNT (node:internal/streams/destroy:169:8)\n    at emitErrorCloseNT (node:internal/streams/destroy:128:3)\n    at Axios.request (/home/ubuntu/Sandeep/projects/node_modules/axios/dist/node/axios.cjs:4280:41)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async /home/ubuntu/Sandeep/projects/omni/comprehensive-test-suite.js:59:30\n    at async OMNITestSuite.runTest (/home/ubuntu/Sandeep/projects/omni/comprehensive-test-suite.js:32:28)\n    at async OMNITestSuite.runAllTests (/home/ubuntu/Sandeep/projects/omni/comprehensive-test-suite.js:271:13)"
+    }
+  ]
+}
