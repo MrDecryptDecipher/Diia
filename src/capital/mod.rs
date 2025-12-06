@@ -3,10 +3,6 @@
 //! This module provides capital management, position sizing, and risk
 //! management capabilities for the trading system.
 
-pub mod manager;
-pub mod position_sizing;
-pub mod risk_calculator;
+pub mod precise_capital_tracker;
 
-pub use manager::*;
-pub use position_sizing::*;
-pub use risk_calculator::*;
+pub use precise_capital_tracker::*;

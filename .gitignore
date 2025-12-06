@@ -54,6 +54,10 @@ yarn-error.log*
 .env.development.local
 .env.test.local
 .env.production.local
+*.env
+*.env.*
+demo.env
+testnet.env
 
 # Build output
 /build/
@@ -63,6 +67,9 @@ yarn-error.log*
 # Temporary files
 .tmp/
 .temp/
+temp/
+tmp/
+*.tmp
 
 # Compiled binary files
 *.com
@@ -71,6 +78,8 @@ yarn-error.log*
 *.exe
 *.o
 *.so
+bybit_demo
+demo
 
 # Dependency directories
 jspm_packages/
@@ -93,9 +102,6 @@ typings/
 # Output of 'npm pack'
 *.tgz
 
-# dotenv environment variable files
-.env
-
 # Mac files
 .DS_Store
 
@@ -115,10 +121,6 @@ Desktop.ini
 # Jupyter Notebook
 .ipynb_checkpoints
 
-# Rust
-/target/
-**/*.rs.bk
-
 # OMNI Project Specific Exclusions
 # ================================
 
@@ -128,25 +130,12 @@ videos/
 
 # Exclude sensitive configuration files
 Webmcps.txt
-*.env
-*.env.*
-demo.env
-testnet.env
-
-# Exclude conversation and PRD files (as per user requirements)
 conversation.txt
 *conversation*.txt
 *prd*.txt
 autoapplierprd.txt
 
-# Exclude temporary files
-temp/
-tmp/
-*.tmp
-
 # Exclude PM2 logs and runtime files
-logs/
-*.log
 .pm2/
 pm2.log
 ecosystem.config.js.backup
