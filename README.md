@@ -30,88 +30,102 @@ Unlike static algorithms that decay over time, Diia possesses a **God Kernel** t
 
 ## 🏗️ **HYPER-STRUCTURED ARCHITECTURE**
 
-The system operates on a decentralized, multi-layered architecture designed for **microsecond latency** and **infinite horizontal scaling**. It orchestrates a symphony of technologies: **Rust** for raw compute, **Node.js** for flexible orchestration, and **TensorFlow** for neural adaptation.
-
-### 🌐 **System Topology**
+The system operates on a decentralized, multi-layered architecture designed for **microsecond latency**.
 
 ```mermaid
 graph TD
-    %% Theme
-    classDef rust fill:#dea584,stroke:#000,stroke-width:2px;
-    classDef node fill:#9ecfff,stroke:#000,stroke-width:2px;
-    classDef react fill:#61dafb,stroke:#000,stroke-width:2px;
-    classDef ext fill:#f0f0f0,stroke:#333,stroke-dasharray: 5 5;
+    %% Theme Enforcement
+    %%{init: {'theme': 'dark', 'themeVariables': { 'darkMode': true, 'background': '#0d0d0d', 'primaryColor': '#7000ff', 'lineColor': '#00f0ff'}}}%%
+    
+    classDef rust fill:#b7410e,stroke:#fff,stroke-width:2px,color:white;
+    classDef node fill:#1e4d2b,stroke:#fff,stroke-width:2px,color:white;
+    classDef react fill:#003366,stroke:#fff,stroke-width:2px,color:white;
+    classDef ext fill:#1a1a1a,stroke:#666,stroke-dasharray: 5 5,color:#ccc;
 
     subgraph Internet ["🌐 External Reality"]
-        Users[("👤 User / Admin")]
-        ByBit[("💹 ByBit Exchange<br/>(Linear/Spot)")]
-        Social[("🐦 Twitter/X API<br/>sentiment")]
-    end
-
-    subgraph Ingress ["🛡️ Ingress Layer (3.111.22.56)"]
-        NGINX[("Reverse Proxy<br/>NGINX")]
+        Users[("👤 User / Admin")]:::ext
+        ByBit[("💹 ByBit Exchange<br/>(Linear/Spot)")]:::ext
     end
 
     subgraph Core ["🧠 The Singularity (PM2 Cluster)"]
         Frontend[("⚛️ React Frontend<br/>Port 10001")]:::react
         API[("🔌 API Gateway<br/>Express + TensorFlow<br/>Port 10002")]:::node
         Socket[("📡 WebSocket Stream<br/>Port 10003")]:::node
-        gRPC[("⚡ gRPC Neural Link<br/>Port 10004")]:::node
         
         subgraph RustEngine ["🦀 Quantum Engine (Rust)"]
             GodKernel["🧠 God Kernel"]:::rust
-            Agents["🤖 Agent Swarm<br/>(18+ Units)"]:::rust
+            Agents["🤖 18+ Agent Swarm"]:::rust
             OrderExec["⚡ Trade Executor"]:::rust
         end
     end
 
-    Users --> NGINX
-    NGINX --> Frontend
-    NGINX --> API
-    NGINX --> Socket
-
+    Users --> Frontend
+    Frontend <--> API
     API <==>|gRPC Proto| GodKernel
     Socket <==> |Sub| GodKernel
-    
     GodKernel <--> Agents
-    Agents -->|Orders| OrderExec
+    Agents -->|Signal| OrderExec
     OrderExec <-->|API/WS| ByBit
-    API <-->|NLP| Social
 ```
+
+---
+
+## 🔬 **QUANTUM TECHNICAL DEEP DIVE**
+
+Diia utilizes advanced mathematical models typically reserved for particle physics simulations.
+
+### 🌌 **1. Quantum Entanglement Logic**
+*Located in: `src/quantum/quantum_entanglement.rs`*
+
+The system identifies correlated assets not through simple Pearson correlation, but by calculating **Bell State Pairs**.
+- **Entanglement Strength ($E$)**: Calculated as $E = -\log_2(1 - |\rho|^2)$ where $\rho$ is the correlation coefficient.
+- **Bell Pairs**: Pairs with correlation $> 0.9$ are treated as a single quantum system.
+- **Phase Difference**: The engine detects if assets are "in phase" ($0$) or "out of phase" ($\pi$), allowing for advanced pairs trading strategies.
+
+### 🧮 **2. Hyperdimensional Computing (HDC)**
+*Located in: `src/quantum/hyperdimensional_computing.rs`*
+
+Market data is projected into high-dimensional vector space to allow for symbolic reasoning with vectors.
+- **Dimensions**: **10,000-dimensional** hypervectors.
+- **Projection Matrix**: Deterministic pseudo-random projection using sinusoidal encoding: $v_{ij} = \sin(i \cdot 7 + j \cdot 13)$.
+- **Binding Operation**: Vectors are bound using element-wise multiplication to create composite concepts (e.g., `Bullish * HighVol`).
+- **Memory**: Stores the top **800** most frequent patterns in a vector database for instant recall.
+
+### 🌊 **3. Spectral Tree Engine**
+*Located in: `src/quantum/spectral_tree_engine.rs`*
+
+Decomposes price action into its constituent frequencies to predict future waveforms.
+- **Fourier-like Decomposition**: Breaks price into 5 fundamental frequency components with decreasing amplitude ($1/f$).
+- **Path Simulation**: Generates thousands of potential future price paths by phase-shifting these components.
+- **Confidence**: Scored based on wave amplitude significance and price stability variance.
 
 ---
 
 ## 🧠 **AGENTIC SWARM INTELLIGENCE**
 
-The "brain" of Diia is composed of **18+ specialized autonomous agents**, each an expert in a specific domain. They operate in a **Retrievable Augmented Generation (RAG)** loop, constantly arguing, voting, and refining the consensus action under the supervision of the **God Kernel**.
+The **God Kernel** orchestrates **18 specialized agents**, utilizing a **voting consensus** mechanism.
 
-### 🌌 **The 18 Pillars of Intelligence**
-
-| Agent ID | Classification | Prime Directive |
+| Agent Class | Prime Directive | Technical Implementation |
 |:---|:---|:---|
-| **God Kernel** | 🧠 *Omniscient* | Orchestrates the swarm, resolves conflicts, and evolves strategy weights. |
-| **Zero Loss Enforcer** | 🛡️ *Invincible* | Mathematically enforces non-negative P&L via pre-trade simulation and harsh stops. |
-| **Ghost Trader** | 👻 *Ethereal* | Runs thousands of "phantom" trades in parallel timelines to validate strategies before funding. |
-| **Quantum Predictor** | 🔮 *Oracular* | Uses **entanglement algorithms** to predict price collapse/surges before they happen. |
-| **Spectral Tree** | 🌊 *Harmonic* | Decomposes market noise into pure frequencies to find the "music" of the market. |
-| **Hyperdim Recognizer**| 🧮 *Abstract* | Maps market data into 11-dimensional vector space to find non-linear correlations. |
-| **Anti-Loss Hedger** | ⚖️ *Balance* | Automatically opens counter-positions to delta-neutralize risk during volatility. |
-| **Compound Controller**| 💰 *Growth* | Manages capital allocation tiers (Tier 1-4) for exponential compounding. |
-| **Sentiment Analyzer** | 🗣️ *Empath* | Natural Language Processing (Natural/TensorFlow) on Twitter & News. |
-| **Feedback Loop** | 🔄 *Evolution* | Analyzes past trades to "mutate" the parameters of other agents. |
-| **Memory Node** | 💾 *Historian* | Vector database storing all market contexts for RAG-based decision making. |
-| **Asset Scanner** | 🔍 *Hunter* | Scans 300+ pairs continuously for setup validation. |
-| **HFT Agent** | ⚡ *Speed* | Microsecond execution logic for arbitrage and scalp opportunities. |
-| **Risk Manager** | 👮 *Guard* | Global risk parameter enforcement (Max Drawdown, Leverage Limits). |
-| *And more...* | | *Agent Coordinator, Market Analyzer, Trade Executor, Main Controller...* |
-
-### 🧬 **Neural Decision Matrix**
+| **Zero Loss Enforcer** | 🛡️ *Invincible* | Pre-trade simulation in `zero_loss_enforcer.rs` rejects any trade with $<99\%$ win probability. |
+| **Ghost Trader** | 👻 *Ethereal* | Runs shadow trades in `ghost_trader.rs` to validate strategies without capital risk. |
+| **Spectral Tree** | 🌊 *Harmonic* | Uses `spectral_tree_engine.rs` to model price waves. |
+| **Hyperdim Recognizer**| 🧮 *Abstract* | Maps 10k-dim vectors to find non-linear correlations. |
+| **Compound Controller**| 💰 *Growth* | Manages 4 Capital Tiers for exponential scaling (`compound_controller.rs`). |
+| **Feedback Loop** | 🔄 *Evolution* | Mutates agent weights based on realized P&L (`feedback_loop.rs`). |
+| **Memory Node** | 💾 *Historian* | Vector RAG system for context retrieval (`memory_node.rs`). |
+| **Asset Scanner** | 🔍 *Hunter* | Scans 300+ pairs in `asset_scanner_agent.rs`. |
+| **HFT Agent** | ⚡ *Speed* | Microsecond execution logic (`high_frequency_trader.rs`). |
+| **Risk Manager** | 👮 *Guard* | Global drawdown limits (`risk_manager.rs`). |
+| **Sentiment Analyzer** | 🗣️ *Empath* | **Natural** NLP library + TensorFlow sentiment scoring. |
 
 ```mermaid
 graph TD
-    classDef sensory fill:#ff9900,stroke:#333,color:white;
-    classDef process fill:#9900ff,stroke:#333,color:white;
-    classDef action fill:#00cc00,stroke:#333,color:white;
+    %% Theme Enforcement
+    %%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#ff0055', 'edgeLabelBackground': '#000000', 'tertiaryColor': '#1a1a1a'}}}%%
+    classDef sensory fill:#ff9900,stroke:#333,color:black,font-weight:bold;
+    classDef process fill:#9900ff,stroke:#333,color:white,font-weight:bold;
+    classDef action fill:#00cc00,stroke:#333,color:black,font-weight:bold;
 
     subgraph Sensory ["📡 Sensory Input"]
         Market[("Price/Vol")]:::sensory
@@ -126,55 +140,37 @@ graph TD
         Memory["Memory Node<br/>(RAGContext)"]:::process
     end
 
-    subgraph Decision ["⚖️ God Kernel Consensus"]
+    subgraph Decision ["⚖️ God Kernel"]
         Vote["Weighted Voting Mechanism"]:::process
         Sim["Ghost Trader Simulation"]:::process
         ZeroLoss["Zero Loss Validation"]:::action
     end
 
-    subgraph Execution ["⚡ Output"]
-        Order["ByBit API"]:::action
-        Hedge["Hedge Fund"]:::action
-    end
-
     Market --> Spectral
     Market --> Hyper
     Social --> Memory
-    Context --> Memory
-
     Spectral --> Vote
     Hyper --> Vote
     Quantum --> Vote
-    Memory --> Quantum
-    Memory --> Vote
-
     Vote --> Sim
-    Sim -->|Pass| ZeroLoss
-    ZeroLoss -->|Approved| Order
-    ZeroLoss -->|Rejected| Hedge
+    Sim --> ZeroLoss
 ```
 
 ---
 
 ## 🛠️ **TECHNOLOGICAL SINGULARITY (STACK)**
 
-### 🎨 **Frontend (The Visor)**
-- **React 18.2.0**: Concurrent rendering engine.
-- **Material-UI (MUI)**: Customized "Quantum Dark" theme system.
-- **Data Visualization**: D3.js + Lightweight Charts (TradingView) for financial rendering; Three.js for 3D data exploration.
-- **State Management**: Redux Toolkit for atomic state updates.
-
 ### 🔌 **Middle Layer (The Nervous System)**
-- **Express.js + Node.js**: High-throughput non-blocking I/O.
+- **Express.js + Node.js**: Orchestrates `mcpService.js`, `quantum-bridge.js`, and `real-750-trades-engine.js`.
 - **TensorFlow.js**: Running lightweight inference models on the edge.
 - **Natural**: Tokenization and sentiment scoring for social data.
-- **gRPC**: Protobuf-based communication for <1ms overhead interactions with Rust.
+- **gRPC**: `grpc-server.js` enables <1ms latency between Node.js and Rust.
 
 ### 🦀 **Backend (The Engine)**
 - **Rust 1.70+**: Memory-safe, zero-cost abstraction systems programming.
-- **Tokio**: Asynchronous runtime for handling 100k+ concurrent websockets.
+- **Tokio**: Asynchronous runtime handling 100k+ concurrent websockets.
 - **Serde**: High-speed serialization/deserialization.
-- **Anyhow**: Robust error propagation (because silence is deadly).
+- **Anyhow**: Robust error propagation.
 
 ---
 
@@ -203,7 +199,6 @@ graph TD
 3.  **Access the Dashboard**
     - Local: `http://localhost:10001`
     - Production: `http://3.111.22.56:10001`
-    - API Health: `http://localhost:10002/health`
 
 ---
 
@@ -230,5 +225,5 @@ His vision is simple: **To create a financial intelligence so advanced it is ind
 *Open sourced for the advancement of humanity's financial intelligence.*
 
 <div align="center">
-  <sub>Built with 💜, 🦀 and ⚛️ by the Omni Team.</sub>
+  <sub>Built with 💜, 🦀 and ⚛️ by Sandeep Kumar Sahoo.</sub>
 </div>
