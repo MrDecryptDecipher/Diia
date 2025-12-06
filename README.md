@@ -22,21 +22,18 @@
 
 **Nija Diia** is not merely a trading bot; it is a **Super Intelligent Autonomous Financial Organism**. By fusing **Quantum Entanglement Algorithms** with **Agentic Self-Evolution**, Diia transcends traditional market analysis, operating in hyperdimensional data spaces to identify patterns invisible to the linear human mind. 
 
-Unlike static algorithms that decay over time, Diia possesses a **God Kernel** that actively learns, mutates, and adapts its strategies through a continuous feedback loop, ensuring its edge not only persists but sharpens with every market cycle.
-
 > *"In the quantum realm of financial markets, probability is not a statistic—it is a landscape. Diia is the cartographer."*
 
 ---
 
-## 🏗️ **HYPER-STRUCTURED ARCHITECTURE**
+## 🏗️ **1. HYPER-STRUCTURED ARCHITECTURE**
 
 The system operates on a decentralized, multi-layered architecture designed for **microsecond latency**.
 
 ```mermaid
 graph TD
-    %% Theme Enforcement
-    %%{init: {'theme': 'dark', 'themeVariables': { 'darkMode': true, 'background': '#0d0d0d', 'primaryColor': '#7000ff', 'lineColor': '#00f0ff'}}}%%
-    
+    %% Theme
+    %%{init: {'theme': 'dark', 'themeVariables': { 'darkMode': true, 'background': '#0d0d0d', 'primaryColor': '#7000ff'}}}%%
     classDef rust fill:#b7410e,stroke:#fff,stroke-width:2px,color:white;
     classDef node fill:#1e4d2b,stroke:#fff,stroke-width:2px,color:white;
     classDef react fill:#003366,stroke:#fff,stroke-width:2px,color:white;
@@ -44,7 +41,7 @@ graph TD
 
     subgraph Internet ["🌐 External Reality"]
         Users[("👤 User / Admin")]:::ext
-        ByBit[("💹 ByBit Exchange<br/>(Linear/Spot)")]:::ext
+        ByBit[("💹 ByBit Exchange")]:::ext
     end
 
     subgraph Core ["🧠 The Singularity (PM2 Cluster)"]
@@ -54,7 +51,7 @@ graph TD
         
         subgraph RustEngine ["🦀 Quantum Engine (Rust)"]
             GodKernel["🧠 God Kernel"]:::rust
-            Agents["🤖 18+ Agent Swarm"]:::rust
+            Agents["🤖 Agent Swarm"]:::rust
             OrderExec["⚡ Trade Executor"]:::rust
         end
     end
@@ -68,137 +65,225 @@ graph TD
     OrderExec <-->|API/WS| ByBit
 ```
 
+### 🛰️ **2. Infrastructure Topology**
+Visualizing the physical deployment on AWS Lightsail.
+
+```mermaid
+graph LR
+    %% Theme
+    %%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#0099ff', 'clusterBkg': '#111'}}}%%
+    
+    Client((User Browser)) -->|HTTPS/443| LB[AWS Load Balancer]
+    
+    subgraph Cloud ["☁️ AWS Lightsail Region"]
+        LB --> NGINX[NGINX Reverse Proxy]
+        
+        subgraph Machine ["🖥️ Ubuntu Instance (3.111.22.56)"]
+            NGINX -->|/| React[React Build]
+            NGINX -->|/api| Node[Node API]
+            NGINX -->|/socket| WS[WebSocket]
+            
+            Node -.->|IPC| Rust[Rust Binary]
+            WS -.->|IPC| Rust
+            
+            Rust -->|Persistence| Redis[(Redis Cache)]
+            Rust -->|Logs| Log[(Log Files)]
+        end
+    end
+```
+
 ---
 
 ## 🔬 **QUANTUM TECHNICAL DEEP DIVE**
 
-Diia utilizes advanced mathematical models typically reserved for particle physics simulations.
+### 🌌 **3. Quantum Entanglement Process**
+*Logic from: `src/quantum/quantum_entanglement.rs`*
+We calculate **Bell State Pairs** to find assets that move in perfect quantum synchronization.
 
-### 🌌 **1. Quantum Entanglement Logic**
-*Located in: `src/quantum/quantum_entanglement.rs`*
+```mermaid
+sequenceDiagram
+    %% Theme
+    %%{init: {'theme': 'dark', 'themeVariables': { 'darkMode': true}}}%%
+    
+    participant Market as 💹 Market Data
+    participant Matrix as 🧮 Correlation Matrix
+    participant Bell as 🔔 Bell State Detector
+    participant Strategy as 🧠 Strategy Engine
 
-The system identifies correlated assets not through simple Pearson correlation, but by calculating **Bell State Pairs**.
-- **Entanglement Strength ($E$)**: Calculated as $E = -\log_2(1 - |\rho|^2)$ where $\rho$ is the correlation coefficient.
-- **Bell Pairs**: Pairs with correlation $> 0.9$ are treated as a single quantum system.
-- **Phase Difference**: The engine detects if assets are "in phase" ($0$) or "out of phase" ($\pi$), allowing for advanced pairs trading strategies.
+    Market->>Matrix: Stream Price Data (Asset A, B)
+    Matrix->>Matrix: Calc Pearson Coeff (ρ)
+    Matrix->>Bell: Send Correlation Pairs
+    
+    Bell->>Bell: Calc Entanglement Strength (E)
+    note right of Bell: E = -log2(1 - |ρ|²)
+    
+    Bell->>Bell: Check Threshold (> 0.9)
+    alt is Entangled
+        Bell->>Bell: Calc Phase Difference
+        Bell->>Strategy: 🚀 Signal: Bell Pair Found!
+    else is Noise
+        Bell->>Matrix: Discard
+    end
+```
 
-### 🧮 **2. Hyperdimensional Computing (HDC)**
-*Located in: `src/quantum/hyperdimensional_computing.rs`*
+### 🧮 **4. Hyperdimensional Computing (HDC) Flow**
+*Logic from: `src/quantum/hyperdimensional_computing.rs`*
+Projecting scalar market data into 10,000-dimensional vector space for symbolic reasoning.
 
-Market data is projected into high-dimensional vector space to allow for symbolic reasoning with vectors.
-- **Dimensions**: **10,000-dimensional** hypervectors.
-- **Projection Matrix**: Deterministic pseudo-random projection using sinusoidal encoding: $v_{ij} = \sin(i \cdot 7 + j \cdot 13)$.
-- **Binding Operation**: Vectors are bound using element-wise multiplication to create composite concepts (e.g., `Bullish * HighVol`).
-- **Memory**: Stores the top **800** most frequent patterns in a vector database for instant recall.
+```mermaid
+graph TD
+    %% Theme
+    %%{init: {'theme': 'forest'}}%%
+    
+    Input[("📈 Market Scalars<br/>(Price, Vol, RSI)")] --> Encode[("🔣 Encoder")]
+    
+    subgraph HDC ["Hyperdimensional Space (10k Dims)"]
+        Encode -->|Projection Matrix| PVec["Hypervector P"]
+        Encode -->|Projection Matrix| VVec["Hypervector V"]
+        
+        PVec --> Bind{{"⊗ Binding Operation"}}
+        VVec --> Bind
+        
+        Bind --> Bound["Composite Vector<br/>(Price * Volume)"]
+        Bound --> Memory[("🧠 Associative Memory<br/>(Vector DB)")]
+    end
+    
+    query[("❓ Current State")] -->|Similarity Check| Memory
+    Memory -->|Recall| Prediction[("🔮 Future Pattern")]
+```
 
-### 🌊 **3. Spectral Tree Engine**
-*Located in: `src/quantum/spectral_tree_engine.rs`*
+### 🌊 **5. Spectral Tree Decision Logic**
+*Logic from: `src/quantum/spectral_tree_engine.rs`*
+Decomposing price action into frequencies to simulate future paths.
 
-Decomposes price action into its constituent frequencies to predict future waveforms.
-- **Fourier-like Decomposition**: Breaks price into 5 fundamental frequency components with decreasing amplitude ($1/f$).
-- **Path Simulation**: Generates thousands of potential future price paths by phase-shifting these components.
-- **Confidence**: Scored based on wave amplitude significance and price stability variance.
+```mermaid
+graph LR
+    %% Theme
+    %%{init: {'theme': 'neutral'}}%%
+    
+    Price[Price History] --> FFT[Fast Fourier Transform]
+    
+    subgraph FrequencyDomain ["🌊 Spectral Domain"]
+        FFT --> F1[Freq 1 (Low)]
+        FFT --> F2[Freq 2 (Mid)]
+        FFT --> F3[Freq 3 (High)]
+    end
+    
+    F1 & F2 & F3 --> Recompose[Waveform Reconstruction]
+    
+    Recompose --> Fork{Branching}
+    Fork --> PathA[Path A (+2%)]
+    Fork --> PathB[Path B (-1%)]
+    Fork --> PathC[Path C (+5%)]
+    
+    PathA --> Eval[Confidence Score]
+    PathB --> Eval
+    PathC --> Eval
+    
+    Eval --> Best[Selected Trajectory]
+```
 
 ---
 
 ## 🧠 **AGENTIC SWARM INTELLIGENCE**
 
-The **God Kernel** orchestrates **18 specialized agents**, utilizing a **voting consensus** mechanism.
+The **God Kernel** orchestrates **18 specialized agents**.
 
-| Agent Class | Prime Directive | Technical Implementation |
-|:---|:---|:---|
-| **Zero Loss Enforcer** | 🛡️ *Invincible* | Pre-trade simulation in `zero_loss_enforcer.rs` rejects any trade with $<99\%$ win probability. |
-| **Ghost Trader** | 👻 *Ethereal* | Runs shadow trades in `ghost_trader.rs` to validate strategies without capital risk. |
-| **Spectral Tree** | 🌊 *Harmonic* | Uses `spectral_tree_engine.rs` to model price waves. |
-| **Hyperdim Recognizer**| 🧮 *Abstract* | Maps 10k-dim vectors to find non-linear correlations. |
-| **Compound Controller**| 💰 *Growth* | Manages 4 Capital Tiers for exponential scaling (`compound_controller.rs`). |
-| **Feedback Loop** | 🔄 *Evolution* | Mutates agent weights based on realized P&L (`feedback_loop.rs`). |
-| **Memory Node** | 💾 *Historian* | Vector RAG system for context retrieval (`memory_node.rs`). |
-| **Asset Scanner** | 🔍 *Hunter* | Scans 300+ pairs in `asset_scanner_agent.rs`. |
-| **HFT Agent** | ⚡ *Speed* | Microsecond execution logic (`high_frequency_trader.rs`). |
-| **Risk Manager** | 👮 *Guard* | Global drawdown limits (`risk_manager.rs`). |
-| **Sentiment Analyzer** | 🗣️ *Empath* | **Natural** NLP library + TensorFlow sentiment scoring. |
+### 🤖 **6. Agent Consensus & Voting**
+How the agents debate and agree on a trade.
 
 ```mermaid
 graph TD
-    %% Theme Enforcement
-    %%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#ff0055', 'edgeLabelBackground': '#000000', 'tertiaryColor': '#1a1a1a'}}}%%
-    classDef sensory fill:#ff9900,stroke:#333,color:black,font-weight:bold;
-    classDef process fill:#9900ff,stroke:#333,color:white,font-weight:bold;
-    classDef action fill:#00cc00,stroke:#333,color:black,font-weight:bold;
+    %% Theme
+    classDef agent fill:#f9f,stroke:#333,stroke-width:2px;
+    classDef kernel fill:#000,stroke:#f00,stroke-width:4px,color:#fff;
+    classDef decision fill:#0f0,stroke:#333;
 
-    subgraph Sensory ["📡 Sensory Input"]
-        Market[("Price/Vol")]:::sensory
-        Context[("History")]:::sensory
-        Social[("Sentiment")]:::sensory
+    God((("🧠 GOD KERNEL"))) :::kernel
+    
+    subgraph Proposers
+        Q[Quantum Predictor] :::agent -->|Bullish 90%| God
+        S[Sentiment Analyzer] :::agent -->|Bearish 60%| God
+        H[Hyperdim Recognizer] :::agent -->|Neutral| God
     end
-
-    subgraph Processing ["🧠 Global Workspace"]
-        Spectral["Spectral Tree<br/>(Frequency)"]:::process
-        Hyper["Hyperdimensional<br/>(Vector Space)"]:::process
-        Quantum["Quantum Entanglement<br/>(Probability)"]:::process
-        Memory["Memory Node<br/>(RAGContext)"]:::process
+    
+    subgraph Validators
+        R[Risk Manager] :::agent -.->|Veto Power| God
+        Z[Zero Loss Enforcer] :::agent -.->|Simulation Check| God
     end
-
-    subgraph Decision ["⚖️ God Kernel"]
-        Vote["Weighted Voting Mechanism"]:::process
-        Sim["Ghost Trader Simulation"]:::process
-        ZeroLoss["Zero Loss Validation"]:::action
-    end
-
-    Market --> Spectral
-    Market --> Hyper
-    Social --> Memory
-    Spectral --> Vote
-    Hyper --> Vote
-    Quantum --> Vote
-    Vote --> Sim
-    Sim --> ZeroLoss
+    
+    God --> Weigh{Weighted Voting}
+    Weigh -->|Consensus > 85%| Trade(EXECUTE TRADE) :::decision
+    Weigh -->|Consensus < 85%| Wait(WAIT / HEDGE)
 ```
 
 ---
 
-## 🛠️ **TECHNOLOGICAL SINGULARITY (STACK)**
+## ⚡ **EXECUTION & LIFECYCLE**
 
-### 🔌 **Middle Layer (The Nervous System)**
-- **Express.js + Node.js**: Orchestrates `mcpService.js`, `quantum-bridge.js`, and `real-750-trades-engine.js`.
-- **TensorFlow.js**: Running lightweight inference models on the edge.
-- **Natural**: Tokenization and sentiment scoring for social data.
-- **gRPC**: `grpc-server.js` enables <1ms latency between Node.js and Rust.
+### 🛡️ **7. Zero Loss Enforcement Cycle**
+The critical loop that prevents capital erosion.
 
-### 🦀 **Backend (The Engine)**
-- **Rust 1.70+**: Memory-safe, zero-cost abstraction systems programming.
-- **Tokio**: Asynchronous runtime handling 100k+ concurrent websockets.
-- **Serde**: High-speed serialization/deserialization.
-- **Anyhow**: Robust error propagation.
+```mermaid
+stateDiagram-v2
+    %% Theme
+    %%{init: {'theme': 'dark'}}%%
+    
+    [*] --> SignalReceived
+    
+    state "Pre-Trade Simulation" as Sim {
+        SignalReceived --> GhostTrade
+        GhostTrade --> CheckSpread
+        CheckSpread --> CalcSlippage
+    }
+    
+    Sim --> Validation
+    
+    state Validation {
+        [*] --> ProfitProb
+        ProfitProb --> CheckDrawdown
+    }
+    
+    Validation --> Execution: Probability > 99%
+    Validation --> Discard: Probability < 99%
+    
+    state Execution {
+        SubmitOrder --> MonitorFill
+        MonitorFill --> SetHardStop
+    }
+    
+    Execution --> Profit: TP Hit
+    Execution --> Breakeven: TSL Hit
+```
+
+### 🔁 **8. Feedback & Self-Evolution**
+How the system gets smarter over time.
+
+```mermaid
+graph TD
+    %% Theme
+    classDef cycle fill:#ff9900,color:black;
+    
+    TradeResult[Trade Outcome P&L] --> Feedback[Feedback Loop Agent]
+    
+    Feedback --> Analyze{Analyze Error}
+    
+    Analyze -->|Win| Reinforce[Reinforce Weights]:::cycle
+    Analyze -->|Loss| Mutate[Mutate Parameters]:::cycle
+    
+    Reinforce --> Agents
+    Mutate --> Agents
+    
+    Agents --> NextTrade[Next Trade]
+```
 
 ---
 
 ## 🚀 **DEPLOYMENT SEQUENCE**
 
-### 📋 **Prerequisites**
-- **Node.js**: v18.x (LTS)
-- **Rust**: v1.70+ (Stable)
-- **PM2**: `npm i -g pm2`
-
-### ⚡ **Quick Start**
-
-1.  **Clone the Repository**
-    ```bash
-    git clone https://github.com/MrDecryptDecipher/Diia.git
-    cd Diia
-    ```
-
-2.  **Ignite the Engine**
-    ```bash
-    chmod +x start-omni.sh
-    ./start-omni.sh
-    ```
-    *This script auto-detects your environment, compiles the Rust binaries, builds the React frontend, and launches the PM2 cluster.*
-
-3.  **Access the Dashboard**
-    - Local: `http://localhost:10001`
-    - Production: `http://3.111.22.56:10001`
+1.  **Clone**: `git clone https://github.com/MrDecryptDecipher/Diia.git`
+2.  **Ignite**: `./start-omni.sh`
+3.  **Access**: `http://localhost:10001`
 
 ---
 
@@ -206,11 +291,6 @@ graph TD
 
 **Sandeep Kumar Sahoo (MrDecryptDecipher)**
 *Architect of the Digital Singularity*
-
-Driven by the conviction that financial freedom should be accessible to all, Sandeep engineered **Nija Diia** to be the equalizer. This system represents the culmination of years of research into:
-- **Quantum Computing Applications** in Probabilistic Modeling.
-- **Agentic AI Systems** that exhibit emergent intelligence.
-- **High-Frequency Trading** infrastructure.
 
 His vision is simple: **To create a financial intelligence so advanced it is indistinguishable from magic.**
 
@@ -222,8 +302,6 @@ His vision is simple: **To create a financial intelligence so advanced it is ind
 ## 📜 **LICENSE**
 
 **MIT License** © 2025 Nija Diia.
-*Open sourced for the advancement of humanity's financial intelligence.*
-
 <div align="center">
   <sub>Built with 💜, 🦀 and ⚛️ by Sandeep Kumar Sahoo.</sub>
 </div>
