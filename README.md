@@ -164,17 +164,19 @@ graph LR
     Price[Price History] --> FFT[Fast Fourier Transform]
     
     subgraph FrequencyDomain ["🌊 Spectral Domain"]
-        FFT --> F1[Freq 1 (Low)]
-        FFT --> F2[Freq 2 (Mid)]
-        FFT --> F3[Freq 3 (High)]
+        FFT --> F1["Freq 1 (Low)"]
+        FFT --> F2["Freq 2 (Mid)"]
+        FFT --> F3["Freq 3 (High)"]
     end
     
-    F1 & F2 & F3 --> Recompose[Waveform Reconstruction]
+    F1 --> Recompose[Waveform Reconstruction]
+    F2 --> Recompose
+    F3 --> Recompose
     
     Recompose --> Fork{Branching}
-    Fork --> PathA[Path A (+2%)]
-    Fork --> PathB[Path B (-1%)]
-    Fork --> PathC[Path C (+5%)]
+    Fork --> PathA["Path A (+2%)"]
+    Fork --> PathB["Path B (-1%)"]
+    Fork --> PathC["Path C (+5%)"]
     
     PathA --> Eval[Confidence Score]
     PathB --> Eval
@@ -199,21 +201,28 @@ graph TD
     classDef kernel fill:#000,stroke:#f00,stroke-width:4px,color:#fff;
     classDef decision fill:#0f0,stroke:#333;
 
-    God((("🧠 GOD KERNEL"))) :::kernel
+    God(("🧠 GOD KERNEL")):::kernel
     
     subgraph Proposers
-        Q[Quantum Predictor] :::agent -->|Bullish 90%| God
-        S[Sentiment Analyzer] :::agent -->|Bearish 60%| God
-        H[Hyperdim Recognizer] :::agent -->|Neutral| God
+        Q[Quantum Predictor]:::agent
+        S[Sentiment Analyzer]:::agent
+        H[Hyperdim Recognizer]:::agent
     end
+
+    Q -->|Bullish 90%| God
+    S -->|Bearish 60%| God
+    H -->|Neutral| God
     
     subgraph Validators
-        R[Risk Manager] :::agent -.->|Veto Power| God
-        Z[Zero Loss Enforcer] :::agent -.->|Simulation Check| God
+        R[Risk Manager]:::agent
+        Z[Zero Loss Enforcer]:::agent
     end
+
+    R -.->|Veto Power| God
+    Z -.->|Simulation Check| God
     
     God --> Weigh{Weighted Voting}
-    Weigh -->|Consensus > 85%| Trade(EXECUTE TRADE) :::decision
+    Weigh -->|Consensus > 85%| Trade(EXECUTE TRADE):::decision
     Weigh -->|Consensus < 85%| Wait(WAIT / HEDGE)
 ```
 
